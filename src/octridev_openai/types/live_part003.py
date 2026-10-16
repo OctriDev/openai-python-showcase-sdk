@@ -168,10 +168,7 @@ class LiveDecisionEvent(BaseModel):
     trigger_id: str | None
     """Required `string` value serialized in the `trigger_id` wire field."""
     source_event_type: (
-        Literal["session.input_transcript.delta"]
-        | str
-        | Literal["session.output_transcript.delta"]
-        | None
+        Literal["session.input_transcript.delta", "session.output_transcript.delta"] | str | None
     )
     """Required API value serialized in the `source_event_type` wire field."""
     source_event_id: str | None
@@ -322,12 +319,7 @@ class LiveSessionClosed(BaseModel):
     type: Literal["session.closed"]
     """The event type, always `session.closed`."""
     reason: (
-        Literal["close_requested"]
-        | str
-        | Literal["expired"]
-        | Literal["content"]
-        | Literal["remote_hangup"]
-        | Literal["connection_lost"]
+        Literal["close_requested", "expired", "content", "remote_hangup", "connection_lost"] | str
     )
     """Why the Live session ended: `close_requested` for an application close or hangup request, `expired` for the session duration limit, `content` for a safety filter, `remote_hangup` for a graceful remote disconnect, or `connection_lost` for an unexpected primary or upstream disconnection."""
     session: LiveSessionResourceParam
