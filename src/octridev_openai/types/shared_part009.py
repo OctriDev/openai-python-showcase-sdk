@@ -3,169 +3,38 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, WrapValidator, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
-from octridev_openai.types.shared_part001 import MCPToolFilter
 from octridev_openai.types.shared_part002 import WebSearchApproximateLocation
+from octridev_openai.types.shared_part003 import ImageGenActionEnum, ToolCallCaller
 from octridev_openai.types.shared_part004 import (
+    ApproximateLocation,
     CallableToolAllowedCaller,
     ComputerEnvironment,
     EmptyModelParam,
     Filters,
+    FunctionShellCallOutputStatusEnum,
+    GrammarSyntax1,
     HybridSearchOptions,
+    InputFidelity,
     RankerVersionType,
 )
+from octridev_openai.types.shared_search import SearchContentType, SearchContextSize
 
 from ..validation import (
     validate_enum,
     validate_items,
     validate_length,
     validate_pattern,
+    validate_range,
     validate_required,
-    validate_union_candidate,
-    validate_uri,
 )
 
-
-class MCPToolRequireApprovalMCPToolApprovalFilter(BaseModel):
-    """
-    Specify which of the MCP server's tools require approval. Can be
-    `always`, `never`, or a filter object associated with tools
-    that require approval.
-    """
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    always: MCPToolFilter | NotGiven = NOT_GIVEN
-    """A filter object to specify which tools are allowed."""
-    never: MCPToolFilter | NotGiven = NOT_GIVEN
-    """A filter object to specify which tools are allowed."""
-
-
-class MCPTool(BaseModel):
-    """
-    Give the model access to additional tools via remote Model Context Protocol
-    (MCP) servers. [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
-    """
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["mcp"]
-    """The type of the MCP tool. Always `mcp`."""
-    server_label: str
-    """A label for this MCP server, used to identify it in tool calls."""
-    server_url: str | NotGiven = NOT_GIVEN
-    """
-    The URL for the MCP server. One of `server_url`, `connector_id`, or
-    `tunnel_id` must be provided.
-    """
-    connector_id: (
-        Literal[
-            "connector_dropbox",
-            "connector_gmail",
-            "connector_googlecalendar",
-            "connector_googledrive",
-            "connector_microsoftteams",
-            "connector_outlookcalendar",
-            "connector_outlookemail",
-            "connector_sharepoint",
-        ]
-        | str
-        | NotGiven
-    ) = NOT_GIVEN
-    """
-    Identifier for service connectors, like those available in ChatGPT. One of
-    `server_url`, `connector_id`, or `tunnel_id` must be provided. Learn more
-    about service connectors [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
-
-    This field is deprecated for models released after September 1, 2026.
-    Use `server_url` to connect to a remote MCP server, or `tunnel_id` to
-    connect through a Secure MCP Tunnel.
-
-    Currently supported `connector_id` values are:
-
-    - Dropbox: `connector_dropbox`
-    - Gmail: `connector_gmail`
-    - Google Calendar: `connector_googlecalendar`
-    - Google Drive: `connector_googledrive`
-    - Microsoft Teams: `connector_microsoftteams`
-    - Outlook Calendar: `connector_outlookcalendar`
-    - Outlook Email: `connector_outlookemail`
-    - SharePoint: `connector_sharepoint`
-    """
-    tunnel_id: str | NotGiven = NOT_GIVEN
-    """
-    The Secure MCP Tunnel ID to use instead of a direct server URL. One of
-    `server_url`, `connector_id`, or `tunnel_id` must be provided.
-    """
-    authorization: str | NotGiven = NOT_GIVEN
-    """
-    An OAuth access token that can be used with a remote MCP server, either
-    with a custom MCP server URL or a service connector. Your application
-    must handle the OAuth authorization flow and provide the token here.
-    """
-    server_description: str | NotGiven = NOT_GIVEN
-    """Optional description of the MCP server, used to provide more context."""
-    headers: dict[str, str] | None | NotGiven = NOT_GIVEN
-    """
-    Optional HTTP headers to send to the MCP server. Use for authentication
-    or other purposes.
-    """
-    allowed_tools: (
-        list[str]
-        | Annotated[MCPToolFilter, WrapValidator(validate_union_candidate)]
-        | None
-        | NotGiven
-    ) = NOT_GIVEN
-    """List of allowed tool names or a filter object."""
-    allowed_callers: list[CallableToolAllowedCaller] | None | NotGiven = NOT_GIVEN
-    """The tool invocation context(s)."""
-    require_approval: (
-        Annotated[
-            MCPToolRequireApprovalMCPToolApprovalFilter, WrapValidator(validate_union_candidate)
-        ]
-        | Literal["always", "never"]
-        | str
-        | None
-        | NotGiven
-    ) = NOT_GIVEN
-    """Specify which of the MCP server's tools require approval."""
-    defer_loading: bool | NotGiven = NOT_GIVEN
-    """Whether this MCP tool is deferred and discovered via tool search."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "server_label"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["mcp"])
-        return value
-
-    @field_validator("server_url")
-    @classmethod
-    def _validate_server_url(cls, value):
-        validate_uri("server_url", value)
-        return value
-
-    @field_validator("tunnel_id")
-    @classmethod
-    def _validate_tunnel_id(cls, value):
-        validate_pattern("tunnel_id", value, "^tunnel_[a-z0-9]{32}$")
-        return value
-
-    @field_validator("allowed_callers")
-    @classmethod
-    def _validate_allowed_callers(cls, value):
-        if value is not None:
-            validate_items("allowed_callers", value, min=1)
-        return value
+if TYPE_CHECKING:
+    from octridev_openai.types.shared_part011 import FunctionShellCallOutputContent
 
 
 class FunctionTool(BaseModel):
@@ -451,4 +320,177 @@ class ComputerUsePreviewTool(BaseModel):
     @classmethod
     def _validate_type(cls, value):
         validate_enum("type", value, ["computer_use_preview"])
+        return value
+
+
+class ImageGenToolInputImageMask(BaseModel):
+    """
+    Optional mask for inpainting. Contains `image_url`
+    (string, optional) and `file_id` (string, optional).
+    """
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    image_url: str | NotGiven = NOT_GIVEN
+    """Base64-encoded mask image."""
+    file_id: str | NotGiven = NOT_GIVEN
+    """File ID for the mask image."""
+
+
+class ImageGenTool(BaseModel):
+    """A tool that generates images using the GPT image models."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["image_generation"]
+    """The type of the image generation tool. Always `image_generation`."""
+    model: str | NotGiven = NOT_GIVEN
+    """Optional `string` value serialized in the `model` wire field."""
+    quality: Literal["low", "medium", "high", "xhigh", "max", "auto"] | str | NotGiven = NOT_GIVEN
+    """
+    The quality of the generated image. The GPT image models support `low`,
+    `medium`, and `high`. `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`,
+    including their `2026-09-08` snapshots, also support `xhigh` and `max`.
+    Default: `auto`.
+    """
+    size: str | NotGiven = NOT_GIVEN
+    """The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum supported resolution is `3840x2160`. The requested size must also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for models that allow automatic sizing."""
+    output_format: Literal["png", "webp", "jpeg"] | str | NotGiven = NOT_GIVEN
+    """
+    The output format of the generated image. One of `png`, `webp`, or
+    `jpeg`. Default: `png`.
+    """
+    output_compression: int | NotGiven = NOT_GIVEN
+    """Compression level for the output image. Default: 100."""
+    moderation: Literal["auto", "low"] | str | NotGiven = NOT_GIVEN
+    """Moderation level for the generated image. Default: `auto`."""
+    background: Literal["transparent", "opaque", "auto"] | str | NotGiven = NOT_GIVEN
+    """
+    Set the background of the generated image. One of `transparent`, `opaque`,
+    or `auto`. `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including
+    their `2026-09-08` snapshots, support `opaque` and `transparent`
+    backgrounds. Transparent backgrounds are available for supported GPT Image
+    models. For `gpt-image-2` and `gpt-image-2-2026-04-21`, this support is in
+    preview. When using `transparent`, set the output format to `png` or `webp`.
+    Default: `auto`.
+    """
+    input_fidelity: InputFidelity | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `input_fidelity` wire field."""
+    input_image_mask: ImageGenToolInputImageMask | NotGiven = NOT_GIVEN
+    """
+    Optional mask for inpainting. Contains `image_url`
+    (string, optional) and `file_id` (string, optional).
+    """
+    partial_images: int | NotGiven = NOT_GIVEN
+    """Number of partial images to generate in streaming mode, from 0 (default value) to 3."""
+    action: ImageGenActionEnum | NotGiven = NOT_GIVEN
+    """Whether to generate a new image or edit an existing image. Default: `auto`."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["image_generation"])
+        return value
+
+    @field_validator("output_compression")
+    @classmethod
+    def _validate_output_compression(cls, value):
+        validate_range("output_compression", value, min=0, max=100)
+        return value
+
+    @field_validator("partial_images")
+    @classmethod
+    def _validate_partial_images(cls, value):
+        validate_range("partial_images", value, min=0, max=3)
+        return value
+
+
+class CustomGrammarFormatParam(BaseModel):
+    """A grammar defined by the user."""
+
+    type: Literal["grammar"]
+    """Grammar format. Always `grammar`."""
+    syntax: GrammarSyntax1
+    """The syntax of the grammar definition. One of `lark` or `regex`."""
+    definition: str
+    """The grammar definition."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "syntax", "definition"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["grammar"])
+        return value
+
+
+class WebSearchPreviewTool(BaseModel):
+    """This tool searches the web for relevant results to use in a response. Learn more about the [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search)."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["web_search_preview", "web_search_preview_2025_03_11"]
+    """The type of the web search tool. One of `web_search_preview` or `web_search_preview_2025_03_11`."""
+    user_location: ApproximateLocation | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `user_location` wire field."""
+    search_context_size: SearchContextSize | NotGiven = NOT_GIVEN
+    """High level guidance for the amount of context window space to use for the search. One of `low`, `medium`, or `high`. `medium` is the default."""
+    search_content_types: list[SearchContentType] | NotGiven = NOT_GIVEN
+    """Optional array value serialized in the `search_content_types` wire field."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["web_search_preview", "web_search_preview_2025_03_11"])
+        return value
+
+
+class FunctionShellCallOutput(BaseModel):
+    """The output of a shell tool call that was emitted."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["shell_call_output"]
+    """The type of the shell call output. Always `shell_call_output`."""
+    id: str
+    """The unique ID of the shell call output. Populated when this item is returned via API."""
+    call_id: str
+    """The unique ID of the shell tool call generated by the model."""
+    status: FunctionShellCallOutputStatusEnum
+    """The status of the shell call output. One of `in_progress`, `completed`, or `incomplete`."""
+    output: list[FunctionShellCallOutputContent]
+    """An array of shell call output contents"""
+    max_output_length: int | None
+    """Required `integer` value serialized in the `max_output_length` wire field."""
+    caller: ToolCallCaller | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `caller` wire field."""
+    created_by: str | NotGiven = NOT_GIVEN
+    """The identifier of the actor that created the item."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "id", "call_id", "status", "output", "max_output_length"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["shell_call_output"])
         return value

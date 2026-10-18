@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Any, Literal, TypeAlias
+from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, WrapValidator, field_validator, model_validator
 from typing_extensions import TypeAliasType
@@ -57,12 +57,6 @@ ChunkingStrategyRequestParam = TypeAliasType(
     "ChunkingStrategyRequestParam",
     'Annotated[Annotated[AutoChunkingStrategyRequestParam, WrapValidator(validate_union_candidate)] | Annotated[StaticChunkingStrategyRequestParam, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownChunkingStrategyRequestParam))]',
 )
-
-
-# CreateVectorStoreFileBatchRequest is a union type
-CreateVectorStoreFileBatchRequest: TypeAlias = Annotated[
-    Any, WrapValidator(validate_union_candidate)
-]
 
 
 class DeleteVectorStoreFileResponse(BaseModel):

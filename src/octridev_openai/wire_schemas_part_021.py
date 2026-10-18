@@ -6,6 +6,36 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_21: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "ResponseOutputText": (
+        None,
+        {
+            "type": ("type", None),
+            "text": ("text", None),
+            "annotations": ("annotations", "union:FileAnnotation|UrlAnnotation~type=file,url"),
+        },
+    ),
+    "AssistantMessageItem": (
+        None,
+        {
+            "id": ("id", None),
+            "object": ("object", None),
+            "created_at": ("created_at", None),
+            "thread_id": ("thread_id", None),
+            "type": ("type", None),
+            "content": ("content", "ResponseOutputText"),
+        },
+    ),
+    "WidgetMessageItem": (
+        None,
+        {
+            "id": ("id", None),
+            "object": ("object", None),
+            "created_at": ("created_at", None),
+            "thread_id": ("thread_id", None),
+            "type": ("type", None),
+            "widget": ("widget", None),
+        },
+    ),
     "ClientToolCallItem": (
         None,
         {
@@ -441,28 +471,6 @@ WIRE_SCHEMAS_PART_21: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         {
             "command": ("command", None),
             "cwd": ("cwd", None),
-        },
-    ),
-    "NetworkPolicyParam": (
-        None,
-        {
-            "access": ("access", None),
-            "allowed_domains": ("allowed_domains", None),
-            "blocked_domains": ("blocked_domains", None),
-        },
-    ),
-    "DesktopParam": (
-        None,
-        {
-            "enabled": ("enabled", None),
-        },
-    ),
-    "HostedSkillParamSkillReference": (
-        None,
-        {
-            "type": ("type", None),
-            "skill_id": ("skill_id", None),
-            "version": ("version", None),
         },
     ),
 }

@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal, TypeAlias
+from typing import Any, TypeAlias
 
 from pydantic import TypeAdapter, ValidationError as _PydanticValidationError
 
@@ -17,14 +17,13 @@ from octridev_openai.client import (
     omit_unset,
     sdk_request,
     sdk_request_sync,
-    serialize_query,
 )
 from octridev_openai.errors import SdkValidationError, sdk_decode
 from octridev_openai.types import (
     ChunkingStrategyRequestParam,
     CreateVectorStoreFileRequest,
+    DeleteVectorStoreResponse,
     ErrorResponse,
-    ListVectorStoreFilesResponse,
     VectorStoreFileAttributes,
     VectorStoreFileBatchObject,
 )
@@ -56,6 +55,75 @@ def _validate_pydantic_response(value: Any, response_type: Any) -> Any:
         raise SdkValidationError(
             field, code, f"Validation failed for '{field}': {message}"
         ) from error
+
+
+DeleteVectorStoreError: TypeAlias = ErrorResponse
+
+
+async def delete_vector_store(
+    _client_config: ClientConfig,
+    vector_store_id: str,
+    *,
+    request_options: RequestOptions | None = None,
+) -> DeleteVectorStoreResponse:
+    """Deletes a vector store. Use this operation when you no longer need the store or its
+    associated collection of processed files.
+
+    Delete a vector store.
+
+    Args:
+        vector_store_id: The ID of the vector store to delete.
+    """
+
+    _resp = await sdk_request(
+        "DELETE",
+        f"/vector_stores/{encode_path_segment(vector_store_id)}",
+        operation_id="delete_vector_store",
+        errors={"404": ErrorResponse, "409": ErrorResponse, "429": ErrorResponse},
+        response_decoder="json",
+        request_options=request_options,
+        config=_client_config,
+    )
+    return sdk_decode(
+        _resp,
+        lambda response: _validate_pydantic_response(
+            _validate_response_enums(response.data, "DeleteVectorStoreResponse"),
+            DeleteVectorStoreResponse,
+        ),
+    )
+
+
+def delete_vector_store_sync(
+    _client_config: ClientConfig,
+    vector_store_id: str,
+    *,
+    request_options: RequestOptions | None = None,
+) -> DeleteVectorStoreResponse:
+    """Deletes a vector store. Use this operation when you no longer need the store or its
+    associated collection of processed files.
+
+    Delete a vector store.
+
+    Args:
+        vector_store_id: The ID of the vector store to delete.
+    """
+
+    _resp = sdk_request_sync(
+        "DELETE",
+        f"/vector_stores/{encode_path_segment(vector_store_id)}",
+        operation_id="delete_vector_store",
+        errors={"404": ErrorResponse, "409": ErrorResponse, "429": ErrorResponse},
+        response_decoder="json",
+        request_options=request_options,
+        config=_client_config,
+    )
+    return sdk_decode(
+        _resp,
+        lambda response: _validate_pydantic_response(
+            _validate_response_enums(response.data, "DeleteVectorStoreResponse"),
+            DeleteVectorStoreResponse,
+        ),
+    )
 
 
 CreateVectorStoreFileBatchError: TypeAlias = ErrorResponse
@@ -403,272 +471,17 @@ def cancel_vector_store_file_batch_sync(
     )
 
 
-ListFilesInVectorStoreBatchError: TypeAlias = ErrorResponse
-
-
-async def list_files_in_vector_store_batch(
-    _client_config: ClientConfig,
-    vector_store_id: str,
-    batch_id: str,
-    limit: int | NotGiven = NOT_GIVEN,
-    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
-    after: str | NotGiven = NOT_GIVEN,
-    before: str | NotGiven = NOT_GIVEN,
-    filter: Literal["in_progress", "completed", "failed", "cancelled"] | str | NotGiven = NOT_GIVEN,
-    *,
-    request_options: RequestOptions | None = None,
-) -> ListVectorStoreFilesResponse:
-    """Lists the files in a vector store file batch. Use `filter` to limit results by
-    processing status and the cursor parameters to navigate through the batch's files.
-
-    Returns a list of vector store files in a batch.
-
-    Args:
-        vector_store_id: The ID of the vector store that the files belong to.
-        batch_id: The ID of the file batch that the files belong to.
-        limit: A limit on the number of objects to be returned. Limit can range between 1 and
-            100, and the default is 20.
-        order: Sort order by the `created_at` timestamp of the objects. `asc` for ascending
-            order and `desc` for descending order.
-        after: A cursor for use in pagination. `after` is an object ID that defines your place
-            in the list. For instance, if you make a list request and receive 100 objects,
-            ending with obj_foo, your subsequent call can include after=obj_foo in order to
-            fetch the next page of the list.
-        before: A cursor for use in pagination. `before` is an object ID that defines your place
-            in the list. For instance, if you make a list request and receive 100 objects,
-            starting with obj_foo, your subsequent call can include before=obj_foo in order
-            to fetch the previous page of the list.
-        filter: Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`.
-    """
-
-    _resp = await sdk_request(
-        "GET",
-        f"/vector_stores/{encode_path_segment(vector_store_id)}/file_batches/{encode_path_segment(batch_id)}/files",
-        params=serialize_query(
-            [
-                ("limit", limit, "form", True),
-                ("order", order, "form", True),
-                ("after", after, "form", True),
-                ("before", before, "form", True),
-                ("filter", filter, "form", True),
-            ]
-        ),
-        operation_id="list_files_in_vector_store_batch",
-        errors={"400": ErrorResponse, "404": ErrorResponse, "429": ErrorResponse},
-        response_decoder="json",
-        request_options=request_options,
-        config=_client_config,
-    )
-    return sdk_decode(
-        _resp,
-        lambda response: _validate_pydantic_response(
-            _validate_response_enums(response.data, "ListVectorStoreFilesResponse"),
-            ListVectorStoreFilesResponse,
-        ),
-    )
-
-
-def list_files_in_vector_store_batch_sync(
-    _client_config: ClientConfig,
-    vector_store_id: str,
-    batch_id: str,
-    limit: int | NotGiven = NOT_GIVEN,
-    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
-    after: str | NotGiven = NOT_GIVEN,
-    before: str | NotGiven = NOT_GIVEN,
-    filter: Literal["in_progress", "completed", "failed", "cancelled"] | str | NotGiven = NOT_GIVEN,
-    *,
-    request_options: RequestOptions | None = None,
-) -> ListVectorStoreFilesResponse:
-    """Lists the files in a vector store file batch. Use `filter` to limit results by
-    processing status and the cursor parameters to navigate through the batch's files.
-
-    Returns a list of vector store files in a batch.
-
-    Args:
-        vector_store_id: The ID of the vector store that the files belong to.
-        batch_id: The ID of the file batch that the files belong to.
-        limit: A limit on the number of objects to be returned. Limit can range between 1 and
-            100, and the default is 20.
-        order: Sort order by the `created_at` timestamp of the objects. `asc` for ascending
-            order and `desc` for descending order.
-        after: A cursor for use in pagination. `after` is an object ID that defines your place
-            in the list. For instance, if you make a list request and receive 100 objects,
-            ending with obj_foo, your subsequent call can include after=obj_foo in order to
-            fetch the next page of the list.
-        before: A cursor for use in pagination. `before` is an object ID that defines your place
-            in the list. For instance, if you make a list request and receive 100 objects,
-            starting with obj_foo, your subsequent call can include before=obj_foo in order
-            to fetch the previous page of the list.
-        filter: Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`.
-    """
-
-    _resp = sdk_request_sync(
-        "GET",
-        f"/vector_stores/{encode_path_segment(vector_store_id)}/file_batches/{encode_path_segment(batch_id)}/files",
-        params=serialize_query(
-            [
-                ("limit", limit, "form", True),
-                ("order", order, "form", True),
-                ("after", after, "form", True),
-                ("before", before, "form", True),
-                ("filter", filter, "form", True),
-            ]
-        ),
-        operation_id="list_files_in_vector_store_batch",
-        errors={"400": ErrorResponse, "404": ErrorResponse, "429": ErrorResponse},
-        response_decoder="json",
-        request_options=request_options,
-        config=_client_config,
-    )
-    return sdk_decode(
-        _resp,
-        lambda response: _validate_pydantic_response(
-            _validate_response_enums(response.data, "ListVectorStoreFilesResponse"),
-            ListVectorStoreFilesResponse,
-        ),
-    )
-
-
-ListVectorStoreFilesError: TypeAlias = ErrorResponse
-
-
-async def list_vector_store_files(
-    _client_config: ClientConfig,
-    vector_store_id: str,
-    limit: int | NotGiven = NOT_GIVEN,
-    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
-    after: str | NotGiven = NOT_GIVEN,
-    before: str | NotGiven = NOT_GIVEN,
-    filter: Literal["in_progress", "completed", "failed", "cancelled"] | str | NotGiven = NOT_GIVEN,
-    *,
-    request_options: RequestOptions | None = None,
-) -> ListVectorStoreFilesResponse:
-    """Lists files attached to a vector store, with pagination and an optional status
-    filter. Use `after` or `before` to navigate the list, and `filter` to select files
-    by processing status.
-
-    Returns a list of vector store files.
-
-    Args:
-        vector_store_id: The ID of the vector store that the files belong to.
-        limit: A limit on the number of objects to be returned. Limit can range between 1 and
-            100, and the default is 20.
-        order: Sort order by the `created_at` timestamp of the objects. `asc` for ascending
-            order and `desc` for descending order.
-        after: A cursor for use in pagination. `after` is an object ID that defines your place
-            in the list. For instance, if you make a list request and receive 100 objects,
-            ending with obj_foo, your subsequent call can include after=obj_foo in order to
-            fetch the next page of the list.
-        before: A cursor for use in pagination. `before` is an object ID that defines your place
-            in the list. For instance, if you make a list request and receive 100 objects,
-            starting with obj_foo, your subsequent call can include before=obj_foo in order
-            to fetch the previous page of the list.
-        filter: Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`.
-    """
-
-    _resp = await sdk_request(
-        "GET",
-        f"/vector_stores/{encode_path_segment(vector_store_id)}/files",
-        params=serialize_query(
-            [
-                ("limit", limit, "form", True),
-                ("order", order, "form", True),
-                ("after", after, "form", True),
-                ("before", before, "form", True),
-                ("filter", filter, "form", True),
-            ]
-        ),
-        operation_id="list_vector_store_files",
-        errors={"400": ErrorResponse, "404": ErrorResponse, "429": ErrorResponse},
-        response_decoder="json",
-        request_options=request_options,
-        config=_client_config,
-    )
-    return sdk_decode(
-        _resp,
-        lambda response: _validate_pydantic_response(
-            _validate_response_enums(response.data, "ListVectorStoreFilesResponse"),
-            ListVectorStoreFilesResponse,
-        ),
-    )
-
-
-def list_vector_store_files_sync(
-    _client_config: ClientConfig,
-    vector_store_id: str,
-    limit: int | NotGiven = NOT_GIVEN,
-    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
-    after: str | NotGiven = NOT_GIVEN,
-    before: str | NotGiven = NOT_GIVEN,
-    filter: Literal["in_progress", "completed", "failed", "cancelled"] | str | NotGiven = NOT_GIVEN,
-    *,
-    request_options: RequestOptions | None = None,
-) -> ListVectorStoreFilesResponse:
-    """Lists files attached to a vector store, with pagination and an optional status
-    filter. Use `after` or `before` to navigate the list, and `filter` to select files
-    by processing status.
-
-    Returns a list of vector store files.
-
-    Args:
-        vector_store_id: The ID of the vector store that the files belong to.
-        limit: A limit on the number of objects to be returned. Limit can range between 1 and
-            100, and the default is 20.
-        order: Sort order by the `created_at` timestamp of the objects. `asc` for ascending
-            order and `desc` for descending order.
-        after: A cursor for use in pagination. `after` is an object ID that defines your place
-            in the list. For instance, if you make a list request and receive 100 objects,
-            ending with obj_foo, your subsequent call can include after=obj_foo in order to
-            fetch the next page of the list.
-        before: A cursor for use in pagination. `before` is an object ID that defines your place
-            in the list. For instance, if you make a list request and receive 100 objects,
-            starting with obj_foo, your subsequent call can include before=obj_foo in order
-            to fetch the previous page of the list.
-        filter: Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`.
-    """
-
-    _resp = sdk_request_sync(
-        "GET",
-        f"/vector_stores/{encode_path_segment(vector_store_id)}/files",
-        params=serialize_query(
-            [
-                ("limit", limit, "form", True),
-                ("order", order, "form", True),
-                ("after", after, "form", True),
-                ("before", before, "form", True),
-                ("filter", filter, "form", True),
-            ]
-        ),
-        operation_id="list_vector_store_files",
-        errors={"400": ErrorResponse, "404": ErrorResponse, "429": ErrorResponse},
-        response_decoder="json",
-        request_options=request_options,
-        config=_client_config,
-    )
-    return sdk_decode(
-        _resp,
-        lambda response: _validate_pydantic_response(
-            _validate_response_enums(response.data, "ListVectorStoreFilesResponse"),
-            ListVectorStoreFilesResponse,
-        ),
-    )
-
-
 __all__ = [
     "CancelVectorStoreFileBatchError",
     "CreateVectorStoreFileBatchError",
+    "DeleteVectorStoreError",
     "GetVectorStoreFileBatchError",
-    "ListFilesInVectorStoreBatchError",
-    "ListVectorStoreFilesError",
     "cancel_vector_store_file_batch",
     "cancel_vector_store_file_batch_sync",
     "create_vector_store_file_batch",
     "create_vector_store_file_batch_sync",
+    "delete_vector_store",
+    "delete_vector_store_sync",
     "get_vector_store_file_batch",
     "get_vector_store_file_batch_sync",
-    "list_files_in_vector_store_batch",
-    "list_files_in_vector_store_batch_sync",
-    "list_vector_store_files",
-    "list_vector_store_files_sync",
 ]

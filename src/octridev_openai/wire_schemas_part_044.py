@@ -6,6 +6,27 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_44: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "BetaResponseSteerRequiredInputVariant6": (
+        None,
+        {
+            "type": ("type", None),
+            "approval_request_id": ("approval_request_id", None),
+        },
+    ),
+    "BetaResponseSteerAcceptedEventSteer": (
+        None,
+        {
+            "id": ("id", None),
+            "previous_response_id": ("previous_response_id", None),
+        },
+    ),
+    "BetaInputAudioInputAudio": (
+        None,
+        {
+            "data": ("data", None),
+            "format": ("format", None),
+        },
+    ),
     "BetaResponseInjectFailedEventError": (
         None,
         {
@@ -53,6 +74,13 @@ WIRE_SCHEMAS_PART_44: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         {
             "prompt_cache_options": ("prompt_cache_options", "BetaPromptCacheOptionsParam"),
             "top_logprobs": ("top_logprobs", None),
+        },
+    ),
+    "MCPToolRequireApprovalVariant0": (
+        None,
+        {
+            "always": ("always", "MCPToolFilter"),
+            "never": ("never", "MCPToolFilter"),
         },
     ),
     "CreateAssistantRequestToolResourcesFileSearchVectorStoresItemChunkingStrategyVariant0": (
@@ -119,18 +147,18 @@ WIRE_SCHEMAS_PART_44: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "template": ("template", "union:EvalItem"),
         },
     ),
+    "CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemChatMessage": (
+        None,
+        {
+            "role": ("role", None),
+            "content": ("content", None),
+        },
+    ),
     "CreateEvalResponsesRunDataSourceInputMessagesVariant1": (
         None,
         {
             "type": ("type", None),
             "item_reference": ("item_reference", None),
-        },
-    ),
-    "TemplateItem2Variant0": (
-        None,
-        {
-            "role": ("role", None),
-            "content": ("content", None),
         },
     ),
     "CreateModerationRequestInputItemVariant0": (
@@ -151,6 +179,12 @@ WIRE_SCHEMAS_PART_44: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         {
             "type": ("type", None),
             "text": ("text", None),
+        },
+    ),
+    "CreateSpeechRequestVoiceVariant2": (
+        None,
+        {
+            "id": ("id", None),
         },
     ),
     "CreateThreadRequestToolResourcesFileSearchVectorStoresItemChunkingStrategyVariant0": (
@@ -180,6 +214,45 @@ WIRE_SCHEMAS_PART_44: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         None,
         {
             "type": ("type", None),
+        },
+    ),
+    "RealtimeSessionCreateRequestTracingVariant1": (
+        None,
+        {
+            "workflow_name": ("workflow_name", None),
+            "group_id": ("group_id", None),
+            "metadata": ("metadata", None),
+        },
+    ),
+    "RealtimeSessionTracingVariant1": (
+        None,
+        {
+            "workflow_name": ("workflow_name", None),
+            "group_id": ("group_id", None),
+            "metadata": ("metadata", None),
+        },
+    ),
+    "RealtimeSessionCreateResponseGATracingVariant1": (
+        None,
+        {
+            "workflow_name": ("workflow_name", None),
+            "group_id": ("group_id", None),
+            "metadata": ("metadata", None),
+        },
+    ),
+    "RealtimeSessionCreateResponseTracingVariant1": (
+        None,
+        {
+            "workflow_name": ("workflow_name", None),
+            "group_id": ("group_id", None),
+            "metadata": ("metadata", None),
+        },
+    ),
+    "BetaMCPToolRequireApprovalVariant0": (
+        None,
+        {
+            "always": ("always", "BetaMCPToolFilter"),
+            "never": ("never", "BetaMCPToolFilter"),
         },
     ),
 }

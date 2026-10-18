@@ -46,8 +46,16 @@ from ..methods.assistants import (
     list_assistants_paginated_sync,
     list_assistants_sync,
     list_messages,
+    list_messages_pages,
+    list_messages_pages_sync,
+    list_messages_paginated,
+    list_messages_paginated_sync,
     list_messages_sync,
     list_run_steps,
+    list_run_steps_pages,
+    list_run_steps_pages_sync,
+    list_run_steps_paginated,
+    list_run_steps_paginated_sync,
     list_run_steps_sync,
     list_runs,
     list_runs_pages,
@@ -100,6 +108,10 @@ class _AssistantsNamespace:
         self.delete_thread.__doc__ = delete_thread_sync.__doc__
         self.list_messages = partial(list_messages_sync, config)
         self.list_messages.__doc__ = list_messages_sync.__doc__
+        self.list_messages_paginated = partial(list_messages_paginated_sync, config)
+        self.list_messages_paginated.__doc__ = list_messages_paginated_sync.__doc__
+        self.list_messages_pages = partial(list_messages_pages_sync, config)
+        self.list_messages_pages.__doc__ = list_messages_pages_sync.__doc__
         self.create_message = partial(create_message_sync, config)
         self.create_message.__doc__ = create_message_sync.__doc__
         self.get_message = partial(get_message_sync, config)
@@ -126,6 +138,10 @@ class _AssistantsNamespace:
         self.cancel_run.__doc__ = cancel_run_sync.__doc__
         self.list_run_steps = partial(list_run_steps_sync, config)
         self.list_run_steps.__doc__ = list_run_steps_sync.__doc__
+        self.list_run_steps_paginated = partial(list_run_steps_paginated_sync, config)
+        self.list_run_steps_paginated.__doc__ = list_run_steps_paginated_sync.__doc__
+        self.list_run_steps_pages = partial(list_run_steps_pages_sync, config)
+        self.list_run_steps_pages.__doc__ = list_run_steps_pages_sync.__doc__
         self.get_run_step = partial(get_run_step_sync, config)
         self.get_run_step.__doc__ = get_run_step_sync.__doc__
         self.submit_tool_outputs_to_run = partial(
@@ -170,6 +186,10 @@ class _AsyncAssistantsNamespace:
         self.delete_thread.__doc__ = delete_thread.__doc__
         self.list_messages = partial(list_messages, config)
         self.list_messages.__doc__ = list_messages.__doc__
+        self.list_messages_paginated = partial(list_messages_paginated, config)
+        self.list_messages_paginated.__doc__ = list_messages_paginated.__doc__
+        self.list_messages_pages = partial(list_messages_pages, config)
+        self.list_messages_pages.__doc__ = list_messages_pages.__doc__
         self.create_message = partial(create_message, config)
         self.create_message.__doc__ = create_message.__doc__
         self.get_message = partial(get_message, config)
@@ -196,6 +216,10 @@ class _AsyncAssistantsNamespace:
         self.cancel_run.__doc__ = cancel_run.__doc__
         self.list_run_steps = partial(list_run_steps, config)
         self.list_run_steps.__doc__ = list_run_steps.__doc__
+        self.list_run_steps_paginated = partial(list_run_steps_paginated, config)
+        self.list_run_steps_paginated.__doc__ = list_run_steps_paginated.__doc__
+        self.list_run_steps_pages = partial(list_run_steps_pages, config)
+        self.list_run_steps_pages.__doc__ = list_run_steps_pages.__doc__
         self.get_run_step = partial(get_run_step, config)
         self.get_run_step.__doc__ = get_run_step.__doc__
         self.submit_tool_outputs_to_run = partial(submit_assistants_tool_outputs_to_run, config)

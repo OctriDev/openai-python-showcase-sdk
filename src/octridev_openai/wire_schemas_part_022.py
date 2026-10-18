@@ -6,6 +6,28 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_22: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "NetworkPolicyParam": (
+        None,
+        {
+            "access": ("access", None),
+            "allowed_domains": ("allowed_domains", None),
+            "blocked_domains": ("blocked_domains", None),
+        },
+    ),
+    "DesktopParam": (
+        None,
+        {
+            "enabled": ("enabled", None),
+        },
+    ),
+    "HostedSkillParamSkillReference": (
+        None,
+        {
+            "type": ("type", None),
+            "skill_id": ("skill_id", None),
+            "version": ("version", None),
+        },
+    ),
     "InlineCapabilitySourceParamBase64": (
         None,
         {
@@ -474,28 +496,6 @@ WIRE_SCHEMAS_PART_22: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         {
             "code": ("code", None),
             "message": ("message", None),
-        },
-    ),
-    "InputTokensDetailsResource2": (
-        None,
-        {
-            "cached_tokens": ("cached_tokens", None),
-        },
-    ),
-    "OutputTokensDetailsResource2": (
-        None,
-        {
-            "reasoning_tokens": ("reasoning_tokens", None),
-        },
-    ),
-    "TokenUsageResource": (
-        None,
-        {
-            "input_tokens": ("input_tokens", None),
-            "input_tokens_details": ("input_tokens_details", "InputTokensDetailsResource2"),
-            "output_tokens": ("output_tokens", None),
-            "output_tokens_details": ("output_tokens_details", "OutputTokensDetailsResource2"),
-            "total_tokens": ("total_tokens", None),
         },
     ),
 }

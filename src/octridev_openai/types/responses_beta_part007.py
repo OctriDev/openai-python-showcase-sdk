@@ -13,6 +13,8 @@ from octridev_openai.types.responses_beta_encrypted import BetaEncryptedContent
 from octridev_openai.types.responses_beta_inline import BetaInlineSkillParam
 from octridev_openai.types.responses_beta_part001 import (
     BetaCallableToolAllowedCaller,
+    BetaContainerNetworkPolicyAllowlistParam,
+    BetaContainerNetworkPolicyDisabledParam,
     BetaContainerReferenceParam,
     BetaCustomTextFormatParam,
     BetaEmptyModelParam,
@@ -73,16 +75,44 @@ from ..validation import (
 if TYPE_CHECKING:
     from octridev_openai.types.responses_beta_part008 import (
         BetaCustomGrammarFormatParam,
+        BetaInputFileContent,
         BetaToolSearchOutputFunctionToolParam,
     )
     from octridev_openai.types.responses_beta_part009 import (
         BetaComputerScreenshotContent,
-        BetaInputFileContent,
         BetaInputImageContent,
     )
     from octridev_openai.types.responses_beta_part010 import BetaOutputTextContent
-    from octridev_openai.types.responses_beta_part012 import BetaAutoCodeInterpreterToolParam
-    from octridev_openai.types.responses_beta_part013 import BetaCustomToolParam
+    from octridev_openai.types.responses_beta_part013 import (
+        BetaContainerAutoParam,
+        BetaCustomToolParam,
+    )
+
+
+class UnknownBetaFunctionShellToolParamEnvironment(BaseModel):
+    """A `BetaFunctionShellToolParamEnvironment` whose `type` names no branch this SDK knows, kept as received."""
+
+    model_config = ConfigDict(extra="allow")
+
+
+# BetaFunctionShellToolParamEnvironment is a union type
+BetaFunctionShellToolParamEnvironment = TypeAliasType(
+    "BetaFunctionShellToolParamEnvironment",
+    'Annotated[Annotated[BetaContainerAutoParam, WrapValidator(validate_union_candidate)] | Annotated[BetaLocalEnvironmentParam, WrapValidator(validate_union_candidate)] | Annotated[BetaContainerReferenceParam, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownBetaFunctionShellToolParamEnvironment))]',
+)
+
+
+class UnknownBetaContainerAutoParamNetworkPolicy(BaseModel):
+    """A `BetaContainerAutoParamNetworkPolicy` whose `type` names no branch this SDK knows, kept as received."""
+
+    model_config = ConfigDict(extra="allow")
+
+
+# BetaContainerAutoParamNetworkPolicy is a union type
+BetaContainerAutoParamNetworkPolicy = TypeAliasType(
+    "BetaContainerAutoParamNetworkPolicy",
+    'Annotated[Annotated[BetaContainerNetworkPolicyDisabledParam, WrapValidator(validate_union_candidate)] | Annotated[BetaContainerNetworkPolicyAllowlistParam, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownBetaContainerAutoParamNetworkPolicy))]',
+)
 
 
 class UnknownBetaContainerAutoParamSkillsItem(BaseModel):
@@ -511,39 +541,38 @@ class BetaFunctionToolParam(BaseModel):
         return value
 
 
-class BetaCodeInterpreterTool(BaseModel):
-    """A tool that runs Python code to help generate a response to a prompt."""
+class BetaFunctionTool(BaseModel):
+    """Defines a function in your own code the model can choose to call. Learn more about [function calling](https://developers.openai.com/api/docs/guides/function-calling)."""
 
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+    model_config = ConfigDict(populate_by_name=True, arbitrary_types_allowed=True)
 
-    type: Literal["code_interpreter"]
-    """The type of the code interpreter tool. Always `code_interpreter`."""
-    container: (
-        str | Annotated[BetaAutoCodeInterpreterToolParam, WrapValidator(validate_union_candidate)]
-    )
-    """
-    The code interpreter container. Can be a container ID or an object that
-    specifies uploaded file IDs to make available to your code, along with an
-    optional `memory_limit` setting.
-    """
+    type: Literal["function"]
+    """The type of the function tool. Always `function`."""
+    name: str
+    """The name of the function to call."""
+    parameters: dict[str, Any] | None
+    """A JSON schema object describing the parameters of the function."""
+    strict: bool | None
+    """Required `boolean` value serialized in the `strict` wire field."""
+    async_: bool | NotGiven = Field(NOT_GIVEN, alias="async")
+    """Optional `boolean` value serialized in the `async` wire field."""
+    description: str | None | NotGiven = NOT_GIVEN
+    """Optional `string` value serialized in the `description` wire field."""
+    output_schema: dict[str, Any] | None | NotGiven = NOT_GIVEN
+    """A JSON schema object describing the JSON value encoded in string outputs for this function."""
+    defer_loading: bool | NotGiven = NOT_GIVEN
+    """Whether this function is deferred and loaded via tool search."""
     allowed_callers: list[BetaCallableToolAllowedCaller] | None | NotGiven = NOT_GIVEN
     """The tool invocation context(s)."""
 
     @model_validator(mode="before")
     @classmethod
     def _validate_required(cls, value):
-        validate_required(value, ["type", "container"])
+        validate_required(value, ["type", "name", "strict", "parameters"])
         return value
 
     @field_validator("type")
     @classmethod
     def _validate_type(cls, value):
-        validate_enum("type", value, ["code_interpreter"])
-        return value
-
-    @field_validator("allowed_callers")
-    @classmethod
-    def _validate_allowed_callers(cls, value):
-        if value is not None:
-            validate_items("allowed_callers", value, min=1)
+        validate_enum("type", value, ["function"])
         return value

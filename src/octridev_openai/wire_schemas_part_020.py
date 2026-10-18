@@ -6,6 +6,31 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_20: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "CreateVideoJsonBody": (
+        None,
+        {
+            "model": ("model", None),
+            "prompt": ("prompt", None),
+            "input_reference": ("input_reference", "ImageRefParam2"),
+            "seconds": ("seconds", None),
+            "size": ("size", None),
+        },
+    ),
+    "CreateVideoCharacterBody": (
+        None,
+        {
+            "video": ("video", None),
+            "name": ("name", None),
+        },
+    ),
+    "VideoCharacterResource": (
+        None,
+        {
+            "id": ("id", None),
+            "name": ("name", None),
+            "created_at": ("created_at", None),
+        },
+    ),
     "VideoReferenceInputParam": (
         None,
         {
@@ -406,36 +431,6 @@ WIRE_SCHEMAS_PART_20: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         {
             "type": ("type", None),
             "source": ("source", "UrlAnnotationSource"),
-        },
-    ),
-    "ResponseOutputText": (
-        None,
-        {
-            "type": ("type", None),
-            "text": ("text", None),
-            "annotations": ("annotations", "union:FileAnnotation|UrlAnnotation~type=file,url"),
-        },
-    ),
-    "AssistantMessageItem": (
-        None,
-        {
-            "id": ("id", None),
-            "object": ("object", None),
-            "created_at": ("created_at", None),
-            "thread_id": ("thread_id", None),
-            "type": ("type", None),
-            "content": ("content", "ResponseOutputText"),
-        },
-    ),
-    "WidgetMessageItem": (
-        None,
-        {
-            "id": ("id", None),
-            "object": ("object", None),
-            "created_at": ("created_at", None),
-            "thread_id": ("thread_id", None),
-            "type": ("type", None),
-            "widget": ("widget", None),
         },
     ),
 }

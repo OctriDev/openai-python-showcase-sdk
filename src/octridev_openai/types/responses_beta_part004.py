@@ -41,19 +41,21 @@ if TYPE_CHECKING:
     )
     from octridev_openai.types.responses_beta_part007 import (
         BetaApplyPatchToolParam,
-        BetaCodeInterpreterTool,
+        BetaFunctionTool,
         BetaWebSearchTool,
     )
     from octridev_openai.types.responses_beta_part008 import (
         BetaComputerUsePreviewTool,
         BetaFileSearchTool,
-        BetaFunctionTool,
         BetaImageGenTool,
-        BetaMCPTool,
         BetaToolSearchToolParam,
         BetaWebSearchPreviewTool,
     )
-    from octridev_openai.types.responses_beta_part012 import BetaFunctionShellToolParam
+    from octridev_openai.types.responses_beta_part012 import (
+        BetaCodeInterpreterTool,
+        BetaFunctionShellToolParam,
+        BetaMCPTool,
+    )
     from octridev_openai.types.responses_beta_part013 import (
         BetaCustomToolParam,
         BetaToolSearchOutputNamespaceToolParam,

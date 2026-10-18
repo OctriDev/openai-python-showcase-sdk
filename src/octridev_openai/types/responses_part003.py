@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, WrapValidator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
 from octridev_openai.types.responses_model import ModelIdsResponses
@@ -24,7 +24,7 @@ from octridev_openai.types.responses_service import ServiceTierResponses
 from octridev_openai.types.responses_tool import ToolChoiceParam
 from octridev_openai.types.shared import InputItem, Metadata, Prompt
 
-from ..validation import validate_required
+from ..validation import validate_required, validate_union_candidate
 
 
 class ResponseVariant2IncompleteDetails(BaseModel):
@@ -71,7 +71,7 @@ class ResponseVariant2(BaseModel):
       the model, you might consider using the `output_text` property where
       supported in SDKs.
     """
-    instructions: str | list[InputItem] | None
+    instructions: str | Annotated[list[InputItem], WrapValidator(validate_union_candidate)] | None
     """
     A system (or developer) message inserted into the model's context.
 
@@ -230,7 +230,7 @@ class Response(BaseModel):
       the model, you might consider using the `output_text` property where
       supported in SDKs.
     """
-    instructions: str | list[InputItem] | None
+    instructions: str | Annotated[list[InputItem], WrapValidator(validate_union_candidate)] | None
     """
     A system (or developer) message inserted into the model's context.
 

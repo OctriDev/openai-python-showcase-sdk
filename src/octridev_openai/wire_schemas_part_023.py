@@ -6,6 +6,28 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_23: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "InputTokensDetailsResource2": (
+        None,
+        {
+            "cached_tokens": ("cached_tokens", None),
+        },
+    ),
+    "OutputTokensDetailsResource2": (
+        None,
+        {
+            "reasoning_tokens": ("reasoning_tokens", None),
+        },
+    ),
+    "TokenUsageResource": (
+        None,
+        {
+            "input_tokens": ("input_tokens", None),
+            "input_tokens_details": ("input_tokens_details", "InputTokensDetailsResource2"),
+            "output_tokens": ("output_tokens", None),
+            "output_tokens_details": ("output_tokens_details", "OutputTokensDetailsResource2"),
+            "total_tokens": ("total_tokens", None),
+        },
+    ),
     "TurnResource": (
         None,
         {
@@ -461,31 +483,6 @@ WIRE_SCHEMAS_PART_23: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "id": ("id", None),
             "object": ("object", None),
             "deleted": ("deleted", None),
-        },
-    ),
-    "SessionSpendControlResource": (
-        None,
-        {
-            "limit": ("limit", None),
-            "consumed": ("consumed", None),
-        },
-    ),
-    "ComputerUseApprovalRequestKindResourceBrowserAuthentication": (
-        None,
-        {
-            "type": ("type", None),
-            "reason": ("reason", None),
-            "credential_origin": ("credential_origin", None),
-            "fields": ("fields", "BrowserAuthenticationFieldResource"),
-            "options": ("options", "BrowserAuthenticationOptionResource"),
-        },
-    ),
-    "ComputerUseApprovalRequestKindResourceBrowserOriginAccess": (
-        None,
-        {
-            "type": ("type", None),
-            "reason": ("reason", None),
-            "origin": ("origin", None),
         },
     ),
 }

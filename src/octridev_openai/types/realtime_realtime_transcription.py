@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
@@ -13,60 +13,6 @@ from octridev_openai.types.realtime_audio import AudioTranscription, AudioTransc
 from octridev_openai.types.realtime_realtime import RealtimeAudioFormats, RealtimeTurnDetection
 
 from ..validation import validate_enum, validate_required
-
-
-class RealtimeTranscriptionSessionCreateRequestTurnDetection(BaseModel):
-    """Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that the model will detect the start and end of speech based on audio volume and respond at the end of user speech."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["server_vad"] | str | NotGiven = NOT_GIVEN
-    """Type of turn detection. Only `server_vad` is currently supported for transcription sessions."""
-    threshold: float | NotGiven = NOT_GIVEN
-    """
-    Activation threshold for VAD (0.0 to 1.0), this defaults to 0.5. A
-    higher threshold will require louder audio to activate the model, and
-    thus might perform better in noisy environments.
-    """
-    prefix_padding_ms: int | NotGiven = NOT_GIVEN
-    """
-    Amount of audio to include before the VAD detected speech (in
-    milliseconds). Defaults to 300ms.
-    """
-    silence_duration_ms: int | NotGiven = NOT_GIVEN
-    """
-    Duration of silence to detect speech stop (in milliseconds). Defaults
-    to 500ms. With shorter values the model will respond more quickly,
-    but may jump in on short pauses from the user.
-    """
-
-
-class RealtimeTranscriptionSessionCreateRequest(BaseModel):
-    """Realtime transcription session object configuration."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    turn_detection: RealtimeTranscriptionSessionCreateRequestTurnDetection | NotGiven = NOT_GIVEN
-    """Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that the model will detect the start and end of speech based on audio volume and respond at the end of user speech."""
-    input_audio_noise_reduction: Any | NotGiven = NOT_GIVEN
-    """
-    Configuration for input audio noise reduction. This can be set to `null` to turn off.
-    Noise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.
-    Filtering the audio can improve VAD and turn detection accuracy (reducing false positives) and model performance by improving perception of the input audio.
-    """
-    input_audio_format: Literal["pcm16", "g711_ulaw", "g711_alaw"] | str | NotGiven = NOT_GIVEN
-    """
-    The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
-    For `pcm16`, input audio must be 16-bit PCM at a 24kHz sample rate,
-    single channel (mono), and little-endian byte order.
-    """
-    input_audio_transcription: AudioTranscription | NotGiven = NOT_GIVEN
-    """Configuration for input audio transcription. The client can optionally set the language and prompt for transcription, these offer additional guidance to the transcription service."""
-    include: list[Literal["item.input_audio_transcription.logprobs"] | str] | NotGiven = NOT_GIVEN
-    """
-    The set of items to include in the transcription. Current available items are:
-    `item.input_audio_transcription.logprobs`
-    """
 
 
 class RealtimeTranscriptionSessionCreateResponseClientSecret(BaseModel):
@@ -161,6 +107,75 @@ class RealtimeTranscriptionSessionCreateResponse(BaseModel):
     def _validate_required(cls, value):
         validate_required(value, ["client_secret"])
         return value
+
+
+class RealtimeTranscriptionSessionCreateRequestTurnDetection(BaseModel):
+    """Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that the model will detect the start and end of speech based on audio volume and respond at the end of user speech."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["server_vad"] | str | NotGiven = NOT_GIVEN
+    """Type of turn detection. Only `server_vad` is currently supported for transcription sessions."""
+    threshold: float | NotGiven = NOT_GIVEN
+    """
+    Activation threshold for VAD (0.0 to 1.0), this defaults to 0.5. A
+    higher threshold will require louder audio to activate the model, and
+    thus might perform better in noisy environments.
+    """
+    prefix_padding_ms: int | NotGiven = NOT_GIVEN
+    """
+    Amount of audio to include before the VAD detected speech (in
+    milliseconds). Defaults to 300ms.
+    """
+    silence_duration_ms: int | NotGiven = NOT_GIVEN
+    """
+    Duration of silence to detect speech stop (in milliseconds). Defaults
+    to 500ms. With shorter values the model will respond more quickly,
+    but may jump in on short pauses from the user.
+    """
+
+
+class RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction(BaseModel):
+    """
+    Configuration for input audio noise reduction. This can be set to `null` to turn off.
+    Noise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.
+    Filtering the audio can improve VAD and turn detection accuracy (reducing false positives) and model performance by improving perception of the input audio.
+    """
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: NoiseReductionType | NotGiven = NOT_GIVEN
+    """Type of noise reduction. `near_field` is for close-talking microphones such as headphones, `far_field` is for far-field microphones such as laptop or conference room microphones."""
+
+
+class RealtimeTranscriptionSessionCreateRequest(BaseModel):
+    """Realtime transcription session object configuration."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    turn_detection: RealtimeTranscriptionSessionCreateRequestTurnDetection | NotGiven = NOT_GIVEN
+    """Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that the model will detect the start and end of speech based on audio volume and respond at the end of user speech."""
+    input_audio_noise_reduction: (
+        RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction | NotGiven
+    ) = NOT_GIVEN
+    """
+    Configuration for input audio noise reduction. This can be set to `null` to turn off.
+    Noise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.
+    Filtering the audio can improve VAD and turn detection accuracy (reducing false positives) and model performance by improving perception of the input audio.
+    """
+    input_audio_format: Literal["pcm16", "g711_ulaw", "g711_alaw"] | str | NotGiven = NOT_GIVEN
+    """
+    The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
+    For `pcm16`, input audio must be 16-bit PCM at a 24kHz sample rate,
+    single channel (mono), and little-endian byte order.
+    """
+    input_audio_transcription: AudioTranscription | NotGiven = NOT_GIVEN
+    """Configuration for input audio transcription. The client can optionally set the language and prompt for transcription, these offer additional guidance to the transcription service."""
+    include: list[Literal["item.input_audio_transcription.logprobs"] | str] | NotGiven = NOT_GIVEN
+    """
+    The set of items to include in the transcription. Current available items are:
+    `item.input_audio_transcription.logprobs`
+    """
 
 
 class RealtimeTranscriptionSessionCreateResponseGAAudioInputNoiseReduction(BaseModel):
@@ -262,6 +277,19 @@ class RealtimeTranscriptionSessionCreateResponseGA(BaseModel):
         return value
 
 
+class RealtimeTranscriptionSessionCreateRequestGAAudioInputNoiseReduction(BaseModel):
+    """
+    Configuration for input audio noise reduction. This can be set to `null` to turn off.
+    Noise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.
+    Filtering the audio can improve VAD and turn detection accuracy (reducing false positives) and model performance by improving perception of the input audio.
+    """
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: NoiseReductionType | NotGiven = NOT_GIVEN
+    """Type of noise reduction. `near_field` is for close-talking microphones such as headphones, `far_field` is for far-field microphones such as laptop or conference room microphones."""
+
+
 class RealtimeTranscriptionSessionCreateRequestGAAudioInput(BaseModel):
     """Optional object value serialized in the `input` wire field."""
 
@@ -271,7 +299,9 @@ class RealtimeTranscriptionSessionCreateRequestGAAudioInput(BaseModel):
     """Optional API value serialized in the `format` wire field."""
     transcription: AudioTranscription | NotGiven = NOT_GIVEN
     """Configuration for input audio transcription, defaults to off and can be set to `null` to turn off once on. Input audio transcription is not native to the model, since the model consumes audio directly. Transcription runs asynchronously through [the /audio/transcriptions endpoint](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create) and should be treated as guidance of input audio content rather than precisely what the model heard. The client can optionally set the language and prompt for transcription, these offer additional guidance to the transcription service."""
-    noise_reduction: Any | NotGiven = NOT_GIVEN
+    noise_reduction: (
+        RealtimeTranscriptionSessionCreateRequestGAAudioInputNoiseReduction | NotGiven
+    ) = NOT_GIVEN
     """
     Configuration for input audio noise reduction. This can be set to `null` to turn off.
     Noise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.

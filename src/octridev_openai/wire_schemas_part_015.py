@@ -6,6 +6,29 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_15: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "ModerationParam": (
+        None,
+        {
+            "model": ("model", None),
+            "policy": ("policy", "ModerationPolicyParam"),
+        },
+    ),
+    "SkillReferenceParam": (
+        None,
+        {
+            "type": ("type", None),
+            "skill_id": ("skill_id", None),
+            "version": ("version", None),
+        },
+    ),
+    "InlineSkillSourceParam": (
+        None,
+        {
+            "type": ("type", None),
+            "media_type": ("media_type", None),
+            "data": ("data", None),
+        },
+    ),
     "InlineSkillParam": (
         None,
         {
@@ -416,36 +439,6 @@ WIRE_SCHEMAS_PART_15: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         None,
         {
             "type": ("type", None),
-        },
-    ),
-    "LocalShellToolParam": (
-        None,
-        {
-            "type": ("type", None),
-        },
-    ),
-    "ContainerAutoParam": (
-        None,
-        {
-            "type": ("type", None),
-            "file_ids": ("file_ids", None),
-            "memory_limit": ("memory_limit", None),
-            "network_policy": (
-                "network_policy",
-                "union:ContainerNetworkPolicyDisabledParam|ContainerNetworkPolicyAllowlistParam~type=disabled,allowlist",
-            ),
-            "skills": (
-                "skills",
-                "union:SkillReferenceParam|InlineSkillParam~type=skill_reference,inline",
-            ),
-        },
-    ),
-    "LocalSkillParam": (
-        None,
-        {
-            "name": ("name", None),
-            "description": ("description", None),
-            "path": ("path", None),
         },
     ),
 }

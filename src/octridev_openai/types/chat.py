@@ -5,16 +5,13 @@ from __future__ import annotations
 
 from typing import Annotated, Literal, TypeAlias
 
-from pydantic import BaseModel, ConfigDict, Field, WrapValidator, model_validator
-from typing_extensions import TypeAliasType
+from pydantic import BaseModel, WrapValidator, model_validator
 
 from octridev_openai.types.chat_chat_completion_request import (
     ChatCompletionRequestMessageContentPartText,
 )
-from octridev_openai.types.chat_custom import CustomToolChatCompletions
-from octridev_openai.types.shared_chat import ChatCompletionTool
 
-from ..validation import open_union, validate_required, validate_union_candidate
+from ..validation import validate_required, validate_union_candidate
 
 
 class PredictionContent(BaseModel):
@@ -28,7 +25,13 @@ class PredictionContent(BaseModel):
     The type of the predicted content you want to provide. This type is
     currently always `content`.
     """
-    content: str | list[ChatCompletionRequestMessageContentPartText]
+    content: (
+        str
+        | Annotated[
+            list[ChatCompletionRequestMessageContentPartText],
+            WrapValidator(validate_union_candidate),
+        ]
+    )
     """
     The content that should be matched when generating a model response.
     If generated tokens would match this content, the entire model response
@@ -42,6 +45,9 @@ class PredictionContent(BaseModel):
         return value
 
 
+ResponseModalities = list[Literal["text", "audio"] | str]
+
+
 # ServiceTier is a union type
 ServiceTier: TypeAlias = (
     Annotated[
@@ -50,17 +56,4 @@ ServiceTier: TypeAlias = (
     ]
     | Annotated[str, WrapValidator(validate_union_candidate)]
     | Annotated[None, WrapValidator(validate_union_candidate)]
-)
-
-
-class UnknownToolsItem(BaseModel):
-    """A `ToolsItem` whose `type` names no branch this SDK knows, kept as received."""
-
-    model_config = ConfigDict(extra="allow")
-
-
-# ToolsItem is a union type
-ToolsItem = TypeAliasType(
-    "ToolsItem",
-    'Annotated[Annotated[ChatCompletionTool, WrapValidator(validate_union_candidate)] | Annotated[CustomToolChatCompletions, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownToolsItem))]',
 )

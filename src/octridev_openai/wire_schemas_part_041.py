@@ -6,6 +6,47 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_41: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "RealtimeTranslationSessionUpdateRequestAudioInputNoiseReduction": (
+        None,
+        {
+            "type": ("type", None),
+        },
+    ),
+    "RealtimeTruncationVariant1": (
+        None,
+        {
+            "type": ("type", None),
+            "retention_ratio": ("retention_ratio", None),
+            "token_limits": ("token_limits", "RealtimeTruncationVariant1TokenLimits"),
+        },
+    ),
+    "RealtimeTruncationVariant1TokenLimits": (
+        None,
+        {
+            "post_instructions": ("post_instructions", None),
+        },
+    ),
+    "RealtimeTurnDetectionVariant0": (
+        None,
+        {
+            "type": ("type", None),
+            "threshold": ("threshold", None),
+            "prefix_padding_ms": ("prefix_padding_ms", None),
+            "silence_duration_ms": ("silence_duration_ms", None),
+            "create_response": ("create_response", None),
+            "interrupt_response": ("interrupt_response", None),
+            "idle_timeout_ms": ("idle_timeout_ms", None),
+        },
+    ),
+    "RealtimeTurnDetectionVariant1": (
+        None,
+        {
+            "type": ("type", None),
+            "eagerness": ("eagerness", None),
+            "create_response": ("create_response", None),
+            "interrupt_response": ("interrupt_response", None),
+        },
+    ),
     "ResponseVariant2": (
         None,
         {
@@ -369,41 +410,6 @@ WIRE_SCHEMAS_PART_41: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         },
     ),
     "RunStepStreamEventThreadRunStepInProgress": (
-        None,
-        {
-            "event": ("event", None),
-            "data": ("data", "RunStepObject"),
-        },
-    ),
-    "RunStepStreamEventThreadRunStepDelta": (
-        None,
-        {
-            "event": ("event", None),
-            "data": ("data", "RunStepDeltaObject"),
-        },
-    ),
-    "RunStepStreamEventThreadRunStepCompleted": (
-        None,
-        {
-            "event": ("event", None),
-            "data": ("data", "RunStepObject"),
-        },
-    ),
-    "RunStepStreamEventThreadRunStepFailed": (
-        None,
-        {
-            "event": ("event", None),
-            "data": ("data", "RunStepObject"),
-        },
-    ),
-    "RunStepStreamEventThreadRunStepCancelled": (
-        None,
-        {
-            "event": ("event", None),
-            "data": ("data", "RunStepObject"),
-        },
-    ),
-    "RunStepStreamEventThreadRunStepExpired": (
         None,
         {
             "event": ("event", None),

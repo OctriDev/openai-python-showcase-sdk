@@ -22,7 +22,11 @@ from octridev_openai.client import (
     sdk_stream_sync,
 )
 from octridev_openai.errors import SdkValidationError, sdk_decode
-from octridev_openai.types import CreateSpeechResponseStreamEvent, ErrorResponse, VoiceIdsShared
+from octridev_openai.types import (
+    CreateSpeechRequestVoice,
+    CreateSpeechResponseStreamEvent,
+    ErrorResponse,
+)
 from octridev_openai.validation import validate_length, validate_range
 from octridev_openai.wire import to_wire
 
@@ -60,7 +64,7 @@ async def create_speech(
     _client_config: ClientConfig,
     model: str,
     input: str,
-    voice: VoiceIdsShared | Literal["fable", "onyx", "nova"] | str | dict[str, Any],
+    voice: CreateSpeechRequestVoice,
     instructions: str | NotGiven = NOT_GIVEN,
     response_format: Literal["mp3", "opus", "aac", "flac", "wav", "pcm"]
     | str
@@ -115,12 +119,7 @@ async def create_speech(
                 "model": (NOT_GIVEN if model is NOT_GIVEN else to_wire(model, "str")),
                 "input": (NOT_GIVEN if input is NOT_GIVEN else to_wire(input, "str")),
                 "voice": (
-                    NOT_GIVEN
-                    if voice is NOT_GIVEN
-                    else to_wire(
-                        voice,
-                        'VoiceIdsShared | Literal["fable", "onyx", "nova"] | str | dict[str, Any]',
-                    )
+                    NOT_GIVEN if voice is NOT_GIVEN else to_wire(voice, "CreateSpeechRequestVoice")
                 ),
                 "instructions": (
                     NOT_GIVEN if instructions is NOT_GIVEN else to_wire(instructions, "str")
@@ -159,7 +158,7 @@ def create_speech_sync(
     _client_config: ClientConfig,
     model: str,
     input: str,
-    voice: VoiceIdsShared | Literal["fable", "onyx", "nova"] | str | dict[str, Any],
+    voice: CreateSpeechRequestVoice,
     instructions: str | NotGiven = NOT_GIVEN,
     response_format: Literal["mp3", "opus", "aac", "flac", "wav", "pcm"]
     | str
@@ -214,12 +213,7 @@ def create_speech_sync(
                 "model": (NOT_GIVEN if model is NOT_GIVEN else to_wire(model, "str")),
                 "input": (NOT_GIVEN if input is NOT_GIVEN else to_wire(input, "str")),
                 "voice": (
-                    NOT_GIVEN
-                    if voice is NOT_GIVEN
-                    else to_wire(
-                        voice,
-                        'VoiceIdsShared | Literal["fable", "onyx", "nova"] | str | dict[str, Any]',
-                    )
+                    NOT_GIVEN if voice is NOT_GIVEN else to_wire(voice, "CreateSpeechRequestVoice")
                 ),
                 "instructions": (
                     NOT_GIVEN if instructions is NOT_GIVEN else to_wire(instructions, "str")
@@ -261,7 +255,7 @@ async def create_speech_stream(
     _client_config: ClientConfig,
     model: str,
     input: str,
-    voice: VoiceIdsShared | Literal["fable", "onyx", "nova"] | str | dict[str, Any],
+    voice: CreateSpeechRequestVoice,
     instructions: str | NotGiven = NOT_GIVEN,
     response_format: Literal["mp3", "opus", "aac", "flac", "wav", "pcm"]
     | str
@@ -308,12 +302,7 @@ async def create_speech_stream(
                 "model": (NOT_GIVEN if model is NOT_GIVEN else to_wire(model, "str")),
                 "input": (NOT_GIVEN if input is NOT_GIVEN else to_wire(input, "str")),
                 "voice": (
-                    NOT_GIVEN
-                    if voice is NOT_GIVEN
-                    else to_wire(
-                        voice,
-                        'VoiceIdsShared | Literal["fable", "onyx", "nova"] | str | dict[str, Any]',
-                    )
+                    NOT_GIVEN if voice is NOT_GIVEN else to_wire(voice, "CreateSpeechRequestVoice")
                 ),
                 "instructions": (
                     NOT_GIVEN if instructions is NOT_GIVEN else to_wire(instructions, "str")
@@ -357,7 +346,7 @@ def create_speech_stream_sync(
     _client_config: ClientConfig,
     model: str,
     input: str,
-    voice: VoiceIdsShared | Literal["fable", "onyx", "nova"] | str | dict[str, Any],
+    voice: CreateSpeechRequestVoice,
     instructions: str | NotGiven = NOT_GIVEN,
     response_format: Literal["mp3", "opus", "aac", "flac", "wav", "pcm"]
     | str
@@ -404,12 +393,7 @@ def create_speech_stream_sync(
                 "model": (NOT_GIVEN if model is NOT_GIVEN else to_wire(model, "str")),
                 "input": (NOT_GIVEN if input is NOT_GIVEN else to_wire(input, "str")),
                 "voice": (
-                    NOT_GIVEN
-                    if voice is NOT_GIVEN
-                    else to_wire(
-                        voice,
-                        'VoiceIdsShared | Literal["fable", "onyx", "nova"] | str | dict[str, Any]',
-                    )
+                    NOT_GIVEN if voice is NOT_GIVEN else to_wire(voice, "CreateSpeechRequestVoice")
                 ),
                 "instructions": (
                     NOT_GIVEN if instructions is NOT_GIVEN else to_wire(instructions, "str")

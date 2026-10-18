@@ -3,78 +3,197 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, WrapValidator, field_validator, model_validator
-from typing_extensions import TypeAliasType
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
-from octridev_openai.types.evals_eval_part001 import EvalApiError
 from octridev_openai.types.evals_eval_part002 import (
+    CreateEvalCompletionsRunDataSourceInputMessages,
     CreateEvalCompletionsRunDataSourceSamplingParamsResponseFormat,
     CreateEvalCompletionsRunDataSourceSource,
     CreateEvalJsonlRunDataSourceSource,
     CreateEvalRequestDataSourceConfig,
     CreateEvalRequestTestingCriteriaItem,
+    CreateEvalResponsesRunDataSourceInputMessages,
+    CreateEvalResponsesRunDataSourceSource,
     CreateEvalRunRequestDataSource,
     EvalDataSourceConfig,
-    EvalRunDataSource,
     EvalTestingCriteriaItem,
 )
-from octridev_openai.types.evals_template import TemplateItem, TemplateItem2
-from octridev_openai.types.shared import Metadata, ReasoningEffort
-from octridev_openai.types.shared_chat import ChatCompletionTool
-
-from ..validation import validate_enum, validate_required, validate_union_candidate, validate_uri
-
-
-class CreateEvalCompletionsRunDataSourceInputMessagesVariant0(BaseModel):
-    """Optional object value serialized in the `input_messages` wire field."""
-
-    type: Literal["template"]
-    """The type of input messages. Always `template`."""
-    template: list[TemplateItem]
-    """A list of chat messages forming the prompt or context. May include variable references to the `item` namespace, ie {{item.name}}."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "template"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["template"])
-        return value
-
-
-class CreateEvalCompletionsRunDataSourceInputMessagesVariant1(BaseModel):
-    """Optional object value serialized in the `input_messages` wire field."""
-
-    type: Literal["item_reference"]
-    """The type of input messages. Always `item_reference`."""
-    item_reference: str
-    """A reference to a variable in the `item` namespace. Ie, "item.input_trajectory" """
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "item_reference"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["item_reference"])
-        return value
-
-
-# CreateEvalCompletionsRunDataSourceInputMessages is a union type
-CreateEvalCompletionsRunDataSourceInputMessages = TypeAliasType(
-    "CreateEvalCompletionsRunDataSourceInputMessages",
-    'Annotated[Annotated[CreateEvalCompletionsRunDataSourceInputMessagesVariant0, WrapValidator(validate_union_candidate)] | Annotated[CreateEvalCompletionsRunDataSourceInputMessagesVariant1, WrapValidator(validate_union_candidate)], Field(discriminator="type")]',
+from octridev_openai.types.shared import (
+    Metadata,
+    ReasoningEffort,
+    TextResponseFormatConfiguration,
+    Tool,
 )
+from octridev_openai.types.shared_chat import ChatCompletionTool
+from octridev_openai.types.shared_eval import EvalItem
+
+from ..validation import validate_enum, validate_required
+
+
+class EvalGraderScoreModelVariant1(BaseModel):
+    """Required object value serialized in the `testing_criteria[]` wire field."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    pass_threshold: float | NotGiven = NOT_GIVEN
+    """The threshold for the score."""
+
+
+class EvalGraderScoreModelSamplingParams(BaseModel):
+    """The sampling parameters for the model."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    seed: int | None | NotGiven = NOT_GIVEN
+    """Optional `integer` value serialized in the `seed` wire field."""
+    top_p: float | None | NotGiven = NOT_GIVEN
+    """Optional `number` value serialized in the `top_p` wire field."""
+    temperature: float | None | NotGiven = NOT_GIVEN
+    """Optional `number` value serialized in the `temperature` wire field."""
+    max_completions_tokens: int | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `max_completions_tokens` wire field."""
+    reasoning_effort: ReasoningEffort | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `reasoning_effort` wire field."""
+
+
+class EvalGraderScoreModel(BaseModel):
+    """Typed representation of the `EvalGraderScoreModel` API schema."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["score_model"]
+    """The object type, which is always `score_model`."""
+    name: str
+    """The name of the grader."""
+    model: str
+    """The model to use for the evaluation."""
+    input: list[EvalItem]
+    """The input messages evaluated by the grader. Supports text, output text, input image, and input audio content blocks, and may include template strings."""
+    sampling_params: EvalGraderScoreModelSamplingParams | NotGiven = NOT_GIVEN
+    """The sampling parameters for the model."""
+    range: list[float] | NotGiven = NOT_GIVEN
+    """The service requires two numbers for the score range. Defaults to `[0, 1]`."""
+    pass_threshold: float | NotGiven = NOT_GIVEN
+    """The threshold for the score."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "name", "input", "model"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["score_model"])
+        return value
+
+
+class EvalResponsesSource(BaseModel):
+    """A EvalResponsesSource object describing a run data source configuration."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["responses"]
+    """The type of run data source. Always `responses`."""
+    metadata: dict[str, Any] | None | NotGiven = NOT_GIVEN
+    """Optional object value serialized in the `metadata` wire field."""
+    model: str | None | NotGiven = NOT_GIVEN
+    """Optional `string` value serialized in the `model` wire field."""
+    instructions_search: str | None | NotGiven = NOT_GIVEN
+    """Optional `string` value serialized in the `instructions_search` wire field."""
+    created_after: int | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `created_after` wire field."""
+    created_before: int | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `created_before` wire field."""
+    reasoning_effort: ReasoningEffort | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `reasoning_effort` wire field."""
+    temperature: float | None | NotGiven = NOT_GIVEN
+    """Optional `number` value serialized in the `temperature` wire field."""
+    top_p: float | None | NotGiven = NOT_GIVEN
+    """Optional `number` value serialized in the `top_p` wire field."""
+    users: list[str] | None | NotGiven = NOT_GIVEN
+    """List of user identifiers. This is a query parameter used to select responses."""
+    tools: list[str] | None | NotGiven = NOT_GIVEN
+    """List of tool names. This is a query parameter used to select responses."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["responses"])
+        return value
+
+
+class CreateEvalCompletionsRunDataSourceSamplingParams(BaseModel):
+    """Optional object value serialized in the `sampling_params` wire field."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    reasoning_effort: ReasoningEffort | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `reasoning_effort` wire field."""
+    temperature: float | NotGiven = NOT_GIVEN
+    """A higher temperature increases randomness in the outputs."""
+    max_completion_tokens: int | NotGiven = NOT_GIVEN
+    """The maximum number of tokens in the generated output."""
+    top_p: float | NotGiven = NOT_GIVEN
+    """An alternative to temperature for nucleus sampling; 1.0 includes all tokens."""
+    seed: int | NotGiven = NOT_GIVEN
+    """A seed value to initialize the randomness, during sampling."""
+    response_format: CreateEvalCompletionsRunDataSourceSamplingParamsResponseFormat | NotGiven = (
+        NOT_GIVEN
+    )
+    """
+    An object specifying the format that the model must output.
+
+    Setting to `{ "type": "json_schema", "json_schema": {...} }` enables
+    Structured Outputs which ensures the model will match your supplied JSON
+    schema. Learn more in the [Structured Outputs
+    guide](https://developers.openai.com/api/docs/guides/structured-outputs).
+
+    Setting to `{ "type": "json_object" }` enables the older JSON mode, which
+    ensures the message the model generates is valid JSON. Using `json_schema`
+    is preferred for models that support it.
+    """
+    tools: list[ChatCompletionTool] | NotGiven = NOT_GIVEN
+    """A list of tools the model may call. Currently, only functions are supported as a tool. Use this to provide a list of functions the model may generate JSON inputs for. A max of 128 functions are supported."""
+
+
+class CreateEvalCompletionsRunDataSource(BaseModel):
+    """A CompletionsRunDataSource object describing a model sampling configuration."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["completions"]
+    """The type of run data source. Always `completions`."""
+    source: CreateEvalCompletionsRunDataSourceSource
+    """Determines what populates the `item` namespace in this run's data source."""
+    input_messages: CreateEvalCompletionsRunDataSourceInputMessages | NotGiven = NOT_GIVEN
+    """Used when sampling from a model. Dictates the structure of the messages passed into the model. Can either be a reference to a prebuilt trajectory (ie, `item.input_trajectory`), or a template with variable references to the `item` namespace."""
+    sampling_params: CreateEvalCompletionsRunDataSourceSamplingParams | NotGiven = NOT_GIVEN
+    """Optional object value serialized in the `sampling_params` wire field."""
+    model: str | NotGiven = NOT_GIVEN
+    """The name of the model to use for generating completions (e.g. "o3-mini")."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "source"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["completions"])
+        return value
 
 
 class CreateEvalJsonlRunDataSource(BaseModel):
@@ -126,53 +245,100 @@ class CreateEvalRequest(BaseModel):
         return value
 
 
-class CreateEvalResponsesRunDataSourceInputMessagesVariant0(BaseModel):
-    """Optional object value serialized in the `input_messages` wire field."""
+class CreateEvalResponsesRunDataSourceSamplingParamsText(BaseModel):
+    """
+    Configuration options for a text response from the model. Can be plain
+    text or structured JSON data. Learn more:
+    - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+    - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
+    """
 
-    type: Literal["template"]
-    """The type of input messages. Always `template`."""
-    template: list[TemplateItem2]
-    """A list of chat messages forming the prompt or context. May include variable references to the `item` namespace, ie {{item.name}}."""
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    format: TextResponseFormatConfiguration | NotGiven = NOT_GIVEN
+    """
+    An object specifying the format that the model must output.
+
+    Configuring `{ "type": "json_schema" }` enables Structured Outputs,
+    which ensures the model will match your supplied JSON schema. Learn more in the
+    [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
+
+    The default format is `{ "type": "text" }` with no additional options.
+
+    **Not recommended for gpt-4o and newer models:**
+
+    Setting to `{ "type": "json_object" }` enables the older JSON mode, which
+    ensures the message the model generates is valid JSON. Using `json_schema`
+    is preferred for models that support it.
+    """
+
+
+class CreateEvalResponsesRunDataSourceSamplingParams(BaseModel):
+    """Optional object value serialized in the `sampling_params` wire field."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    reasoning_effort: ReasoningEffort | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `reasoning_effort` wire field."""
+    temperature: float | NotGiven = NOT_GIVEN
+    """A higher temperature increases randomness in the outputs."""
+    max_completion_tokens: int | NotGiven = NOT_GIVEN
+    """The maximum number of tokens in the generated output."""
+    top_p: float | NotGiven = NOT_GIVEN
+    """An alternative to temperature for nucleus sampling; 1.0 includes all tokens."""
+    seed: int | NotGiven = NOT_GIVEN
+    """A seed value to initialize the randomness, during sampling."""
+    tools: list[Tool] | NotGiven = NOT_GIVEN
+    """
+    An array of tools the model may call while generating a response. You
+    can specify which tool to use by setting the `tool_choice` parameter.
+
+    The two categories of tools you can provide the model are:
+
+    - **Built-in tools**: Tools that are provided by OpenAI that extend the
+      model's capabilities, like [web search](https://developers.openai.com/api/docs/guides/tools-web-search)
+      or [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn more about
+      [built-in tools](https://developers.openai.com/api/docs/guides/tools).
+    - **Function calls (custom tools)**: Functions that are defined by you,
+      enabling the model to call your own code. Learn more about
+      [function calling](https://developers.openai.com/api/docs/guides/function-calling).
+    """
+    text: CreateEvalResponsesRunDataSourceSamplingParamsText | NotGiven = NOT_GIVEN
+    """
+    Configuration options for a text response from the model. Can be plain
+    text or structured JSON data. Learn more:
+    - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+    - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
+    """
+
+
+class CreateEvalResponsesRunDataSource(BaseModel):
+    """A ResponsesRunDataSource object describing a model sampling configuration."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["responses"]
+    """The type of run data source. Always `responses`."""
+    source: CreateEvalResponsesRunDataSourceSource
+    """Determines what populates the `item` namespace in this run's data source."""
+    input_messages: CreateEvalResponsesRunDataSourceInputMessages | NotGiven = NOT_GIVEN
+    """Used when sampling from a model. Dictates the structure of the messages passed into the model. Can either be a reference to a prebuilt trajectory (ie, `item.input_trajectory`), or a template with variable references to the `item` namespace."""
+    sampling_params: CreateEvalResponsesRunDataSourceSamplingParams | NotGiven = NOT_GIVEN
+    """Optional object value serialized in the `sampling_params` wire field."""
+    model: str | NotGiven = NOT_GIVEN
+    """The name of the model to use for generating completions (e.g. "o3-mini")."""
 
     @model_validator(mode="before")
     @classmethod
     def _validate_required(cls, value):
-        validate_required(value, ["type", "template"])
+        validate_required(value, ["type", "source"])
         return value
 
     @field_validator("type")
     @classmethod
     def _validate_type(cls, value):
-        validate_enum("type", value, ["template"])
+        validate_enum("type", value, ["responses"])
         return value
-
-
-class CreateEvalResponsesRunDataSourceInputMessagesVariant1(BaseModel):
-    """Optional object value serialized in the `input_messages` wire field."""
-
-    type: Literal["item_reference"]
-    """The type of input messages. Always `item_reference`."""
-    item_reference: str
-    """A reference to a variable in the `item` namespace. Ie, "item.name" """
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "item_reference"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["item_reference"])
-        return value
-
-
-# CreateEvalResponsesRunDataSourceInputMessages is a union type
-CreateEvalResponsesRunDataSourceInputMessages = TypeAliasType(
-    "CreateEvalResponsesRunDataSourceInputMessages",
-    'Annotated[Annotated[CreateEvalResponsesRunDataSourceInputMessagesVariant0, WrapValidator(validate_union_candidate)] | Annotated[CreateEvalResponsesRunDataSourceInputMessagesVariant1, WrapValidator(validate_union_candidate)], Field(discriminator="type")]',
-)
 
 
 class CreateEvalRunRequest(BaseModel):
@@ -252,210 +418,4 @@ class Eval(BaseModel):
                 "metadata",
             ],
         )
-        return value
-
-
-class EvalRunResultCounts(BaseModel):
-    """Counters summarizing the outcomes of the evaluation run."""
-
-    total: int
-    """Total number of executed output items."""
-    errored: int
-    """Number of output items that resulted in an error."""
-    failed: int
-    """Number of output items that failed to pass the evaluation."""
-    passed: int
-    """Number of output items that passed the evaluation."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["total", "errored", "failed", "passed"])
-        return value
-
-
-class EvalRunPerModelUsageItem(BaseModel):
-    """Required object value serialized in the `per_model_usage[]` wire field."""
-
-    model_config = ConfigDict(
-        populate_by_name=False, arbitrary_types_allowed=True, protected_namespaces=()
-    )
-
-    model_name: str
-    """The name of the model."""
-    invocation_count: int
-    """The number of invocations."""
-    prompt_tokens: int
-    """The number of prompt tokens used."""
-    completion_tokens: int
-    """The number of completion tokens generated."""
-    total_tokens: int
-    """The total number of tokens used."""
-    cached_tokens: int
-    """The number of tokens retrieved from cache."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(
-            value,
-            [
-                "model_name",
-                "invocation_count",
-                "prompt_tokens",
-                "completion_tokens",
-                "total_tokens",
-                "cached_tokens",
-            ],
-        )
-        return value
-
-
-class EvalRunPerTestingCriteriaResultsItem(BaseModel):
-    """Required object value serialized in the `per_testing_criteria_results[]` wire field."""
-
-    testing_criteria: str
-    """A description of the testing criteria."""
-    passed: int
-    """Number of tests passed for this criteria."""
-    failed: int
-    """Number of tests failed for this criteria."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["testing_criteria", "passed", "failed"])
-        return value
-
-
-class EvalRun(BaseModel):
-    """A schema representing an evaluation run."""
-
-    object: Literal["eval.run"] | str
-    """The type of the object. Always "eval.run"."""
-    id: str
-    """Unique identifier for the evaluation run."""
-    eval_id: str
-    """The identifier of the associated evaluation."""
-    status: str
-    """The status of the evaluation run."""
-    model: str | None
-    """The model that is evaluated, if applicable."""
-    name: str | None
-    """The name of the evaluation run."""
-    created_at: int
-    """Unix timestamp (in seconds) when the evaluation run was created."""
-    report_url: str
-    """The URL to the rendered evaluation run report on the UI dashboard."""
-    result_counts: EvalRunResultCounts
-    """Counters summarizing the outcomes of the evaluation run."""
-    per_model_usage: list[EvalRunPerModelUsageItem] | None
-    """Usage statistics for each model during the evaluation run."""
-    per_testing_criteria_results: list[EvalRunPerTestingCriteriaResultsItem] | None
-    """Results per testing criteria applied during the evaluation run."""
-    data_source: EvalRunDataSource
-    """Information about the run's data source."""
-    metadata: Metadata | None
-    """
-    Set of 16 key-value pairs that can be attached to an object. This can be
-    useful for storing additional information about the object in a structured
-    format, and querying for objects via API or the dashboard.
-
-    Keys are strings with a maximum length of 64 characters. Values are strings
-    with a maximum length of 512 characters.
-    """
-    error: EvalApiError | None
-    """Required API value serialized in the `error` wire field."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(
-            value,
-            [
-                "object",
-                "id",
-                "eval_id",
-                "status",
-                "model",
-                "name",
-                "created_at",
-                "report_url",
-                "result_counts",
-                "per_model_usage",
-                "per_testing_criteria_results",
-                "data_source",
-                "metadata",
-                "error",
-            ],
-        )
-        return value
-
-    @field_validator("report_url")
-    @classmethod
-    def _validate_report_url(cls, value):
-        validate_uri("report_url", value)
-        return value
-
-
-class CreateEvalCompletionsRunDataSourceSamplingParams(BaseModel):
-    """Optional object value serialized in the `sampling_params` wire field."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    reasoning_effort: ReasoningEffort | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `reasoning_effort` wire field."""
-    temperature: float | NotGiven = NOT_GIVEN
-    """A higher temperature increases randomness in the outputs."""
-    max_completion_tokens: int | NotGiven = NOT_GIVEN
-    """The maximum number of tokens in the generated output."""
-    top_p: float | NotGiven = NOT_GIVEN
-    """An alternative to temperature for nucleus sampling; 1.0 includes all tokens."""
-    seed: int | NotGiven = NOT_GIVEN
-    """A seed value to initialize the randomness, during sampling."""
-    response_format: CreateEvalCompletionsRunDataSourceSamplingParamsResponseFormat | NotGiven = (
-        NOT_GIVEN
-    )
-    """
-    An object specifying the format that the model must output.
-
-    Setting to `{ "type": "json_schema", "json_schema": {...} }` enables
-    Structured Outputs which ensures the model will match your supplied JSON
-    schema. Learn more in the [Structured Outputs
-    guide](https://developers.openai.com/api/docs/guides/structured-outputs).
-
-    Setting to `{ "type": "json_object" }` enables the older JSON mode, which
-    ensures the message the model generates is valid JSON. Using `json_schema`
-    is preferred for models that support it.
-    """
-    tools: list[ChatCompletionTool] | NotGiven = NOT_GIVEN
-    """A list of tools the model may call. Currently, only functions are supported as a tool. Use this to provide a list of functions the model may generate JSON inputs for. A max of 128 functions are supported."""
-
-
-class CreateEvalCompletionsRunDataSource(BaseModel):
-    """A CompletionsRunDataSource object describing a model sampling configuration."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["completions"]
-    """The type of run data source. Always `completions`."""
-    source: CreateEvalCompletionsRunDataSourceSource
-    """Determines what populates the `item` namespace in this run's data source."""
-    input_messages: CreateEvalCompletionsRunDataSourceInputMessages | NotGiven = NOT_GIVEN
-    """Used when sampling from a model. Dictates the structure of the messages passed into the model. Can either be a reference to a prebuilt trajectory (ie, `item.input_trajectory`), or a template with variable references to the `item` namespace."""
-    sampling_params: CreateEvalCompletionsRunDataSourceSamplingParams | NotGiven = NOT_GIVEN
-    """Optional object value serialized in the `sampling_params` wire field."""
-    model: str | NotGiven = NOT_GIVEN
-    """The name of the model to use for generating completions (e.g. "o3-mini")."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "source"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["completions"])
         return value

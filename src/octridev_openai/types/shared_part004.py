@@ -17,25 +17,6 @@ if TYPE_CHECKING:
     from octridev_openai.types.shared_part011 import CompoundFilter
 
 
-class ScreenshotParam(BaseModel):
-    """A screenshot action."""
-
-    type: Literal["screenshot"]
-    """Specifies the event type. For a screenshot action, this property is always set to `screenshot`."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["screenshot"])
-        return value
-
-
 class ScrollParam(BaseModel):
     """A scroll action."""
 

@@ -6,6 +6,25 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_7: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "ProjectApiKeyOwnerUser": (
+        None,
+        {
+            "id": ("id", None),
+            "email": ("email", None),
+            "name": ("name", None),
+            "created_at": ("created_at", None),
+            "role": ("role", None),
+        },
+    ),
+    "ProjectCreateRequest": (
+        None,
+        {
+            "name": ("name", None),
+            "geography": ("geography", None),
+            "residency": ("residency", None),
+            "external_key_id": ("external_key_id", None),
+        },
+    ),
     "ProjectDataRetention": (
         None,
         {
@@ -459,30 +478,6 @@ WIRE_SCHEMAS_PART_7: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = 
             "item": (
                 "item",
                 "union:RealtimeConversationItemMessageSystem|RealtimeConversationItemMessageUser|RealtimeConversationItemMessageAssistant|RealtimeConversationItemFunctionCall|RealtimeConversationItemFunctionCallOutput|RealtimeMCPApprovalResponse|RealtimeMCPListTools|RealtimeMCPToolCall|RealtimeMCPApprovalRequest~type=function_call,function_call_output,mcp_approval_response,mcp_list_tools,mcp_call,mcp_approval_request",
-            ),
-        },
-    ),
-    "RealtimeBetaServerEventConversationItemDeleted": (
-        None,
-        {
-            "event_id": ("event_id", None),
-            "type": ("type", None),
-            "item_id": ("item_id", None),
-        },
-    ),
-    "RealtimeBetaServerEventConversationItemInputAudioTranscriptionCompleted": (
-        None,
-        {
-            "event_id": ("event_id", None),
-            "type": ("type", None),
-            "item_id": ("item_id", None),
-            "content_index": ("content_index", None),
-            "transcript": ("transcript", None),
-            "languages": ("languages", "TranscriptionLanguage"),
-            "logprobs": ("logprobs", "LogProbProperties"),
-            "usage": (
-                "usage",
-                "union:TranscriptTextUsageTokens|TranscriptTextUsageDuration~type=tokens,duration",
             ),
         },
     ),

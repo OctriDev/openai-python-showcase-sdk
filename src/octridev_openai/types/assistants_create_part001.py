@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, WrapValidator, field_validator, model_validator
 from typing_extensions import TypeAliasType
@@ -251,55 +251,6 @@ CreateThreadAndRunRequestToolsItem = TypeAliasType(
 )
 
 
-class CreateThreadRequestToolResourcesCodeInterpreter(BaseModel):
-    """Optional object value serialized in the `code_interpreter` wire field."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    file_ids: list[str] | NotGiven = NOT_GIVEN
-    """A list of [file](https://developers.openai.com/api/reference/resources/files) IDs made available to the `code_interpreter` tool. There can be a maximum of 20 files associated with the tool."""
-
-    @field_validator("file_ids")
-    @classmethod
-    def _validate_file_ids(cls, value):
-        validate_items("file_ids", value, max=20)
-        return value
-
-
-class CreateThreadRequestToolResources(BaseModel):
-    """A set of resources that are made available to the assistant's tools in this thread. The resources are specific to the type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the `file_search` tool requires a list of vector store IDs."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    code_interpreter: CreateThreadRequestToolResourcesCodeInterpreter | NotGiven = NOT_GIVEN
-    """Optional object value serialized in the `code_interpreter` wire field."""
-    file_search: Any | NotGiven = NOT_GIVEN
-    """Optional object value serialized in the `file_search` wire field."""
-
-
-class CreateThreadRequest(BaseModel):
-    """
-    Options to create a new thread. If no thread is provided when running a
-    request, an empty thread will be created.
-    """
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    messages: list[CreateMessageRequest] | NotGiven = NOT_GIVEN
-    """A list of [messages](https://developers.openai.com/api/docs/assistants/migration) to start the thread with."""
-    tool_resources: CreateThreadRequestToolResources | None | NotGiven = NOT_GIVEN
-    """A set of resources that are made available to the assistant's tools in this thread. The resources are specific to the type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the `file_search` tool requires a list of vector store IDs."""
-    metadata: Metadata | None | NotGiven = NOT_GIVEN
-    """
-    Set of 16 key-value pairs that can be attached to an object. This can be
-    useful for storing additional information about the object in a structured
-    format, and querying for objects via API or the dashboard.
-
-    Keys are strings with a maximum length of 64 characters. Values are strings
-    with a maximum length of 512 characters.
-    """
-
-
 class CreateAssistantRequestToolResourcesCodeInterpreter(BaseModel):
     """Optional object value serialized in the `code_interpreter` wire field."""
 
@@ -315,6 +266,59 @@ class CreateAssistantRequestToolResourcesCodeInterpreter(BaseModel):
         return value
 
 
+class CreateAssistantRequestToolResourcesFileSearchVectorStoresItem(BaseModel):
+    """Required object value serialized in the `vector_stores[]` wire field."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    file_ids: list[str] | NotGiven = NOT_GIVEN
+    """A list of [file](https://developers.openai.com/api/reference/resources/files) IDs to add to the vector store. For vector stores created before Nov 2025, there can be a maximum of 10,000 files in a vector store. For vector stores created starting in Nov 2025, the limit is 100,000,000 files."""
+    chunking_strategy: (
+        CreateAssistantRequestToolResourcesFileSearchVectorStoresItemChunkingStrategy | NotGiven
+    ) = NOT_GIVEN
+    """The chunking strategy used to chunk the file(s). If not set, will use the `auto` strategy."""
+    metadata: Metadata | None | NotGiven = NOT_GIVEN
+    """
+    Set of 16 key-value pairs that can be attached to an object. This can be
+    useful for storing additional information about the object in a structured
+    format, and querying for objects via API or the dashboard.
+
+    Keys are strings with a maximum length of 64 characters. Values are strings
+    with a maximum length of 512 characters.
+    """
+
+    @field_validator("file_ids")
+    @classmethod
+    def _validate_file_ids(cls, value):
+        validate_items("file_ids", value, max=100000000)
+        return value
+
+
+class CreateAssistantRequestToolResourcesFileSearch(BaseModel):
+    """Optional object value serialized in the `file_search` wire field."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    vector_store_ids: list[str] | NotGiven = NOT_GIVEN
+    """The [vector store](https://developers.openai.com/api/reference/resources/vector_stores) attached to this assistant. There can be a maximum of 1 vector store attached to the assistant."""
+    vector_stores: (
+        list[CreateAssistantRequestToolResourcesFileSearchVectorStoresItem] | NotGiven
+    ) = NOT_GIVEN
+    """A helper to create a [vector store](https://developers.openai.com/api/reference/resources/vector_stores) with file_ids and attach it to this assistant. There can be a maximum of 1 vector store attached to the assistant."""
+
+    @field_validator("vector_store_ids")
+    @classmethod
+    def _validate_vector_store_ids(cls, value):
+        validate_items("vector_store_ids", value, max=1)
+        return value
+
+    @field_validator("vector_stores")
+    @classmethod
+    def _validate_vector_stores(cls, value):
+        validate_items("vector_stores", value, max=1)
+        return value
+
+
 class CreateAssistantRequestToolResources(BaseModel):
     """A set of resources that are used by the assistant's tools. The resources are specific to the type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the `file_search` tool requires a list of vector store IDs."""
 
@@ -322,7 +326,7 @@ class CreateAssistantRequestToolResources(BaseModel):
 
     code_interpreter: CreateAssistantRequestToolResourcesCodeInterpreter | NotGiven = NOT_GIVEN
     """Optional object value serialized in the `code_interpreter` wire field."""
-    file_search: Any | NotGiven = NOT_GIVEN
+    file_search: CreateAssistantRequestToolResourcesFileSearch | NotGiven = NOT_GIVEN
     """Optional object value serialized in the `file_search` wire field."""
 
 
@@ -400,7 +404,10 @@ class CreateMessageRequest(BaseModel):
     - `user`: Indicates the message is sent by an actual user and should be used in most cases to represent user-generated messages.
     - `assistant`: Indicates the message is generated by the assistant. Use this value to insert messages from the assistant into the conversation.
     """
-    content: str | list[CreateMessageRequestContentItem]
+    content: (
+        str
+        | Annotated[list[CreateMessageRequestContentItem], WrapValidator(validate_union_candidate)]
+    )
     """Required API value serialized in the `content` wire field."""
     attachments: list[CreateMessageRequestAttachmentsItem] | None | NotGiven = NOT_GIVEN
     """A list of files attached to the message, and the tools they should be added to."""

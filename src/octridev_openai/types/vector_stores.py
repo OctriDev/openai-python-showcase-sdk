@@ -6,7 +6,6 @@ import importlib
 from .vector_stores_part001 import (
     AutoChunkingStrategyRequestParam,
     ChunkingStrategyRequestParam,
-    CreateVectorStoreFileBatchRequest,
     CreateVectorStoreRequestChunkingStrategy,
     DeleteVectorStoreFileResponse,
     DeleteVectorStoreResponse,
@@ -31,6 +30,7 @@ from .vector_stores_part001 import (
     VectorStoreSearchResultsPage,
 )
 from .vector_stores_part002 import (
+    CreateVectorStoreFileBatchRequest,
     CreateVectorStoreFileRequest,
     CreateVectorStoreRequest,
     UpdateVectorStoreFileAttributesRequest,

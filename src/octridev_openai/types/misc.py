@@ -336,9 +336,15 @@ class FineTuneChatCompletionRequestAssistantMessage(BaseModel):
     """The role of the messages author, in this case `assistant`."""
     weight: int | NotGiven = NOT_GIVEN
     """Controls whether the assistant message is trained against (0 or 1)"""
-    content: str | list[ChatCompletionRequestAssistantMessageContentPart] | None | NotGiven = (
-        NOT_GIVEN
-    )
+    content: (
+        str
+        | Annotated[
+            list[ChatCompletionRequestAssistantMessageContentPart],
+            WrapValidator(validate_union_candidate),
+        ]
+        | None
+        | NotGiven
+    ) = NOT_GIVEN
     """The contents of the assistant message. Required unless `tool_calls` or `function_call` is specified."""
     refusal: str | None | NotGiven = NOT_GIVEN
     """Optional `string` value serialized in the `refusal` wire field."""

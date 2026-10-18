@@ -6,6 +6,23 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_13: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "SubmitToolOutputsRunRequest": (
+        None,
+        {
+            "tool_outputs": ("tool_outputs", "SubmitToolOutputsRunRequestToolOutputsItem"),
+            "stream": ("stream", None),
+        },
+    ),
+    "TextResponseFormatJsonSchema": (
+        None,
+        {
+            "type": ("type", None),
+            "description": ("description", None),
+            "name": ("name", None),
+            "schema_": ("schema", None),
+            "strict": ("strict", None),
+        },
+    ),
     "ThreadObject": (
         None,
         {
@@ -14,6 +31,14 @@ WIRE_SCHEMAS_PART_13: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "created_at": ("created_at", None),
             "tool_resources": ("tool_resources", None),
             "metadata": ("metadata", None),
+        },
+    ),
+    "ThreadStreamEvent": (
+        None,
+        {
+            "enabled": ("enabled", None),
+            "event": ("event", None),
+            "data": ("data", "ThreadObject"),
         },
     ),
     "ToggleCertificatesRequest": (
@@ -464,33 +489,6 @@ WIRE_SCHEMAS_PART_13: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
                 "grader",
                 "union:GraderStringCheck|GraderTextSimilarity|GraderPython|GraderScoreModel|GraderMulti~type=string_check,text_similarity,python,score_model,multi",
             ),
-        },
-    ),
-    "ValidateGraderResponse": (
-        None,
-        {
-            "grader": (
-                "grader",
-                "union:GraderStringCheck|GraderTextSimilarity|GraderPython|GraderScoreModel|GraderMulti~type=string_check,text_similarity,python,score_model,multi",
-            ),
-        },
-    ),
-    "VectorStoreExpirationAfter": (
-        None,
-        {
-            "anchor": ("anchor", None),
-            "days": ("days", None),
-        },
-    ),
-    "VectorStoreFileBatchObject": (
-        None,
-        {
-            "id": ("id", None),
-            "object": ("object", None),
-            "created_at": ("created_at", None),
-            "vector_store_id": ("vector_store_id", None),
-            "status": ("status", None),
-            "file_counts": ("file_counts", "VectorStoreFileBatchObjectFileCounts"),
         },
     ),
 }

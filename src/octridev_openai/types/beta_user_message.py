@@ -41,7 +41,12 @@ class BetaUserMessageItemParam(BaseModel):
     """The item type. Always `message`."""
     role: Literal["user"] | str
     """The message role. Always `user`."""
-    content: list[BetaUserMessageItemParamContentItem] | str
+    content: (
+        Annotated[
+            list[BetaUserMessageItemParamContentItem], WrapValidator(validate_union_candidate)
+        ]
+        | str
+    )
     """The message content, as an array of content parts."""
     agent: Beta_AgentTagParam | None | NotGiven = NOT_GIVEN
     """Optional API value serialized in the `agent` wire field."""

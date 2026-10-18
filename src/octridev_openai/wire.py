@@ -120,7 +120,7 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
     },
     "AssistantStreamEvent": {
         "oneOf": [
-            {},
+            {"ref": "ThreadStreamEvent"},
             {"ref": "RunStreamEvent"},
             {"ref": "RunStepStreamEvent"},
             {"ref": "MessageStreamEvent"},
@@ -284,7 +284,7 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
     "CodeInterpreterTool": {
         "properties": {
             "type": {"enum": ["code_interpreter"]},
-            "container": {"oneOf": [{}, {"ref": "AutoCodeInterpreterToolParam"}]},
+            "container": {"ref": "CodeInterpreterToolContainer"},
         }
     },
     "CodeInterpreterToolCall": {
@@ -438,18 +438,45 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
     "CreateChatCompletionRequest": {
         "properties": {
             "messages": {"items": {"ref": "ChatCompletionRequestMessage"}},
-            "response_format": {"ref": "ResponseFormat"},
+            "response_format": {
+                "oneOf": [
+                    {"ref": "ResponseFormatText"},
+                    {"ref": "ResponseFormatJsonSchema"},
+                    {"ref": "ResponseFormatJsonObject"},
+                ],
+                "openTag": ["type", ["text", "json_schema", "json_object"]],
+            },
             "prediction": {"ref": "PredictionContent"},
-            "tools": {"items": {"ref": "ToolsItem"}},
+            "tools": {
+                "items": {
+                    "oneOf": [{"ref": "ChatCompletionTool"}, {"ref": "CustomToolChatCompletions"}],
+                    "openTag": ["type", ["function", "custom"]],
+                }
+            },
             "tool_choice": {"ref": "ChatCompletionToolChoiceOption"},
         },
         "allOf": [
             {
                 "properties": {
                     "messages": {"items": {"ref": "ChatCompletionRequestMessage"}},
-                    "response_format": {"ref": "ResponseFormat"},
+                    "response_format": {
+                        "oneOf": [
+                            {"ref": "ResponseFormatText"},
+                            {"ref": "ResponseFormatJsonSchema"},
+                            {"ref": "ResponseFormatJsonObject"},
+                        ],
+                        "openTag": ["type", ["text", "json_schema", "json_object"]],
+                    },
                     "prediction": {"ref": "PredictionContent"},
-                    "tools": {"items": {"ref": "ToolsItem"}},
+                    "tools": {
+                        "items": {
+                            "oneOf": [
+                                {"ref": "ChatCompletionTool"},
+                                {"ref": "CustomToolChatCompletions"},
+                            ],
+                            "openTag": ["type", ["function", "custom"]],
+                        }
+                    },
                     "tool_choice": {"ref": "ChatCompletionToolChoiceOption"},
                 }
             }
@@ -1467,23 +1494,7 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
         "properties": {"session": {"ref": "RealtimeSession"}}
     },
     "RealtimeCallCreateRequest": {
-        "properties": {
-            "session": {
-                "properties": {
-                    "type": {"enum": ["realtime"]},
-                    "audio": {
-                        "properties": {
-                            "input": {"properties": {"format": {"ref": "RealtimeAudioFormats"}}},
-                            "output": {"properties": {"format": {"ref": "RealtimeAudioFormats"}}},
-                        }
-                    },
-                    "tools": {"items": {"ref": "RealtimeSessionCreateRequestGAToolsItem"}},
-                    "tool_choice": {"ref": "RealtimeSessionCreateRequestGAToolChoice"},
-                    "prompt": {"ref": "Prompt"},
-                },
-                "allOf": [{"ref": "RealtimeSessionCreateRequestGA"}],
-            }
-        }
+        "properties": {"session": {"ref": "RealtimeSessionCreateRequestGA"}}
     },
     "RealtimeClientEvent": {
         "anyOf": [
@@ -3090,6 +3101,7 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
         "openTag": ["type", ["text", "json_schema", "json_object"]],
     },
     "TextResponseFormatJsonSchema": {"properties": {"type": {"enum": ["json_schema"]}}},
+    "ThreadStreamEvent": {"properties": {"event": {"enum": ["thread.created"]}}},
     "Tool": {
         "oneOf": [
             {"ref": "FunctionTool"},
@@ -3592,45 +3604,7 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
     "LiveResponsesDelegationSettingsInputParam": {
         "properties": {
             "tools": {"items": {"ref": "LiveResponsesDelegationSettingsInputParamToolsItem"}},
-            "tool_choice": {
-                "oneOf": [
-                    {},
-                    {
-                        "oneOf": [
-                            {"ref": "LiveFunctionToolChoiceParam"},
-                            {"ref": "LiveMCPToolChoiceParam"},
-                            {"ref": "LiveSpecificFileSearchParam"},
-                            {"ref": "LiveSpecificWebSearchParam"},
-                            {"ref": "LiveSpecificWebSearchPreviewParam"},
-                            {"ref": "LiveSpecificImageGenParam"},
-                            {"ref": "LiveSpecificComputerParam"},
-                            {"ref": "LiveSpecificCodeInterpreterParam"},
-                            {"ref": "LiveSpecificProgrammaticToolCallingParam"},
-                            {"ref": "LiveSpecificFunctionShellParam"},
-                            {"ref": "LiveSpecificCustomToolParam"},
-                            {"ref": "LiveSpecificApplyPatchParam"},
-                        ],
-                        "openTag": [
-                            "type",
-                            [
-                                "function",
-                                "mcp",
-                                "file_search",
-                                "web_search",
-                                "web_search_preview",
-                                "image_generation",
-                                "computer",
-                                "code_interpreter",
-                                "programmatic_tool_calling",
-                                "shell",
-                                "custom",
-                                "apply_patch",
-                            ],
-                        ],
-                    },
-                    {"ref": "LiveAllowedToolsChoiceParam"},
-                ]
-            },
+            "tool_choice": {"ref": "LiveResponsesDelegationSettingsInputParamToolChoice"},
         }
     },
     "LiveResponsesDelegationParam": {
@@ -3686,45 +3660,7 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
     "LiveResponsesDelegationSettingsUpdateInputParam": {
         "properties": {
             "tools": {"items": {"ref": "LiveResponsesDelegationSettingsUpdateInputParamToolsItem"}},
-            "tool_choice": {
-                "oneOf": [
-                    {},
-                    {
-                        "oneOf": [
-                            {"ref": "LiveFunctionToolChoiceParam"},
-                            {"ref": "LiveMCPToolChoiceParam"},
-                            {"ref": "LiveSpecificFileSearchParam"},
-                            {"ref": "LiveSpecificWebSearchParam"},
-                            {"ref": "LiveSpecificWebSearchPreviewParam"},
-                            {"ref": "LiveSpecificImageGenParam"},
-                            {"ref": "LiveSpecificComputerParam"},
-                            {"ref": "LiveSpecificCodeInterpreterParam"},
-                            {"ref": "LiveSpecificProgrammaticToolCallingParam"},
-                            {"ref": "LiveSpecificFunctionShellParam"},
-                            {"ref": "LiveSpecificCustomToolParam"},
-                            {"ref": "LiveSpecificApplyPatchParam"},
-                        ],
-                        "openTag": [
-                            "type",
-                            [
-                                "function",
-                                "mcp",
-                                "file_search",
-                                "web_search",
-                                "web_search_preview",
-                                "image_generation",
-                                "computer",
-                                "code_interpreter",
-                                "programmatic_tool_calling",
-                                "shell",
-                                "custom",
-                                "apply_patch",
-                            ],
-                        ],
-                    },
-                    {"ref": "LiveAllowedToolsChoiceParam"},
-                ]
-            },
+            "tool_choice": {"ref": "LiveResponsesDelegationSettingsUpdateInputParamToolChoice"},
         }
     },
     "LiveResponsesDelegationUpdateParam": {
@@ -4834,10 +4770,10 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
         ],
     },
     "ComputerUseApprovalResponseParamBrowserAuthenticationSubmitParam": {
-        "properties": {"action": {"enum": ["submit"]}}
+        "properties": {"type": {"enum": ["browser_authentication"]}, "action": {"enum": ["submit"]}}
     },
     "ComputerUseApprovalResponseParamBrowserAuthenticationCancelParam": {
-        "properties": {"action": {"enum": ["cancel"]}}
+        "properties": {"type": {"enum": ["browser_authentication"]}, "action": {"enum": ["cancel"]}}
     },
     "ComputerUseApprovalResponseParamBrowserAuthentication": {
         "properties": {"type": {"enum": ["browser_authentication"]}},
@@ -5469,7 +5405,7 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
     "BetaCodeInterpreterTool": {
         "properties": {
             "type": {"enum": ["code_interpreter"]},
-            "container": {"oneOf": [{}, {"ref": "BetaAutoCodeInterpreterToolParam"}]},
+            "container": {"ref": "BetaCodeInterpreterToolContainer"},
         }
     },
     "BetaAutoCodeInterpreterToolParam": {
@@ -7269,6 +7205,13 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
         ],
         "openTag": ["type", ["aws", "azure", "gcp", "oci"]],
     },
+    "CreateTranscriptionResponse": {
+        "anyOf": [
+            {"ref": "CreateTranscriptionResponseJson"},
+            {"ref": "CreateTranscriptionResponseDiarizedJson"},
+            {"ref": "CreateTranscriptionResponseVerboseJson"},
+        ]
+    },
     "AssistantObjectToolsItem": {
         "oneOf": [
             {"ref": "AssistantToolsCode"},
@@ -7386,6 +7329,7 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
         ],
         "openTag": ["type", ["moderation_results", "error"]],
     },
+    "CodeInterpreterToolContainer": {"oneOf": [{}, {"ref": "AutoCodeInterpreterToolParam"}]},
     "AutoCodeInterpreterToolParamNetworkPolicy": {
         "oneOf": [
             {"ref": "ContainerNetworkPolicyDisabledParam"},
@@ -7496,18 +7440,6 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
             {"properties": {"type": {"enum": ["static"]}}},
         ]
     },
-    "ResponseFormat": {
-        "oneOf": [
-            {"ref": "ResponseFormatText"},
-            {"ref": "ResponseFormatJsonSchema"},
-            {"ref": "ResponseFormatJsonObject"},
-        ],
-        "openTag": ["type", ["text", "json_schema", "json_object"]],
-    },
-    "ToolsItem": {
-        "oneOf": [{"ref": "ChatCompletionTool"}, {"ref": "CustomToolChatCompletions"}],
-        "openTag": ["type", ["function", "custom"]],
-    },
     "CustomToolChatCompletionsCustomFormat": {
         "oneOf": [
             {"properties": {"type": {"enum": ["text"]}}},
@@ -7530,13 +7462,14 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
             {
                 "properties": {
                     "type": {"enum": ["template"]},
-                    "template": {"items": {"ref": "TemplateItem"}},
+                    "template": {
+                        "items": {"oneOf": [{"ref": "EasyInputMessage"}, {"ref": "EvalItem"}]}
+                    },
                 }
             },
             {"properties": {"type": {"enum": ["item_reference"]}}},
         ]
     },
-    "TemplateItem": {"oneOf": [{"ref": "EasyInputMessage"}, {"ref": "EvalItem"}]},
     "CreateEvalCompletionsRunDataSourceSamplingParamsResponseFormat": {
         "oneOf": [
             {"ref": "ResponseFormatText"},
@@ -7583,13 +7516,12 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
             {
                 "properties": {
                     "type": {"enum": ["template"]},
-                    "template": {"items": {"ref": "TemplateItem2"}},
+                    "template": {"items": {"oneOf": [{}, {"ref": "EvalItem"}]}},
                 }
             },
             {"properties": {"type": {"enum": ["item_reference"]}}},
         ]
     },
-    "TemplateItem2": {"oneOf": [{}, {"ref": "EvalItem"}]},
     "CreateEvalResponsesRunDataSourceSource": {
         "oneOf": [
             {"ref": "EvalJsonlFileContentSource"},
@@ -7777,6 +7709,45 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
         "oneOf": [{"ref": "LiveSkillReferenceParam"}, {"ref": "LiveInlineSkillParam"}],
         "openTag": ["type", ["skill_reference", "inline"]],
     },
+    "LiveResponsesDelegationSettingsInputParamToolChoice": {
+        "oneOf": [
+            {},
+            {
+                "oneOf": [
+                    {"ref": "LiveFunctionToolChoiceParam"},
+                    {"ref": "LiveMCPToolChoiceParam"},
+                    {"ref": "LiveSpecificFileSearchParam"},
+                    {"ref": "LiveSpecificWebSearchParam"},
+                    {"ref": "LiveSpecificWebSearchPreviewParam"},
+                    {"ref": "LiveSpecificImageGenParam"},
+                    {"ref": "LiveSpecificComputerParam"},
+                    {"ref": "LiveSpecificCodeInterpreterParam"},
+                    {"ref": "LiveSpecificProgrammaticToolCallingParam"},
+                    {"ref": "LiveSpecificFunctionShellParam"},
+                    {"ref": "LiveSpecificCustomToolParam"},
+                    {"ref": "LiveSpecificApplyPatchParam"},
+                ],
+                "openTag": [
+                    "type",
+                    [
+                        "function",
+                        "mcp",
+                        "file_search",
+                        "web_search",
+                        "web_search_preview",
+                        "image_generation",
+                        "computer",
+                        "code_interpreter",
+                        "programmatic_tool_calling",
+                        "shell",
+                        "custom",
+                        "apply_patch",
+                    ],
+                ],
+            },
+            {"ref": "LiveAllowedToolsChoiceParam"},
+        ]
+    },
     "LiveAllowedToolsChoiceParamToolsItem": {
         "oneOf": [
             {"ref": "LiveFunctionToolChoiceParam"},
@@ -7867,6 +7838,45 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
                 "apply_patch",
             ],
         ],
+    },
+    "LiveResponsesDelegationSettingsUpdateInputParamToolChoice": {
+        "oneOf": [
+            {},
+            {
+                "oneOf": [
+                    {"ref": "LiveFunctionToolChoiceParam"},
+                    {"ref": "LiveMCPToolChoiceParam"},
+                    {"ref": "LiveSpecificFileSearchParam"},
+                    {"ref": "LiveSpecificWebSearchParam"},
+                    {"ref": "LiveSpecificWebSearchPreviewParam"},
+                    {"ref": "LiveSpecificImageGenParam"},
+                    {"ref": "LiveSpecificComputerParam"},
+                    {"ref": "LiveSpecificCodeInterpreterParam"},
+                    {"ref": "LiveSpecificProgrammaticToolCallingParam"},
+                    {"ref": "LiveSpecificFunctionShellParam"},
+                    {"ref": "LiveSpecificCustomToolParam"},
+                    {"ref": "LiveSpecificApplyPatchParam"},
+                ],
+                "openTag": [
+                    "type",
+                    [
+                        "function",
+                        "mcp",
+                        "file_search",
+                        "web_search",
+                        "web_search_preview",
+                        "image_generation",
+                        "computer",
+                        "code_interpreter",
+                        "programmatic_tool_calling",
+                        "shell",
+                        "custom",
+                        "apply_patch",
+                    ],
+                ],
+            },
+            {"ref": "LiveAllowedToolsChoiceParam"},
+        ]
     },
     "LiveDecisionInputItemParamContentItem": {
         "oneOf": [{"ref": "LiveDecisionInputTextParam"}, {"ref": "LiveDecisionInputImageParam"}],
@@ -8158,6 +8168,9 @@ _RESPONSE_ENUM_SCHEMAS: dict[str, object] = {
     "BetaCompoundFilterFiltersItem": {
         "oneOf": [{"ref": "BetaComparisonFilter"}, {"ref": "BetaCompoundFilter"}],
         "openTag": ["type", ["eq", "ne", "gt", "gte", "lt", "lte", "in", "nin", "and", "or"]],
+    },
+    "BetaCodeInterpreterToolContainer": {
+        "oneOf": [{}, {"ref": "BetaAutoCodeInterpreterToolParam"}]
     },
     "BetaAutoCodeInterpreterToolParamNetworkPolicy": {
         "oneOf": [

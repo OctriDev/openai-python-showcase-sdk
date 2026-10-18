@@ -6,6 +6,49 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_40: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "RealtimeServerEventErrorError": (
+        None,
+        {
+            "type": ("type", None),
+            "code": ("code", None),
+            "message": ("message", None),
+            "param": ("param", None),
+            "event_id": ("event_id", None),
+        },
+    ),
+    "RealtimeServerEventRateLimitsUpdatedRateLimitsItem": (
+        None,
+        {
+            "name": ("name", None),
+            "limit": ("limit", None),
+            "remaining": ("remaining", None),
+            "reset_seconds": ("reset_seconds", None),
+        },
+    ),
+    "RealtimeServerEventResponseContentPartAddedPart": (
+        None,
+        {
+            "type": ("type", None),
+            "text": ("text", None),
+            "audio": ("audio", None),
+            "transcript": ("transcript", None),
+        },
+    ),
+    "RealtimeServerEventResponseContentPartDonePart": (
+        None,
+        {
+            "type": ("type", None),
+            "text": ("text", None),
+            "audio": ("audio", None),
+            "transcript": ("transcript", None),
+        },
+    ),
+    "RealtimeSessionInputAudioNoiseReduction": (
+        None,
+        {
+            "type": ("type", None),
+        },
+    ),
     "RealtimeSessionCreateRequestClientSecret": (
         None,
         {
@@ -17,14 +60,6 @@ WIRE_SCHEMAS_PART_40: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         None,
         {
             "model": ("model", None),
-        },
-    ),
-    "RealtimeSessionCreateRequestTracingTracingConfiguration": (
-        None,
-        {
-            "workflow_name": ("workflow_name", None),
-            "group_id": ("group_id", None),
-            "metadata": ("metadata", None),
         },
     ),
     "RealtimeSessionCreateRequestTurnDetection": (
@@ -65,7 +100,10 @@ WIRE_SCHEMAS_PART_40: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         {
             "format": ("format", None),
             "transcription": ("transcription", "AudioTranscription"),
-            "noise_reduction": ("noise_reduction", None),
+            "noise_reduction": (
+                "noise_reduction",
+                "RealtimeSessionCreateRequestGAAudioInputNoiseReduction",
+            ),
             "turn_detection": ("turn_detection", None),
         },
     ),
@@ -77,19 +115,17 @@ WIRE_SCHEMAS_PART_40: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "speed": ("speed", None),
         },
     ),
+    "RealtimeSessionCreateRequestGAAudioInputNoiseReduction": (
+        None,
+        {
+            "type": ("type", None),
+        },
+    ),
     "RealtimeSessionCreateResponseAudio": (
         None,
         {
             "input": ("input", "RealtimeSessionCreateResponseAudioInput"),
             "output": ("output", "RealtimeSessionCreateResponseAudioOutput"),
-        },
-    ),
-    "RealtimeSessionCreateResponseTracingTracingConfiguration": (
-        None,
-        {
-            "workflow_name": ("workflow_name", None),
-            "group_id": ("group_id", None),
-            "metadata": ("metadata", None),
         },
     ),
     "RealtimeSessionCreateResponseTurnDetection": (
@@ -140,14 +176,6 @@ WIRE_SCHEMAS_PART_40: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "output": ("output", "RealtimeSessionCreateResponseGAAudioOutput"),
         },
     ),
-    "RealtimeSessionCreateResponseGATracingTracingConfiguration": (
-        None,
-        {
-            "workflow_name": ("workflow_name", None),
-            "group_id": ("group_id", None),
-            "metadata": ("metadata", None),
-        },
-    ),
     "RealtimeSessionCreateResponseGAAudioInput": (
         None,
         {
@@ -180,6 +208,12 @@ WIRE_SCHEMAS_PART_40: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "silence_duration_ms": ("silence_duration_ms", None),
         },
     ),
+    "RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction": (
+        None,
+        {
+            "type": ("type", None),
+        },
+    ),
     "RealtimeTranscriptionSessionCreateRequestGAAudio": (
         None,
         {
@@ -191,8 +225,17 @@ WIRE_SCHEMAS_PART_40: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         {
             "format": ("format", None),
             "transcription": ("transcription", "AudioTranscription"),
-            "noise_reduction": ("noise_reduction", None),
+            "noise_reduction": (
+                "noise_reduction",
+                "RealtimeTranscriptionSessionCreateRequestGAAudioInputNoiseReduction",
+            ),
             "turn_detection": ("turn_detection", None),
+        },
+    ),
+    "RealtimeTranscriptionSessionCreateRequestGAAudioInputNoiseReduction": (
+        None,
+        {
+            "type": ("type", None),
         },
     ),
     "RealtimeTranscriptionSessionCreateResponseClientSecret": (
@@ -336,47 +379,6 @@ WIRE_SCHEMAS_PART_40: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         None,
         {
             "model": ("model", None),
-        },
-    ),
-    "RealtimeTranslationSessionUpdateRequestAudioInputNoiseReduction": (
-        None,
-        {
-            "type": ("type", None),
-        },
-    ),
-    "RealtimeTruncationVariant1": (
-        None,
-        {
-            "type": ("type", None),
-            "retention_ratio": ("retention_ratio", None),
-            "token_limits": ("token_limits", "RealtimeTruncationVariant1TokenLimits"),
-        },
-    ),
-    "RealtimeTruncationVariant1TokenLimits": (
-        None,
-        {
-            "post_instructions": ("post_instructions", None),
-        },
-    ),
-    "RealtimeTurnDetectionVariant0": (
-        None,
-        {
-            "type": ("type", None),
-            "threshold": ("threshold", None),
-            "prefix_padding_ms": ("prefix_padding_ms", None),
-            "silence_duration_ms": ("silence_duration_ms", None),
-            "create_response": ("create_response", None),
-            "interrupt_response": ("interrupt_response", None),
-            "idle_timeout_ms": ("idle_timeout_ms", None),
-        },
-    ),
-    "RealtimeTurnDetectionVariant1": (
-        None,
-        {
-            "type": ("type", None),
-            "eagerness": ("eagerness", None),
-            "create_response": ("create_response", None),
-            "interrupt_response": ("interrupt_response", None),
         },
     ),
 }

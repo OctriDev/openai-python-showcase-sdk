@@ -6,6 +6,49 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_39: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "MessageDeltaContentTextObjectText": (
+        None,
+        {
+            "value": ("value", None),
+            "annotations": (
+                "annotations",
+                "union:MessageDeltaContentTextAnnotationsFileCitationObject|MessageDeltaContentTextAnnotationsFilePathObject~type=file_citation,file_path",
+            ),
+        },
+    ),
+    "MessageDeltaObjectDelta": (
+        None,
+        {
+            "role": ("role", None),
+            "content": (
+                "content",
+                "union:MessageDeltaContentImageFileObject|MessageDeltaContentTextObject|MessageDeltaContentRefusalObject|MessageDeltaContentImageUrlObject~type=image_file,text,refusal,image_url",
+            ),
+        },
+    ),
+    "MessageObjectIncompleteDetails": (
+        None,
+        {
+            "reason": ("reason", None),
+        },
+    ),
+    "MessageObjectAttachmentsItem": (
+        None,
+        {
+            "file_id": ("file_id", None),
+            "tools": (
+                "tools",
+                "union:AssistantToolsCode|AssistantToolsFileSearchTypeOnly~type=code_interpreter,file_search",
+            ),
+        },
+    ),
+    "MessageStreamEventThreadMessageCreated": (
+        None,
+        {
+            "event": ("event", None),
+            "data": ("data", "MessageObject"),
+        },
+    ),
     "MessageStreamEventThreadMessageInProgress": (
         None,
         {
@@ -378,51 +421,6 @@ WIRE_SCHEMAS_PART_39: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "code": ("code", None),
             "message": ("message", None),
             "param": ("param", None),
-        },
-    ),
-    "RealtimeServerEventErrorError": (
-        None,
-        {
-            "type": ("type", None),
-            "code": ("code", None),
-            "message": ("message", None),
-            "param": ("param", None),
-            "event_id": ("event_id", None),
-        },
-    ),
-    "RealtimeServerEventRateLimitsUpdatedRateLimitsItem": (
-        None,
-        {
-            "name": ("name", None),
-            "limit": ("limit", None),
-            "remaining": ("remaining", None),
-            "reset_seconds": ("reset_seconds", None),
-        },
-    ),
-    "RealtimeServerEventResponseContentPartAddedPart": (
-        None,
-        {
-            "type": ("type", None),
-            "text": ("text", None),
-            "audio": ("audio", None),
-            "transcript": ("transcript", None),
-        },
-    ),
-    "RealtimeServerEventResponseContentPartDonePart": (
-        None,
-        {
-            "type": ("type", None),
-            "text": ("text", None),
-            "audio": ("audio", None),
-            "transcript": ("transcript", None),
-        },
-    ),
-    "RealtimeSessionTracingTracingConfiguration": (
-        None,
-        {
-            "workflow_name": ("workflow_name", None),
-            "group_id": ("group_id", None),
-            "metadata": ("metadata", None),
         },
     ),
 }

@@ -6,6 +6,40 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_33: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "BetaResponseShellCallCommandDeltaStreamingEvent": (
+        None,
+        {
+            "type": ("type", None),
+            "sequence_number": ("sequence_number", None),
+            "agent": ("agent", "BetaAgentTag"),
+            "output_index": ("output_index", None),
+            "command_index": ("command_index", None),
+            "delta": ("delta", None),
+            "obfuscation": ("obfuscation", None),
+        },
+    ),
+    "BetaResponseShellCallCommandAddedStreamingEvent": (
+        None,
+        {
+            "type": ("type", None),
+            "sequence_number": ("sequence_number", None),
+            "agent": ("agent", "BetaAgentTag"),
+            "output_index": ("output_index", None),
+            "command_index": ("command_index", None),
+            "command": ("command", None),
+        },
+    ),
+    "BetaResponseFunctionCallArgumentsDoneEvent": (
+        None,
+        {
+            "agent": ("agent", "BetaAgentTag"),
+            "type": ("type", None),
+            "item_id": ("item_id", None),
+            "output_index": ("output_index", None),
+            "sequence_number": ("sequence_number", None),
+            "arguments": ("arguments", None),
+        },
+    ),
     "BetaResponseFunctionCallArgumentsDeltaEvent": (
         None,
         {
@@ -447,32 +481,6 @@ WIRE_SCHEMAS_PART_33: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "type": ("type", None),
             "username": ("username", None),
             "password": ("password", None),
-        },
-    ),
-    "LiveSIPTrunkRequest": (
-        None,
-        {
-            "provider_url": ("provider_url", None),
-            "auth": ("auth", "LiveSIPTrunkAuthRequest"),
-            "caller_number": ("caller_number", None),
-        },
-    ),
-    "LiveSIPTransportRequest": (
-        None,
-        {
-            "type": ("type", None),
-            "destination": ("destination", None),
-            "trunk": ("trunk", "LiveSIPTrunkRequest"),
-        },
-    ),
-    "LiveSessionCreateRequestRequest": (
-        None,
-        {
-            "session": ("session", "LiveMediaSessionCreateParams"),
-            "transport": (
-                "transport",
-                "union:LiveWebRTCTransport|LiveSIPTransportRequest~type=webrtc,sip",
-            ),
         },
     ),
 }

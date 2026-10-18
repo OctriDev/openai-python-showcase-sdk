@@ -6,6 +6,38 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_30: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "BetaLocalShellToolCallOutput": (
+        None,
+        {
+            "agent": ("agent", "BetaAgentTag"),
+            "type": ("type", None),
+            "id": ("id", None),
+            "output": ("output", None),
+            "status": ("status", None),
+        },
+    ),
+    "BetaLocalShellToolCall": (
+        None,
+        {
+            "agent": ("agent", "BetaAgentTag"),
+            "type": ("type", None),
+            "id": ("id", None),
+            "call_id": ("call_id", None),
+            "action": ("action", "BetaLocalShellExecAction"),
+            "status": ("status", None),
+        },
+    ),
+    "BetaLocalShellExecAction": (
+        None,
+        {
+            "type": ("type", None),
+            "command": ("command", None),
+            "timeout_ms": ("timeout_ms", None),
+            "working_directory": ("working_directory", None),
+            "env": ("env", None),
+            "user": ("user", None),
+        },
+    ),
     "BetaCodeInterpreterToolCall": (
         None,
         {
@@ -498,42 +530,6 @@ WIRE_SCHEMAS_PART_30: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "x": ("x", None),
             "y": ("y", None),
             "keys": ("keys", None),
-        },
-    ),
-    "BetaClickParam": (
-        None,
-        {
-            "type": ("type", None),
-            "button": ("button", None),
-            "x": ("x", None),
-            "y": ("y", None),
-            "keys": ("keys", None),
-        },
-    ),
-    "BetaFileSearchToolCall": (
-        None,
-        {
-            "agent": ("agent", "BetaAgentTag"),
-            "id": ("id", None),
-            "type": ("type", None),
-            "status": ("status", None),
-            "queries": ("queries", None),
-            "results": ("results", "BetaFileSearchToolCallResultsItem"),
-        },
-    ),
-    "BetaOutputMessage": (
-        None,
-        {
-            "agent": ("agent", "BetaAgentTag"),
-            "id": ("id", None),
-            "type": ("type", None),
-            "role": ("role", None),
-            "content": (
-                "content",
-                "union:BetaOutputTextContent|BetaRefusalContent~type=output_text,refusal",
-            ),
-            "phase": ("phase", None),
-            "status": ("status", None),
         },
     ),
 }

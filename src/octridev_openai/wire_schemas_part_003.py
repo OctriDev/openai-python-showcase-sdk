@@ -189,6 +189,18 @@ WIRE_SCHEMAS_PART_3: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = 
             "expires_after": ("expires_after", "FileExpirationAfter"),
         },
     ),
+    "CreateVectorStoreFileBatchRequest": (
+        None,
+        {
+            "file_ids": ("file_ids", None),
+            "files": ("files", "CreateVectorStoreFileRequest"),
+            "chunking_strategy": (
+                "chunking_strategy",
+                "union:AutoChunkingStrategyRequestParam|StaticChunkingStrategyRequestParam~type=auto,static",
+            ),
+            "attributes": ("attributes", None),
+        },
+    ),
     "CreateVectorStoreFileRequest": (
         None,
         {
@@ -365,8 +377,8 @@ WIRE_SCHEMAS_PART_3: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = 
         None,
         {
             "model": ("model", None),
-            "images": ("images", None),
-            "mask": ("mask", None),
+            "images": ("images", "ImageRefParam"),
+            "mask": ("mask", "ImageRefParam"),
             "prompt": ("prompt", None),
             "n": ("n", None),
             "quality": ("quality", None),
@@ -507,28 +519,6 @@ WIRE_SCHEMAS_PART_3: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = 
             "top_p": ("top_p", None),
             "users": ("users", None),
             "tools": ("tools", None),
-        },
-    ),
-    "EvalRun": (
-        None,
-        {
-            "object": ("object", None),
-            "id": ("id", None),
-            "eval_id": ("eval_id", None),
-            "status": ("status", None),
-            "model": ("model", None),
-            "name": ("name", None),
-            "created_at": ("created_at", None),
-            "report_url": ("report_url", None),
-            "result_counts": ("result_counts", "EvalRunResultCounts"),
-            "per_model_usage": ("per_model_usage", None),
-            "per_testing_criteria_results": ("per_testing_criteria_results", None),
-            "data_source": (
-                "data_source",
-                "union:CreateEvalJsonlRunDataSource|CreateEvalCompletionsRunDataSource|CreateEvalResponsesRunDataSource~type=jsonl,completions,responses",
-            ),
-            "metadata": ("metadata", None),
-            "error": ("error", "EvalApiError"),
         },
     ),
 }

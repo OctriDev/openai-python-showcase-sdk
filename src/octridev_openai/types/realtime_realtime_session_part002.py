@@ -8,6 +8,7 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, WrapValidator, field_validator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
+from octridev_openai.types.realtime import NoiseReductionType
 from octridev_openai.types.realtime_audio import AudioTranscription
 from octridev_openai.types.realtime_realtime import (
     RealtimeAudioFormats,
@@ -18,6 +19,7 @@ from octridev_openai.types.realtime_realtime_reasoning import RealtimeReasoning
 from octridev_openai.types.realtime_realtime_session_part001 import (
     RealtimeSessionCreateRequestGAToolChoice,
     RealtimeSessionCreateRequestGAToolsItem,
+    RealtimeSessionCreateRequestTracing,
 )
 from octridev_openai.types.shared import Prompt
 from octridev_openai.types.shared_voice import VoiceIdsOrCustomVoice
@@ -60,28 +62,6 @@ class RealtimeSessionCreateRequestInputAudioTranscription(BaseModel):
 
     model: str | NotGiven = NOT_GIVEN
     """The model to use for transcription."""
-
-
-class RealtimeSessionCreateRequestTracingTracingConfiguration(BaseModel):
-    """Granular configuration for tracing."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    workflow_name: str | NotGiven = NOT_GIVEN
-    """
-    The name of the workflow to attach to this trace. This is used to
-    name the trace in the traces dashboard.
-    """
-    group_id: str | NotGiven = NOT_GIVEN
-    """
-    The group id to attach to this trace to enable filtering and
-    grouping in the traces dashboard.
-    """
-    metadata: dict[str, Any] | NotGiven = NOT_GIVEN
-    """
-    The arbitrary metadata to attach to this trace to enable
-    filtering in the traces dashboard.
-    """
 
 
 class RealtimeSessionCreateRequestTurnDetection(BaseModel):
@@ -182,15 +162,7 @@ class RealtimeSessionCreateRequest(BaseModel):
     the minimum speed. 1.5 is the maximum speed. This value can only be changed
     in between model turns, not while a response is in progress.
     """
-    tracing: (
-        Literal["auto"]
-        | str
-        | Annotated[
-            RealtimeSessionCreateRequestTracingTracingConfiguration,
-            WrapValidator(validate_union_candidate),
-        ]
-        | NotGiven
-    ) = NOT_GIVEN
+    tracing: RealtimeSessionCreateRequestTracing | NotGiven = NOT_GIVEN
     """
     Configuration options for tracing. Set to null to disable tracing. Once
     tracing is enabled for a session, the configuration cannot be modified.
@@ -249,6 +221,19 @@ class RealtimeSessionCreateRequest(BaseModel):
         return value
 
 
+class RealtimeSessionCreateRequestGAAudioInputNoiseReduction(BaseModel):
+    """
+    Configuration for input audio noise reduction. This can be set to `null` to turn off.
+    Noise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.
+    Filtering the audio can improve VAD and turn detection accuracy (reducing false positives) and model performance by improving perception of the input audio.
+    """
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: NoiseReductionType | NotGiven = NOT_GIVEN
+    """Type of noise reduction. `near_field` is for close-talking microphones such as headphones, `far_field` is for far-field microphones such as laptop or conference room microphones."""
+
+
 class RealtimeSessionCreateRequestGAAudioInput(BaseModel):
     """Optional object value serialized in the `input` wire field."""
 
@@ -258,7 +243,7 @@ class RealtimeSessionCreateRequestGAAudioInput(BaseModel):
     """The format of the input audio."""
     transcription: AudioTranscription | NotGiven = NOT_GIVEN
     """Configuration for input audio transcription, defaults to off and can be set to `null` to turn off once on. Input audio transcription is not native to the model, since the model consumes audio directly. Transcription runs asynchronously through [the /audio/transcriptions endpoint](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create) and should be treated as guidance of input audio content rather than precisely what the model heard. The client can optionally set the language and prompt for transcription, these offer additional guidance to the transcription service."""
-    noise_reduction: Any | NotGiven = NOT_GIVEN
+    noise_reduction: RealtimeSessionCreateRequestGAAudioInputNoiseReduction | NotGiven = NOT_GIVEN
     """
     Configuration for input audio noise reduction. This can be set to `null` to turn off.
     Noise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.

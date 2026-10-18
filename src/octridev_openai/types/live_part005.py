@@ -8,28 +8,7 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, WrapValidator, field_validator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
-from octridev_openai.types.live_live_allowed import LiveAllowedToolsChoiceParam
-from octridev_openai.types.live_live_function import LiveFunctionToolChoiceParam
-from octridev_openai.types.live_live_mcptool import LiveMCPToolChoiceParam
-from octridev_openai.types.live_live_specific import (
-    LiveSpecificApplyPatchParam,
-    LiveSpecificCodeInterpreterParam,
-    LiveSpecificComputerParam,
-    LiveSpecificCustomToolParam,
-    LiveSpecificFileSearchParam,
-    LiveSpecificFunctionShellParam,
-    LiveSpecificImageGenParam,
-    LiveSpecificProgrammaticToolCallingParam,
-    LiveSpecificWebSearchParam,
-    LiveSpecificWebSearchPreviewParam,
-)
-from octridev_openai.types.live_live_tool import LiveToolChoiceEnum
-from octridev_openai.types.live_part001 import (
-    LiveInitialMessageStatus,
-    LiveMediaSessionAudioParam,
-    LiveResponsesServiceTier,
-    ModelIdsLive,
-)
+from octridev_openai.types.live_part001 import LiveMediaSessionAudioParam, LiveResponsesServiceTier
 from octridev_openai.types.live_part002 import (
     LiveClientConfigParam,
     LiveDecisionTriggerInputParam2,
@@ -37,62 +16,34 @@ from octridev_openai.types.live_part002 import (
 )
 from octridev_openai.types.live_part003 import (
     Delegation,
-    LiveInitialAssistantMessageItemParamContentItem,
+    LiveDecisionInputItemParamContentItem,
+    LiveResponsesDelegationSettingsInputParamToolsItem,
+    LiveResponsesDelegationSettingsUpdateInputParamToolsItem,
     LiveSessionCreateParamsDelegation,
+    LiveSessionResourceParamDelegation,
     LiveSessionUpdateParamsDelegation,
     Session,
     Triggers,
 )
 from octridev_openai.types.live_part004 import (
     Input,
-    LiveDecisionInputItemParamContentItem,
     LiveDecisionStoredInputItemParamContentItem,
     LiveDelegationReasoningInputParam,
     LiveDelegationTextInputParam,
     LiveInitialSessionAudioParam,
-    LiveResponsesDelegationSettingsUpdateInputParamToolsItem,
+    LiveResponsesDelegationSettingsInputParamToolChoice,
+    LiveResponsesDelegationSettingsUpdateInputParamToolChoice,
     LiveSessionCreateRequestTransport,
     LiveSessionCreateRequestTransportRequest,
     LiveSessionCreateResponseTransport,
-    LiveSessionResourceParamDelegation,
 )
 
-from ..validation import validate_enum, validate_items, validate_required, validate_union_candidate
-
-
-class LiveInitialAssistantMessageItemParam(BaseModel):
-    """An assistant message included in the initial text history of a Live session."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    role: Literal["assistant"]
-    """The author of this history message. Always `assistant`."""
-    content: list[LiveInitialAssistantMessageItemParamContentItem]
-    """The message content. Supply exactly one text part for the initial Live conversation history."""
-    id: str | None | NotGiven = NOT_GIVEN
-    """Optional `string` value serialized in the `id` wire field."""
-    type: Literal["message"] | str | NotGiven = NOT_GIVEN
-    """The history item type. Always `message`."""
-    status: LiveInitialMessageStatus | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `status` wire field."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["role", "content"])
-        return value
-
-    @field_validator("role")
-    @classmethod
-    def _validate_role(cls, value):
-        validate_enum("role", value, ["assistant"])
-        return value
-
-    @field_validator("content")
-    @classmethod
-    def _validate_content(cls, value):
-        validate_items("content", value, min=1, max=1)
-        return value
+from ..validation import (
+    validate_items,
+    validate_length,
+    validate_required,
+    validate_union_candidate,
+)
 
 
 class LiveSessionCreateParams(BaseModel):
@@ -100,7 +51,7 @@ class LiveSessionCreateParams(BaseModel):
 
     model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
 
-    model: ModelIdsLive
+    model: str
     """
     The Live model. Required in the session configuration for every transport; do not pass it as a URL query parameter.
 
@@ -125,6 +76,12 @@ class LiveSessionCreateParams(BaseModel):
     @classmethod
     def _validate_required(cls, value):
         validate_required(value, ["model"])
+        return value
+
+    @field_validator("model")
+    @classmethod
+    def _validate_model(cls, value):
+        validate_length("model", value, min=1)
         return value
 
     @field_validator("input")
@@ -157,49 +114,6 @@ class LiveSessionUpdateParams(BaseModel):
         return value
 
 
-class LiveResponsesDelegationSettingsUpdateInputParam(BaseModel):
-    """Updates to the Responses backend of an existing Live session. Omitted settings retain their current values."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    model: str | NotGiven = NOT_GIVEN
-    """The Responses backend model to use for subsequent delegated requests. Omit to keep the current backend model."""
-    instructions: str | None | NotGiven = NOT_GIVEN
-    """Optional `string` value serialized in the `instructions` wire field."""
-    max_output_tokens: int | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `max_output_tokens` wire field."""
-    service_tier: LiveResponsesServiceTier | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `service_tier` wire field."""
-    reasoning: LiveDelegationReasoningInputParam | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `reasoning` wire field."""
-    text: LiveDelegationTextInputParam | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `text` wire field."""
-    tools: list[LiveResponsesDelegationSettingsUpdateInputParamToolsItem] | NotGiven = NOT_GIVEN
-    """Tools available to the Responses backend while it handles tasks delegated by the Live model."""
-    tool_choice: (
-        Annotated[LiveToolChoiceEnum, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveFunctionToolChoiceParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveMCPToolChoiceParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificFileSearchParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificWebSearchParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificWebSearchPreviewParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificImageGenParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificComputerParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificCodeInterpreterParam, WrapValidator(validate_union_candidate)]
-        | Annotated[
-            LiveSpecificProgrammaticToolCallingParam, WrapValidator(validate_union_candidate)
-        ]
-        | Annotated[LiveSpecificFunctionShellParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificCustomToolParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificApplyPatchParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveAllowedToolsChoiceParam, WrapValidator(validate_union_candidate)]
-        | NotGiven
-    ) = NOT_GIVEN
-    """Controls which tool the Responses backend uses when handling a task delegated by the Live model."""
-    parallel_tool_calls: bool | None | NotGiven = NOT_GIVEN
-    """Optional `boolean` value serialized in the `parallel_tool_calls` wire field."""
-
-
 class LiveDecisionInputItemParam(BaseModel):
     """Typed representation of the `LiveDecisionInputItemParam` API schema."""
 
@@ -207,7 +121,12 @@ class LiveDecisionInputItemParam(BaseModel):
 
     role: Literal["user"] | str
     """The message role. Always `user`."""
-    content: str | list[LiveDecisionInputItemParamContentItem]
+    content: (
+        str
+        | Annotated[
+            list[LiveDecisionInputItemParamContentItem], WrapValidator(validate_union_candidate)
+        ]
+    )
     """Required API value serialized in the `content` wire field."""
     id: str | None | NotGiven = NOT_GIVEN
     """Optional `string` value serialized in the `id` wire field."""
@@ -226,7 +145,7 @@ class LiveSessionResourceParam(BaseModel):
 
     model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
 
-    model: ModelIdsLive
+    model: str
     """
     The Live model. Required in the session configuration for every transport; do not pass it as a URL query parameter.
 
@@ -259,6 +178,12 @@ class LiveSessionResourceParam(BaseModel):
         validate_required(value, ["model", "id", "expires_at", "status"])
         return value
 
+    @field_validator("model")
+    @classmethod
+    def _validate_model(cls, value):
+        validate_length("model", value, min=1)
+        return value
+
     @field_validator("input")
     @classmethod
     def _validate_input(cls, value):
@@ -281,7 +206,13 @@ class LiveDecisionStoredInputItemParam(BaseModel):
     """The ID of the stored Decision input item."""
     role: Literal["user"] | str
     """The message role. Always `user`."""
-    content: str | list[LiveDecisionStoredInputItemParamContentItem]
+    content: (
+        str
+        | Annotated[
+            list[LiveDecisionStoredInputItemParamContentItem],
+            WrapValidator(validate_union_candidate),
+        ]
+    )
     """Required API value serialized in the `content` wire field."""
     type: Literal["message"] | str | NotGiven = NOT_GIVEN
     """Optional enumerated value serialized in the `type` wire field."""
@@ -338,12 +269,68 @@ class LiveSessionCreateRequestRequest(BaseModel):
         return value
 
 
+class LiveResponsesDelegationSettingsInputParam(BaseModel):
+    """Model, prompt, and tool settings for tasks delegated by the Live session to a Responses backend."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    model: str
+    """The model used for server-owned Responses delegations."""
+    instructions: str | None | NotGiven = NOT_GIVEN
+    """Optional `string` value serialized in the `instructions` wire field."""
+    max_output_tokens: int | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `max_output_tokens` wire field."""
+    service_tier: LiveResponsesServiceTier | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `service_tier` wire field."""
+    reasoning: LiveDelegationReasoningInputParam | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `reasoning` wire field."""
+    text: LiveDelegationTextInputParam | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `text` wire field."""
+    tools: list[LiveResponsesDelegationSettingsInputParamToolsItem] | NotGiven = NOT_GIVEN
+    """Tools available to the Responses backend while it handles tasks delegated by the Live model."""
+    tool_choice: LiveResponsesDelegationSettingsInputParamToolChoice | NotGiven = NOT_GIVEN
+    """Controls which tool the Responses backend uses when handling a task delegated by the Live model."""
+    parallel_tool_calls: bool | None | NotGiven = NOT_GIVEN
+    """Optional `boolean` value serialized in the `parallel_tool_calls` wire field."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["model"])
+        return value
+
+
+class LiveResponsesDelegationSettingsUpdateInputParam(BaseModel):
+    """Updates to the Responses backend of an existing Live session. Omitted settings retain their current values."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    model: str | NotGiven = NOT_GIVEN
+    """The Responses backend model to use for subsequent delegated requests. Omit to keep the current backend model."""
+    instructions: str | None | NotGiven = NOT_GIVEN
+    """Optional `string` value serialized in the `instructions` wire field."""
+    max_output_tokens: int | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `max_output_tokens` wire field."""
+    service_tier: LiveResponsesServiceTier | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `service_tier` wire field."""
+    reasoning: LiveDelegationReasoningInputParam | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `reasoning` wire field."""
+    text: LiveDelegationTextInputParam | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `text` wire field."""
+    tools: list[LiveResponsesDelegationSettingsUpdateInputParamToolsItem] | NotGiven = NOT_GIVEN
+    """Tools available to the Responses backend while it handles tasks delegated by the Live model."""
+    tool_choice: LiveResponsesDelegationSettingsUpdateInputParamToolChoice | NotGiven = NOT_GIVEN
+    """Controls which tool the Responses backend uses when handling a task delegated by the Live model."""
+    parallel_tool_calls: bool | None | NotGiven = NOT_GIVEN
+    """Optional `boolean` value serialized in the `parallel_tool_calls` wire field."""
+
+
 class LiveMediaSessionCreateParams(BaseModel):
     """Startup configuration for a Live media session. Follow the [Live prompting guide](https://developers.openai.com/api/docs/guides/live-prompting) when writing frontend instructions and the backend prompt under delegation.responses.instructions."""
 
     model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
 
-    model: ModelIdsLive
+    model: str
     """
     The Live model. Required in the session configuration for every transport; do not pass it as a URL query parameter.
 
@@ -368,6 +355,12 @@ class LiveMediaSessionCreateParams(BaseModel):
     @classmethod
     def _validate_required(cls, value):
         validate_required(value, ["model"])
+        return value
+
+    @field_validator("model")
+    @classmethod
+    def _validate_model(cls, value):
+        validate_length("model", value, min=1)
         return value
 
     @field_validator("triggers")

@@ -6,6 +6,45 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_32: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "BetaResponseUsage": (
+        None,
+        {
+            "input_tokens": ("input_tokens", None),
+            "input_tokens_details": ("input_tokens_details", "BetaResponseUsageInputTokensDetails"),
+            "output_tokens": ("output_tokens", None),
+            "output_tokens_details": (
+                "output_tokens_details",
+                "BetaResponseUsageOutputTokensDetails",
+            ),
+            "total_tokens": ("total_tokens", None),
+        },
+    ),
+    "BetaMessage": (
+        None,
+        {
+            "agent": ("agent", "BetaAgentTag"),
+            "type": ("type", None),
+            "id": ("id", None),
+            "status": ("status", None),
+            "role": ("role", None),
+            "content": (
+                "content",
+                "union:BetaInputTextContent|BetaOutputTextContent|BetaTextContent|BetaSummaryTextContent|BetaReasoningTextContent|BetaRefusalContent|BetaInputImageContent|BetaComputerScreenshotContent|BetaInputFileContent|BetaEncryptedContent~type=input_text,output_text,text,summary_text,reasoning_text,refusal,input_image,computer_screenshot,input_file,encrypted_content",
+            ),
+            "phase": ("phase", None),
+        },
+    ),
+    "BetaResponseCustomToolCallInputDoneEvent": (
+        None,
+        {
+            "agent": ("agent", "BetaAgentTag"),
+            "type": ("type", None),
+            "sequence_number": ("sequence_number", None),
+            "output_index": ("output_index", None),
+            "item_id": ("item_id", None),
+            "input": ("input", None),
+        },
+    ),
     "BetaResponseCustomToolCallInputDeltaEvent": (
         None,
         {
@@ -508,40 +547,6 @@ WIRE_SCHEMAS_PART_32: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "output_index": ("output_index", None),
             "command_index": ("command_index", None),
             "command": ("command", None),
-        },
-    ),
-    "BetaResponseShellCallCommandDeltaStreamingEvent": (
-        None,
-        {
-            "type": ("type", None),
-            "sequence_number": ("sequence_number", None),
-            "agent": ("agent", "BetaAgentTag"),
-            "output_index": ("output_index", None),
-            "command_index": ("command_index", None),
-            "delta": ("delta", None),
-            "obfuscation": ("obfuscation", None),
-        },
-    ),
-    "BetaResponseShellCallCommandAddedStreamingEvent": (
-        None,
-        {
-            "type": ("type", None),
-            "sequence_number": ("sequence_number", None),
-            "agent": ("agent", "BetaAgentTag"),
-            "output_index": ("output_index", None),
-            "command_index": ("command_index", None),
-            "command": ("command", None),
-        },
-    ),
-    "BetaResponseFunctionCallArgumentsDoneEvent": (
-        None,
-        {
-            "agent": ("agent", "BetaAgentTag"),
-            "type": ("type", None),
-            "item_id": ("item_id", None),
-            "output_index": ("output_index", None),
-            "sequence_number": ("sequence_number", None),
-            "arguments": ("arguments", None),
         },
     ),
 }

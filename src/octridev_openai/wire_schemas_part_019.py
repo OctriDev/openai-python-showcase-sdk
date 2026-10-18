@@ -6,6 +6,26 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_19: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "PromptCacheComparisonResponseNotFoundDiagnosticsBody": (
+        None,
+        {
+            "type": ("type", None),
+        },
+    ),
+    "PromptCacheUnavailableDiagnosticsBody": (
+        None,
+        {
+            "type": ("type", None),
+        },
+    ),
+    "ModerationErrorBody": (
+        None,
+        {
+            "type": ("type", None),
+            "code": ("code", None),
+            "message": ("message", None),
+        },
+    ),
     "Moderation": (
         None,
         {
@@ -465,31 +485,6 @@ WIRE_SCHEMAS_PART_19: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "input_reference": ("input_reference", "union:ImageRefParam2"),
             "seconds": ("seconds", None),
             "size": ("size", None),
-        },
-    ),
-    "CreateVideoJsonBody": (
-        None,
-        {
-            "model": ("model", None),
-            "prompt": ("prompt", None),
-            "input_reference": ("input_reference", "ImageRefParam2"),
-            "seconds": ("seconds", None),
-            "size": ("size", None),
-        },
-    ),
-    "CreateVideoCharacterBody": (
-        None,
-        {
-            "video": ("video", None),
-            "name": ("name", None),
-        },
-    ),
-    "VideoCharacterResource": (
-        None,
-        {
-            "id": ("id", None),
-            "name": ("name", None),
-            "created_at": ("created_at", None),
         },
     ),
 }

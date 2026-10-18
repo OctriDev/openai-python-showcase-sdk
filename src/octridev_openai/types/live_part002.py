@@ -25,33 +25,17 @@ if TYPE_CHECKING:
         LiveDecisionQuestionsInputParam2,
         LiveDecisionsSettingsInputParam2,
         LiveDecisionsSettingsUpdateParam,
+        LiveInitialAssistantMessageItemParam,
         LiveInitialDeveloperMessageItemParam,
         LiveInitialUserMessageItemParam,
     )
     from octridev_openai.types.live_part005 import (
         LiveDecisionInputItemParam,
-        LiveInitialAssistantMessageItemParam,
         LiveResponsesDelegationSettingsUpdateInputParam,
         LiveSessionCreateParams,
+        LiveSessionResourceParam,
         LiveSessionUpdateParams,
     )
-
-
-class LiveInitialInputTextContentPartParam(BaseModel):
-    """Text supplied in a developer or user message when starting a Live session."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    text: str
-    """The message text to include in the Live session’s initial conversation history."""
-    type: Literal["input_text"] | str | NotGiven = NOT_GIVEN
-    """The text content type. Always `input_text`."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["text"])
-        return value
 
 
 class LiveInitialTextContentPartParam(BaseModel):
@@ -118,9 +102,12 @@ class LiveDataChannelConfigParam(BaseModel):
 
     allowed_client_events: Literal["all"] | str | list[str] | NotGiven = NOT_GIVEN
     """Client event types that the frontend data channel may send. Use 'all' to allow every client event; an empty array allows none. Omission preserves the existing allow-all behavior."""
-    allowed_server_events: Literal["all"] | str | list[LiveAllowedServerEventParam] | NotGiven = (
-        NOT_GIVEN
-    )
+    allowed_server_events: (
+        Literal["all"]
+        | str
+        | Annotated[list[LiveAllowedServerEventParam], WrapValidator(validate_union_candidate)]
+        | NotGiven
+    ) = NOT_GIVEN
     """Server events that may be sent to the frontend data channel. Use 'all' to allow every server event; an empty array allows none. Omission preserves the existing allow-all behavior. Responses events use an object with type 'response.event' and a response_event selector."""
 
 
@@ -501,4 +488,31 @@ class LiveSessionCloseParam(BaseModel):
     @classmethod
     def _validate_type(cls, value):
         validate_enum("type", value, ["session.close"])
+        return value
+
+
+class LiveSessionStarted(BaseModel):
+    """Returned when a Live session has started. Contains the resolved session configuration, including server defaults."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["session.started"]
+    """The event type, always `session.started`."""
+    event_id: str
+    """The unique ID of the Live server event."""
+    session: LiveSessionResourceParam
+    """The resolved Live session configuration and server-assigned session metadata."""
+    client_event_id: str | NotGiven = NOT_GIVEN
+    """The event_id of the client command associated with this server event, when supplied."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "event_id", "session"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["session.started"])
         return value

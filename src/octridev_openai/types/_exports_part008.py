@@ -2,6 +2,9 @@
 # This file is machine-generated from your OpenAPI spec.
 
 from .decisions_decision import (
+    DecisionInputCustomToolCall,
+    DecisionInputCustomToolCallOutput,
+    DecisionInputFunctionCall,
     DecisionInputFunctionCallOutput,
     DecisionInputImage,
     DecisionInputImagePromptCacheBreakpoint,
@@ -29,6 +32,7 @@ from .decisions_decisions import (
     DecisionsUsageErrorResponse,
     DecisionsUsageGroupBy,
     DecisionsUsagePermissionErrorResponse,
+    DecisionsUsagePermissionErrorResponseError,
     DecisionsUsageResult,
 )
 from .decisions_question import (
@@ -69,6 +73,7 @@ from .evals_eval import (
     CreateEvalResponsesRunDataSource,
     CreateEvalResponsesRunDataSourceInputMessages,
     CreateEvalResponsesRunDataSourceInputMessagesVariant0,
+    CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemChatMessage,
     CreateEvalResponsesRunDataSourceInputMessagesVariant1,
     CreateEvalResponsesRunDataSourceSamplingParams,
     CreateEvalResponsesRunDataSourceSamplingParamsText,
@@ -122,7 +127,6 @@ from .evals_eval import (
     UnknownEvalRunDataSource,
     UnknownEvalTestingCriteriaItem,
 )
-from .evals_template import TemplateItem, TemplateItem2, TemplateItem2Variant0
 from .external_storage import (
     AwsExternalStorageProviderParams,
     AzureExternalStorageProviderParams,
@@ -140,8 +144,6 @@ from .files import (
     ContainerFileResource,
     CreateContainerFileBody,
     CreateFileRequest,
-    DeleteFileResponse,
-    ListFilesResponse,
 )
 
 __all__ = [
@@ -173,6 +175,7 @@ __all__ = [
     "CreateEvalResponsesRunDataSource",
     "CreateEvalResponsesRunDataSourceInputMessages",
     "CreateEvalResponsesRunDataSourceInputMessagesVariant0",
+    "CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemChatMessage",
     "CreateEvalResponsesRunDataSourceInputMessagesVariant1",
     "CreateEvalResponsesRunDataSourceSamplingParams",
     "CreateEvalResponsesRunDataSourceSamplingParamsText",
@@ -183,6 +186,9 @@ __all__ = [
     "CreateExternalStorageBody",
     "CreateExternalStorageBodyProvider",
     "CreateFileRequest",
+    "DecisionInputCustomToolCall",
+    "DecisionInputCustomToolCallOutput",
+    "DecisionInputFunctionCall",
     "DecisionInputFunctionCallOutput",
     "DecisionInputImage",
     "DecisionInputImagePromptCacheBreakpoint",
@@ -205,13 +211,13 @@ __all__ = [
     "DecisionsUsageErrorResponse",
     "DecisionsUsageGroupBy",
     "DecisionsUsagePermissionErrorResponse",
+    "DecisionsUsagePermissionErrorResponseError",
     "DecisionsUsageResult",
     "DeleteAdminApiKeysResponse",
     "DeleteContainerFileResponse",
     "DeleteContainerResponse",
     "DeleteEvalResponse",
     "DeleteEvalRunResponse",
-    "DeleteFileResponse",
     "DeleteResponseResponse",
     "Embedding",
     "Eval",
@@ -253,7 +259,6 @@ __all__ = [
     "ExternalStorageListResource",
     "ExternalStorageOrder",
     "GcpExternalStorageProviderParams",
-    "ListFilesResponse",
     "OciExternalStorageProviderParams",
     "QuestionParam",
     "QuestionParamChoice",
@@ -261,9 +266,6 @@ __all__ = [
     "QuestionParamScore",
     "ScoreLevelParam",
     "ScoreProbabilityResource",
-    "TemplateItem",
-    "TemplateItem2",
-    "TemplateItem2Variant0",
     "UnknownCreateEvalCompletionsRunDataSourceSamplingParamsResponseFormat",
     "UnknownCreateEvalCompletionsRunDataSourceSource",
     "UnknownCreateEvalJsonlRunDataSourceSource",

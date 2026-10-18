@@ -15,7 +15,8 @@ from ..validation import validate_enum, validate_required, validate_union_candid
 
 if TYPE_CHECKING:
     from octridev_openai.types.evals_eval_part002 import EvalRunOutputItemResult
-    from octridev_openai.types.evals_eval_part003 import Eval, EvalRun
+    from octridev_openai.types.evals_eval_part003 import Eval
+    from octridev_openai.types.evals_eval_part004 import EvalRun
 
 
 class CreateEvalCustomDataSourceConfig(BaseModel):

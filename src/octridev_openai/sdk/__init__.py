@@ -215,4 +215,4 @@ class AsyncOpenAI(_OpenAIBase):
         self.webhook_event_types = _AsyncWebhookEventTypesNamespace(config)
 
 
-__all__ = ["OpenAI", "AsyncOpenAI"]
+__all__ = ["AsyncOpenAI", "OpenAI"]

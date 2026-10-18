@@ -3,19 +3,19 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, WrapValidator, field_validator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
 from octridev_openai.types.responses_beta_part001 import (
     BetaCallableToolAllowedCaller,
     BetaContainerMemoryLimit,
-    BetaTool,
 )
 from octridev_openai.types.responses_beta_part002 import (
     Beta_AgentTagParam,
     BetaAgentTag,
+    BetaMCPToolFilter,
     BetaToolCallCallerParam,
 )
 from octridev_openai.types.responses_beta_part004 import (
@@ -28,142 +28,26 @@ from octridev_openai.types.responses_beta_part006 import (
     BetaAgentMessageItemParamContentItem,
     BetaAutoCodeInterpreterToolParamNetworkPolicy,
     BetaCacheMissReasonTypeEnum,
+    BetaCodeInterpreterToolContainer,
     BetaCompoundFilterFiltersItem,
     BetaComputerCallOutputStatus,
     BetaFunctionCallOutputItemParamOutputItem,
-    BetaFunctionShellToolParamEnvironment,
-    BetaMessageRole,
-    BetaMultiAgentAction,
+    BetaMCPToolRequireApproval,
     BetaOutputTextContentParamAnnotationsItem,
-    BetaProgramOutputStatus,
     BetaResponsePromptVariables,
     BetaWebSearchToolCallAction,
 )
-from octridev_openai.types.responses_beta_part010 import BetaOutputTextContent
+from octridev_openai.types.responses_beta_part007 import BetaFunctionShellToolParamEnvironment
 
-from ..validation import validate_enum, validate_items, validate_length, validate_required
-
-
-class BetaProgramOutput(BaseModel):
-    """Typed representation of the `BetaProgramOutput` API schema."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["program_output"]
-    """The type of the item. Always `program_output`."""
-    id: str
-    """The unique ID of the program output item."""
-    call_id: str
-    """The call ID of the program item."""
-    result: str
-    """The result produced by the program item."""
-    status: BetaProgramOutputStatus
-    """The terminal status of the program output item."""
-    agent: BetaAgentTag | NotGiven = NOT_GIVEN
-    """The agent that produced this item."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "id", "call_id", "result", "status"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["program_output"])
-        return value
-
-
-class BetaAdditionalTools(BaseModel):
-    """Typed representation of the `BetaAdditionalTools` API schema."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["additional_tools"]
-    """The type of the item. Always `additional_tools`."""
-    id: str
-    """The unique ID of the additional tools item."""
-    role: BetaMessageRole
-    """The role that provided the additional tools."""
-    tools: list[BetaTool]
-    """The additional tool definitions made available at this item."""
-    agent: BetaAgentTag | NotGiven = NOT_GIVEN
-    """The agent that produced this item."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "id", "role", "tools"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["additional_tools"])
-        return value
-
-
-class BetaMultiAgentCallOutput(BaseModel):
-    """Typed representation of the `BetaMultiAgentCallOutput` API schema."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["multi_agent_call_output"]
-    """The type of the multi-agent result. Always `multi_agent_call_output`."""
-    id: str
-    """The unique ID of the multi-agent call output item."""
-    call_id: str
-    """The unique ID of the multi-agent call."""
-    action: BetaMultiAgentAction
-    """The multi-agent action that produced this result."""
-    output: list[BetaOutputTextContent]
-    """Text output returned by the multi-agent action."""
-    agent: BetaAgentTag | NotGiven = NOT_GIVEN
-    """The agent that produced this item."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "id", "call_id", "action", "output"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["multi_agent_call_output"])
-        return value
-
-
-class BetaMultiAgentCall(BaseModel):
-    """Typed representation of the `BetaMultiAgentCall` API schema."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["multi_agent_call"]
-    """The type of the multi-agent call. Always `multi_agent_call`."""
-    id: str
-    """The unique ID of the multi-agent call item."""
-    call_id: str
-    """The unique ID linking this call to its output."""
-    action: BetaMultiAgentAction
-    """The multi-agent action to execute."""
-    arguments: str
-    """The JSON string of arguments generated for the action."""
-    agent: BetaAgentTag | NotGiven = NOT_GIVEN
-    """The agent that produced this item."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "id", "call_id", "action", "arguments"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["multi_agent_call"])
-        return value
+from ..validation import (
+    validate_enum,
+    validate_items,
+    validate_length,
+    validate_pattern,
+    validate_required,
+    validate_union_candidate,
+    validate_uri,
+)
 
 
 class BetaComputerToolCallOutputResourceVariant1(BaseModel):
@@ -322,7 +206,12 @@ class BetaFunctionCallOutputItemParam(BaseModel):
 
     type: Literal["function_call_output"]
     """The type of the function tool call output. Always `function_call_output`."""
-    output: str | list[BetaFunctionCallOutputItemParamOutputItem]
+    output: (
+        str
+        | Annotated[
+            list[BetaFunctionCallOutputItemParamOutputItem], WrapValidator(validate_union_candidate)
+        ]
+    )
     """Text, image, or file output of the function tool call."""
     agent: Beta_AgentTagParam | None | NotGiven = NOT_GIVEN
     """Optional API value serialized in the `agent` wire field."""
@@ -426,6 +315,157 @@ class BetaCompoundFilter(BaseModel):
     @classmethod
     def _validate_type(cls, value):
         validate_enum("type", value, ["and", "or"])
+        return value
+
+
+class BetaMCPTool(BaseModel):
+    """
+    Give the model access to additional tools via remote Model Context Protocol
+    (MCP) servers. [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
+    """
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["mcp"]
+    """The type of the MCP tool. Always `mcp`."""
+    server_label: str
+    """A label for this MCP server, used to identify it in tool calls."""
+    server_url: str | NotGiven = NOT_GIVEN
+    """
+    The URL for the MCP server. One of `server_url`, `connector_id`, or
+    `tunnel_id` must be provided.
+    """
+    connector_id: (
+        Literal[
+            "connector_dropbox",
+            "connector_gmail",
+            "connector_googlecalendar",
+            "connector_googledrive",
+            "connector_microsoftteams",
+            "connector_outlookcalendar",
+            "connector_outlookemail",
+            "connector_sharepoint",
+        ]
+        | str
+        | NotGiven
+    ) = NOT_GIVEN
+    """
+    Identifier for service connectors, like those available in ChatGPT. One of
+    `server_url`, `connector_id`, or `tunnel_id` must be provided. Learn more
+    about service connectors [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
+
+    This field is deprecated for models released after September 1, 2026.
+    Use `server_url` to connect to a remote MCP server, or `tunnel_id` to
+    connect through a Secure MCP Tunnel.
+
+    Currently supported `connector_id` values are:
+
+    - Dropbox: `connector_dropbox`
+    - Gmail: `connector_gmail`
+    - Google Calendar: `connector_googlecalendar`
+    - Google Drive: `connector_googledrive`
+    - Microsoft Teams: `connector_microsoftteams`
+    - Outlook Calendar: `connector_outlookcalendar`
+    - Outlook Email: `connector_outlookemail`
+    - SharePoint: `connector_sharepoint`
+    """
+    tunnel_id: str | NotGiven = NOT_GIVEN
+    """
+    The Secure MCP Tunnel ID to use instead of a direct server URL. One of
+    `server_url`, `connector_id`, or `tunnel_id` must be provided.
+    """
+    authorization: str | NotGiven = NOT_GIVEN
+    """
+    An OAuth access token that can be used with a remote MCP server, either
+    with a custom MCP server URL or a service connector. Your application
+    must handle the OAuth authorization flow and provide the token here.
+    """
+    server_description: str | NotGiven = NOT_GIVEN
+    """Optional description of the MCP server, used to provide more context."""
+    headers: dict[str, str] | None | NotGiven = NOT_GIVEN
+    """
+    Optional HTTP headers to send to the MCP server. Use for authentication
+    or other purposes.
+    """
+    allowed_tools: (
+        list[str]
+        | Annotated[BetaMCPToolFilter, WrapValidator(validate_union_candidate)]
+        | None
+        | NotGiven
+    ) = NOT_GIVEN
+    """List of allowed tool names or a filter object."""
+    allowed_callers: list[BetaCallableToolAllowedCaller] | None | NotGiven = NOT_GIVEN
+    """The tool invocation context(s)."""
+    require_approval: BetaMCPToolRequireApproval | None | NotGiven = NOT_GIVEN
+    """Specify which of the MCP server's tools require approval."""
+    defer_loading: bool | NotGiven = NOT_GIVEN
+    """Whether this MCP tool is deferred and discovered via tool search."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "server_label"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["mcp"])
+        return value
+
+    @field_validator("server_url")
+    @classmethod
+    def _validate_server_url(cls, value):
+        validate_uri("server_url", value)
+        return value
+
+    @field_validator("tunnel_id")
+    @classmethod
+    def _validate_tunnel_id(cls, value):
+        validate_pattern("tunnel_id", value, "^tunnel_[a-z0-9]{32}$")
+        return value
+
+    @field_validator("allowed_callers")
+    @classmethod
+    def _validate_allowed_callers(cls, value):
+        if value is not None:
+            validate_items("allowed_callers", value, min=1)
+        return value
+
+
+class BetaCodeInterpreterTool(BaseModel):
+    """A tool that runs Python code to help generate a response to a prompt."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["code_interpreter"]
+    """The type of the code interpreter tool. Always `code_interpreter`."""
+    container: BetaCodeInterpreterToolContainer
+    """
+    The code interpreter container. Can be a container ID or an object that
+    specifies uploaded file IDs to make available to your code, along with an
+    optional `memory_limit` setting.
+    """
+    allowed_callers: list[BetaCallableToolAllowedCaller] | None | NotGiven = NOT_GIVEN
+    """The tool invocation context(s)."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "container"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["code_interpreter"])
+        return value
+
+    @field_validator("allowed_callers")
+    @classmethod
+    def _validate_allowed_callers(cls, value):
+        if value is not None:
+            validate_items("allowed_callers", value, min=1)
         return value
 
 

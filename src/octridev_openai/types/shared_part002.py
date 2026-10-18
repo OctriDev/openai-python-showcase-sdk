@@ -22,57 +22,31 @@ from ..validation import (
 )
 
 if TYPE_CHECKING:
-    from octridev_openai.types.shared_part003 import (
-        InputTextContent,
-        ReasoningTextContent,
-        SummaryTextContent,
-    )
+    from octridev_openai.types.shared_part003 import ReasoningTextContent, SummaryTextContent
     from octridev_openai.types.shared_part004 import ComputerTool, ProgrammaticToolCallingParam
     from octridev_openai.types.shared_part007 import (
         InputFileContent,
         InputImageContent,
         TextResponseFormatJsonSchema,
     )
-    from octridev_openai.types.shared_part008 import CodeInterpreterTool, ToolSearchToolParam
+    from octridev_openai.types.shared_part008 import ToolSearchToolParam
     from octridev_openai.types.shared_part009 import (
         ApplyPatchToolParam,
         ComputerUsePreviewTool,
         FileSearchTool,
         FunctionTool,
-        MCPTool,
+        ImageGenTool,
+        WebSearchPreviewTool,
         WebSearchTool,
     )
-    from octridev_openai.types.shared_part010 import ImageGenTool, WebSearchPreviewTool
+    from octridev_openai.types.shared_part010 import CodeInterpreterTool
     from octridev_openai.types.shared_part011 import (
         CustomToolParam,
         FunctionShellToolParam,
+        MCPTool,
         NamespaceToolParam,
     )
     from octridev_openai.types.shared_part012 import ToolSearchOutputNamespaceToolParam
-
-
-class PublicAssignOrganizationGroupRoleBody(BaseModel):
-    """Request payload for assigning a role to a group or user."""
-
-    role_id: str
-    """Identifier of the role to assign."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["role_id"])
-        return value
-
-
-# ReasoningEffort is a union type
-ReasoningEffort: TypeAlias = (
-    Annotated[
-        Literal["none", "minimal", "low", "medium", "high", "xhigh", "max"],
-        WrapValidator(validate_union_candidate),
-    ]
-    | Annotated[str, WrapValidator(validate_union_candidate)]
-    | Annotated[None, WrapValidator(validate_union_candidate)]
-)
 
 
 class ReasoningItem(BaseModel):
@@ -551,4 +525,29 @@ class PromptCacheBreakpointConfig(BaseModel):
     @classmethod
     def _validate_required(cls, value):
         validate_required(value, ["mode"])
+        return value
+
+
+class InputTextContent(BaseModel):
+    """A text input to the model."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["input_text"]
+    """The type of the input item. Always `input_text`."""
+    text: str
+    """The text input to the model."""
+    prompt_cache_breakpoint: PromptCacheBreakpointConfig | NotGiven = NOT_GIVEN
+    """Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "text"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["input_text"])
         return value

@@ -6,6 +6,36 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_16: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "LocalShellToolParam": (
+        None,
+        {
+            "type": ("type", None),
+        },
+    ),
+    "ContainerAutoParam": (
+        None,
+        {
+            "type": ("type", None),
+            "file_ids": ("file_ids", None),
+            "memory_limit": ("memory_limit", None),
+            "network_policy": (
+                "network_policy",
+                "union:ContainerNetworkPolicyDisabledParam|ContainerNetworkPolicyAllowlistParam~type=disabled,allowlist",
+            ),
+            "skills": (
+                "skills",
+                "union:SkillReferenceParam|InlineSkillParam~type=skill_reference,inline",
+            ),
+        },
+    ),
+    "LocalSkillParam": (
+        None,
+        {
+            "name": ("name", None),
+            "description": ("description", None),
+            "path": ("path", None),
+        },
+    ),
     "LocalEnvironmentParam": (
         None,
         {
@@ -484,40 +514,6 @@ WIRE_SCHEMAS_PART_16: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
                 "tools",
                 "union:ToolSearchOutputFunctionToolParam|CustomToolParam~type=function,custom",
             ),
-        },
-    ),
-    "ToolSearchOutputItemParam": (
-        None,
-        {
-            "id": ("id", None),
-            "call_id": ("call_id", None),
-            "type": ("type", None),
-            "execution": ("execution", None),
-            "tools": (
-                "tools",
-                "union:FunctionTool|FileSearchTool|ComputerTool|ComputerUsePreviewTool|WebSearchTool|MCPTool|CodeInterpreterTool|ProgrammaticToolCallingParam|ImageGenTool|LocalShellToolParam|FunctionShellToolParam|CustomToolParam|ToolSearchOutputNamespaceToolParam|ToolSearchToolParam|WebSearchPreviewTool|ApplyPatchToolParam~type=function,file_search,computer,computer_use_preview,web_search,web_search_2025_08_26,mcp,code_interpreter,programmatic_tool_calling,image_generation,local_shell,shell,custom,namespace,tool_search,web_search_preview,web_search_preview_2025_03_11,apply_patch",
-            ),
-            "status": ("status", None),
-        },
-    ),
-    "AdditionalToolsItemParam": (
-        None,
-        {
-            "id": ("id", None),
-            "type": ("type", None),
-            "role": ("role", None),
-            "tools": (
-                "tools",
-                "union:FunctionTool|FileSearchTool|ComputerTool|ComputerUsePreviewTool|WebSearchTool|MCPTool|CodeInterpreterTool|ProgrammaticToolCallingParam|ImageGenTool|LocalShellToolParam|FunctionShellToolParam|CustomToolParam|NamespaceToolParam|ToolSearchToolParam|WebSearchPreviewTool|ApplyPatchToolParam~type=function,file_search,computer,computer_use_preview,web_search,web_search_2025_08_26,mcp,code_interpreter,programmatic_tool_calling,image_generation,local_shell,shell,custom,namespace,tool_search,web_search_preview,web_search_preview_2025_03_11,apply_patch",
-            ),
-        },
-    ),
-    "CompactionSummaryItemParam": (
-        None,
-        {
-            "id": ("id", None),
-            "type": ("type", None),
-            "encrypted_content": ("encrypted_content", None),
         },
     ),
 }

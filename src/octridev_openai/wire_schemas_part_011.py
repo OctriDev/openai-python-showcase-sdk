@@ -6,6 +6,25 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_11: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "ResponseCodeInterpreterCallCodeDoneEvent": (
+        None,
+        {
+            "type": ("type", None),
+            "output_index": ("output_index", None),
+            "item_id": ("item_id", None),
+            "code": ("code", None),
+            "sequence_number": ("sequence_number", None),
+        },
+    ),
+    "ResponseCodeInterpreterCallCompletedEvent": (
+        None,
+        {
+            "type": ("type", None),
+            "output_index": ("output_index", None),
+            "item_id": ("item_id", None),
+            "sequence_number": ("sequence_number", None),
+        },
+    ),
     "ResponseCodeInterpreterCallInProgressEvent": (
         None,
         {
@@ -471,28 +490,6 @@ WIRE_SCHEMAS_PART_11: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "item_id": ("item_id", None),
             "output_index": ("output_index", None),
             "summary_index": ("summary_index", None),
-            "text": ("text", None),
-            "sequence_number": ("sequence_number", None),
-        },
-    ),
-    "ResponseReasoningTextDeltaEvent": (
-        None,
-        {
-            "type": ("type", None),
-            "item_id": ("item_id", None),
-            "output_index": ("output_index", None),
-            "content_index": ("content_index", None),
-            "delta": ("delta", None),
-            "sequence_number": ("sequence_number", None),
-        },
-    ),
-    "ResponseReasoningTextDoneEvent": (
-        None,
-        {
-            "type": ("type", None),
-            "item_id": ("item_id", None),
-            "output_index": ("output_index", None),
-            "content_index": ("content_index", None),
             "text": ("text", None),
             "sequence_number": ("sequence_number", None),
         },

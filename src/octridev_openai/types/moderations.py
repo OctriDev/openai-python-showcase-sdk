@@ -332,7 +332,11 @@ class CreateModerationRequest(BaseModel):
 
     model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
 
-    input: str | list[str] | list[CreateModerationRequestInputItem]
+    input: (
+        str
+        | list[str]
+        | Annotated[list[CreateModerationRequestInputItem], WrapValidator(validate_union_candidate)]
+    )
     """
     Input (or inputs) to classify. Can be a single string, an array of strings, or
     an array of multi-modal input objects similar to other models.

@@ -28,8 +28,10 @@ from octridev_openai.types import (
     RealtimeSessionCreateRequestClientSecret,
     RealtimeSessionCreateRequestInputAudioTranscription,
     RealtimeSessionCreateRequestToolsItem,
+    RealtimeSessionCreateRequestTracing,
     RealtimeSessionCreateRequestTurnDetection,
     RealtimeSessionCreateResponse,
+    RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction,
     RealtimeTranscriptionSessionCreateRequestTurnDetection,
     RealtimeTranscriptionSessionCreateResponse,
     RealtimeTruncation,
@@ -197,7 +199,7 @@ async def create_realtime_session(
     input_audio_transcription: RealtimeSessionCreateRequestInputAudioTranscription
     | NotGiven = NOT_GIVEN,
     speed: float | NotGiven = NOT_GIVEN,
-    tracing: Literal["auto"] | str | dict[str, Any] | NotGiven = NOT_GIVEN,
+    tracing: RealtimeSessionCreateRequestTracing | NotGiven = NOT_GIVEN,
     turn_detection: RealtimeSessionCreateRequestTurnDetection | NotGiven = NOT_GIVEN,
     tools: list[RealtimeSessionCreateRequestToolsItem] | NotGiven = NOT_GIVEN,
     tool_choice: str | NotGiven = NOT_GIVEN,
@@ -327,7 +329,7 @@ async def create_realtime_session(
                 "tracing": (
                     NOT_GIVEN
                     if tracing is NOT_GIVEN
-                    else to_wire(tracing, 'Literal["auto"] | str | dict[str, Any]')
+                    else to_wire(tracing, "RealtimeSessionCreateRequestTracing")
                 ),
                 "turn_detection": (
                     NOT_GIVEN
@@ -383,7 +385,7 @@ def create_realtime_session_sync(
     input_audio_transcription: RealtimeSessionCreateRequestInputAudioTranscription
     | NotGiven = NOT_GIVEN,
     speed: float | NotGiven = NOT_GIVEN,
-    tracing: Literal["auto"] | str | dict[str, Any] | NotGiven = NOT_GIVEN,
+    tracing: RealtimeSessionCreateRequestTracing | NotGiven = NOT_GIVEN,
     turn_detection: RealtimeSessionCreateRequestTurnDetection | NotGiven = NOT_GIVEN,
     tools: list[RealtimeSessionCreateRequestToolsItem] | NotGiven = NOT_GIVEN,
     tool_choice: str | NotGiven = NOT_GIVEN,
@@ -513,7 +515,7 @@ def create_realtime_session_sync(
                 "tracing": (
                     NOT_GIVEN
                     if tracing is NOT_GIVEN
-                    else to_wire(tracing, 'Literal["auto"] | str | dict[str, Any]')
+                    else to_wire(tracing, "RealtimeSessionCreateRequestTracing")
                 ),
                 "turn_detection": (
                     NOT_GIVEN
@@ -561,7 +563,8 @@ def create_realtime_session_sync(
 async def create_realtime_transcription_session(
     _client_config: ClientConfig,
     turn_detection: RealtimeTranscriptionSessionCreateRequestTurnDetection | NotGiven = NOT_GIVEN,
-    input_audio_noise_reduction: Any | NotGiven = NOT_GIVEN,
+    input_audio_noise_reduction: RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction
+    | NotGiven = NOT_GIVEN,
     input_audio_format: Literal["pcm16", "g711_ulaw", "g711_alaw"] | str | NotGiven = NOT_GIVEN,
     input_audio_transcription: AudioTranscription | NotGiven = NOT_GIVEN,
     include: list[Literal["item.input_audio_transcription.logprobs"] | str] | NotGiven = NOT_GIVEN,
@@ -609,7 +612,10 @@ async def create_realtime_transcription_session(
                 "input_audio_noise_reduction": (
                     NOT_GIVEN
                     if input_audio_noise_reduction is NOT_GIVEN
-                    else to_wire(input_audio_noise_reduction, "Any")
+                    else to_wire(
+                        input_audio_noise_reduction,
+                        "RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction",
+                    )
                 ),
                 "input_audio_format": (
                     NOT_GIVEN
@@ -649,7 +655,8 @@ async def create_realtime_transcription_session(
 def create_realtime_transcription_session_sync(
     _client_config: ClientConfig,
     turn_detection: RealtimeTranscriptionSessionCreateRequestTurnDetection | NotGiven = NOT_GIVEN,
-    input_audio_noise_reduction: Any | NotGiven = NOT_GIVEN,
+    input_audio_noise_reduction: RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction
+    | NotGiven = NOT_GIVEN,
     input_audio_format: Literal["pcm16", "g711_ulaw", "g711_alaw"] | str | NotGiven = NOT_GIVEN,
     input_audio_transcription: AudioTranscription | NotGiven = NOT_GIVEN,
     include: list[Literal["item.input_audio_transcription.logprobs"] | str] | NotGiven = NOT_GIVEN,
@@ -697,7 +704,10 @@ def create_realtime_transcription_session_sync(
                 "input_audio_noise_reduction": (
                     NOT_GIVEN
                     if input_audio_noise_reduction is NOT_GIVEN
-                    else to_wire(input_audio_noise_reduction, "Any")
+                    else to_wire(
+                        input_audio_noise_reduction,
+                        "RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction",
+                    )
                 ),
                 "input_audio_format": (
                     NOT_GIVEN

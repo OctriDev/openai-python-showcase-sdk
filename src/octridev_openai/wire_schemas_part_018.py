@@ -6,6 +6,26 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_18: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "LiveMCPToolChoiceParam": (
+        None,
+        {
+            "type": ("type", None),
+            "server_label": ("server_label", None),
+            "name": ("name", None),
+        },
+    ),
+    "LiveSpecificFileSearchParam": (
+        None,
+        {
+            "type": ("type", None),
+        },
+    ),
+    "LiveSpecificWebSearchParam": (
+        None,
+        {
+            "type": ("type", None),
+        },
+    ),
     "LiveSpecificWebSearchPreviewParam": (
         None,
         {
@@ -386,26 +406,6 @@ WIRE_SCHEMAS_PART_18: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         None,
         {
             "type": ("type", None),
-        },
-    ),
-    "PromptCacheComparisonResponseNotFoundDiagnosticsBody": (
-        None,
-        {
-            "type": ("type", None),
-        },
-    ),
-    "PromptCacheUnavailableDiagnosticsBody": (
-        None,
-        {
-            "type": ("type", None),
-        },
-    ),
-    "ModerationErrorBody": (
-        None,
-        {
-            "type": ("type", None),
-            "code": ("code", None),
-            "message": ("message", None),
         },
     ),
 }

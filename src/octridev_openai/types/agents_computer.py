@@ -219,7 +219,7 @@ class ComputerUseApprovalResponseParamBrowserAuthenticationSubmitParam(BaseModel
 
     model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
 
-    type: Literal["browser_authentication"] | str
+    type: Literal["browser_authentication"]
     """Required enumerated value serialized in the `type` wire field."""
     action: Literal["submit"]
     """Required enumerated value serialized in the `action` wire field."""
@@ -232,6 +232,12 @@ class ComputerUseApprovalResponseParamBrowserAuthenticationSubmitParam(BaseModel
     @classmethod
     def _validate_required(cls, value):
         validate_required(value, ["type", "action", "fields"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["browser_authentication"])
         return value
 
     @field_validator("action")
@@ -257,7 +263,7 @@ class ComputerUseApprovalResponseParamBrowserAuthenticationSubmitParam(BaseModel
 class ComputerUseApprovalResponseParamBrowserAuthenticationCancelParam(BaseModel):
     """Typed representation of the `ComputerUseApprovalResponseParamBrowserAuthenticationCancelParam` API schema."""
 
-    type: Literal["browser_authentication"] | str
+    type: Literal["browser_authentication"]
     """Required enumerated value serialized in the `type` wire field."""
     action: Literal["cancel"]
     """Required enumerated value serialized in the `action` wire field."""
@@ -266,6 +272,12 @@ class ComputerUseApprovalResponseParamBrowserAuthenticationCancelParam(BaseModel
     @classmethod
     def _validate_required(cls, value):
         validate_required(value, ["type", "action"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["browser_authentication"])
         return value
 
     @field_validator("action")

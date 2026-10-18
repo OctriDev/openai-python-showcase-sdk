@@ -6,6 +6,26 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_5: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "ImageRefParam": (
+        None,
+        {
+            "image_url": ("image_url", None),
+            "file_id": ("file_id", None),
+        },
+    ),
+    "ImagesResponse": (
+        None,
+        {
+            "safety_identifier": ("safety_identifier", None),
+            "created": ("created", None),
+            "data": ("data", "Image"),
+            "background": ("background", None),
+            "output_format": ("output_format", None),
+            "size": ("size", None),
+            "quality": ("quality", None),
+            "usage": ("usage", "ImageGenUsage"),
+        },
+    ),
     "ImagesUsage": (
         None,
         {
@@ -426,26 +446,6 @@ WIRE_SCHEMAS_PART_5: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = 
             "server_label": ("server_label", None),
             "name": ("name", None),
             "arguments": ("arguments", None),
-        },
-    ),
-    "MCPApprovalResponse": (
-        None,
-        {
-            "type": ("type", None),
-            "id": ("id", None),
-            "approval_request_id": ("approval_request_id", None),
-            "approve": ("approve", None),
-            "reason": ("reason", None),
-        },
-    ),
-    "MCPApprovalResponseResource": (
-        None,
-        {
-            "type": ("type", None),
-            "id": ("id", None),
-            "approval_request_id": ("approval_request_id", None),
-            "approve": ("approve", None),
-            "reason": ("reason", None),
         },
     ),
 }

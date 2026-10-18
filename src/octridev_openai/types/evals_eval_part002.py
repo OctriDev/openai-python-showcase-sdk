@@ -22,8 +22,8 @@ from octridev_openai.types.evals_eval_part001 import (
     EvalRunOutputItem,
 )
 from octridev_openai.types.shared import (
+    EasyInputMessage,
     Metadata,
-    ReasoningEffort,
     ResponseFormatJsonObject,
     ResponseFormatJsonSchema,
     ResponseFormatText,
@@ -36,8 +36,10 @@ if TYPE_CHECKING:
     from octridev_openai.types.evals_eval_part003 import (
         CreateEvalCompletionsRunDataSource,
         CreateEvalJsonlRunDataSource,
+        CreateEvalResponsesRunDataSource,
+        EvalGraderScoreModel,
+        EvalResponsesSource,
     )
-    from octridev_openai.types.evals_eval_part004 import CreateEvalResponsesRunDataSource
 
 
 class EvalRunOutputItemList(BaseModel):
@@ -82,6 +84,58 @@ class EvalRunOutputItemResult(BaseModel):
     def _validate_required(cls, value):
         validate_required(value, ["name", "score", "passed"])
         return value
+
+
+class CreateEvalCompletionsRunDataSourceInputMessagesVariant0(BaseModel):
+    """Optional object value serialized in the `input_messages` wire field."""
+
+    type: Literal["template"]
+    """The type of input messages. Always `template`."""
+    template: list[
+        Annotated[EasyInputMessage, WrapValidator(validate_union_candidate)]
+        | Annotated[EvalItem, WrapValidator(validate_union_candidate)]
+    ]
+    """A list of chat messages forming the prompt or context. May include variable references to the `item` namespace, ie {{item.name}}."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "template"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["template"])
+        return value
+
+
+class CreateEvalCompletionsRunDataSourceInputMessagesVariant1(BaseModel):
+    """Optional object value serialized in the `input_messages` wire field."""
+
+    type: Literal["item_reference"]
+    """The type of input messages. Always `item_reference`."""
+    item_reference: str
+    """A reference to a variable in the `item` namespace. Ie, "item.input_trajectory" """
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "item_reference"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["item_reference"])
+        return value
+
+
+# CreateEvalCompletionsRunDataSourceInputMessages is a union type
+CreateEvalCompletionsRunDataSourceInputMessages = TypeAliasType(
+    "CreateEvalCompletionsRunDataSourceInputMessages",
+    'Annotated[Annotated[CreateEvalCompletionsRunDataSourceInputMessagesVariant0, WrapValidator(validate_union_candidate)] | Annotated[CreateEvalCompletionsRunDataSourceInputMessagesVariant1, WrapValidator(validate_union_candidate)], Field(discriminator="type")]',
+)
 
 
 class UnknownCreateEvalCompletionsRunDataSourceSamplingParamsResponseFormat(BaseModel):
@@ -146,6 +200,76 @@ class UnknownCreateEvalRequestTestingCriteriaItem(BaseModel):
 CreateEvalRequestTestingCriteriaItem = TypeAliasType(
     "CreateEvalRequestTestingCriteriaItem",
     'Annotated[Annotated[CreateEvalLabelModelGrader, WrapValidator(validate_union_candidate)] | Annotated[EvalGraderStringCheck, WrapValidator(validate_union_candidate)] | Annotated[EvalGraderTextSimilarity, WrapValidator(validate_union_candidate)] | Annotated[EvalGraderPython, WrapValidator(validate_union_candidate)] | Annotated[EvalGraderScoreModel, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownCreateEvalRequestTestingCriteriaItem))]',
+)
+
+
+class CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemChatMessage(BaseModel):
+    """Required object value serialized in the `template[]` wire field."""
+
+    role: str
+    """The role of the message (e.g. "system", "assistant", "user")."""
+    content: str
+    """The content of the message."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["role", "content"])
+        return value
+
+
+class CreateEvalResponsesRunDataSourceInputMessagesVariant0(BaseModel):
+    """Optional object value serialized in the `input_messages` wire field."""
+
+    type: Literal["template"]
+    """The type of input messages. Always `template`."""
+    template: list[
+        Annotated[
+            CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemChatMessage,
+            WrapValidator(validate_union_candidate),
+        ]
+        | Annotated[EvalItem, WrapValidator(validate_union_candidate)]
+    ]
+    """A list of chat messages forming the prompt or context. May include variable references to the `item` namespace, ie {{item.name}}."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "template"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["template"])
+        return value
+
+
+class CreateEvalResponsesRunDataSourceInputMessagesVariant1(BaseModel):
+    """Optional object value serialized in the `input_messages` wire field."""
+
+    type: Literal["item_reference"]
+    """The type of input messages. Always `item_reference`."""
+    item_reference: str
+    """A reference to a variable in the `item` namespace. Ie, "item.name" """
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "item_reference"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["item_reference"])
+        return value
+
+
+# CreateEvalResponsesRunDataSourceInputMessages is a union type
+CreateEvalResponsesRunDataSourceInputMessages = TypeAliasType(
+    "CreateEvalResponsesRunDataSourceInputMessages",
+    'Annotated[Annotated[CreateEvalResponsesRunDataSourceInputMessagesVariant0, WrapValidator(validate_union_candidate)] | Annotated[CreateEvalResponsesRunDataSourceInputMessagesVariant1, WrapValidator(validate_union_candidate)], Field(discriminator="type")]',
 )
 
 
@@ -413,104 +537,4 @@ class EvalStoredCompletionsSource(BaseModel):
     @classmethod
     def _validate_type(cls, value):
         validate_enum("type", value, ["stored_completions"])
-        return value
-
-
-class EvalGraderScoreModelVariant1(BaseModel):
-    """Required object value serialized in the `testing_criteria[]` wire field."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    pass_threshold: float | NotGiven = NOT_GIVEN
-    """The threshold for the score."""
-
-
-class EvalGraderScoreModelSamplingParams(BaseModel):
-    """The sampling parameters for the model."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    seed: int | None | NotGiven = NOT_GIVEN
-    """Optional `integer` value serialized in the `seed` wire field."""
-    top_p: float | None | NotGiven = NOT_GIVEN
-    """Optional `number` value serialized in the `top_p` wire field."""
-    temperature: float | None | NotGiven = NOT_GIVEN
-    """Optional `number` value serialized in the `temperature` wire field."""
-    max_completions_tokens: int | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `max_completions_tokens` wire field."""
-    reasoning_effort: ReasoningEffort | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `reasoning_effort` wire field."""
-
-
-class EvalGraderScoreModel(BaseModel):
-    """Typed representation of the `EvalGraderScoreModel` API schema."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["score_model"]
-    """The object type, which is always `score_model`."""
-    name: str
-    """The name of the grader."""
-    model: str
-    """The model to use for the evaluation."""
-    input: list[EvalItem]
-    """The input messages evaluated by the grader. Supports text, output text, input image, and input audio content blocks, and may include template strings."""
-    sampling_params: EvalGraderScoreModelSamplingParams | NotGiven = NOT_GIVEN
-    """The sampling parameters for the model."""
-    range: list[float] | NotGiven = NOT_GIVEN
-    """The service requires two numbers for the score range. Defaults to `[0, 1]`."""
-    pass_threshold: float | NotGiven = NOT_GIVEN
-    """The threshold for the score."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "name", "input", "model"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["score_model"])
-        return value
-
-
-class EvalResponsesSource(BaseModel):
-    """A EvalResponsesSource object describing a run data source configuration."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["responses"]
-    """The type of run data source. Always `responses`."""
-    metadata: dict[str, Any] | None | NotGiven = NOT_GIVEN
-    """Optional object value serialized in the `metadata` wire field."""
-    model: str | None | NotGiven = NOT_GIVEN
-    """Optional `string` value serialized in the `model` wire field."""
-    instructions_search: str | None | NotGiven = NOT_GIVEN
-    """Optional `string` value serialized in the `instructions_search` wire field."""
-    created_after: int | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `created_after` wire field."""
-    created_before: int | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `created_before` wire field."""
-    reasoning_effort: ReasoningEffort | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `reasoning_effort` wire field."""
-    temperature: float | None | NotGiven = NOT_GIVEN
-    """Optional `number` value serialized in the `temperature` wire field."""
-    top_p: float | None | NotGiven = NOT_GIVEN
-    """Optional `number` value serialized in the `top_p` wire field."""
-    users: list[str] | None | NotGiven = NOT_GIVEN
-    """List of user identifiers. This is a query parameter used to select responses."""
-    tools: list[str] | None | NotGiven = NOT_GIVEN
-    """List of tool names. This is a query parameter used to select responses."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["responses"])
         return value

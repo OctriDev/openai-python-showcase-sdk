@@ -21,8 +21,8 @@ from .live_part001 import (
     LiveFileSearchToolInputParam,
     LiveHostedShellNetworkPolicyAllowlistParam,
     LiveImageGenerationToolInputParam,
+    LiveInitialInputTextContentPartParam,
     LiveInitialMessageStatus,
-    LiveInitialSessionAudioOutputParam,
     LiveMediaSessionAudioParam,
     LiveMediaSessionForkParams,
     LiveNamespaceToolInputParam,
@@ -47,7 +47,6 @@ from .live_part002 import (
     LiveDecisionsDelegationUpdateParam,
     LiveDecisionTriggerInputParam2,
     LiveDetailEnum,
-    LiveInitialInputTextContentPartParam,
     LiveInitialItem,
     LiveInitialOutputTextContentPartParam,
     LiveInitialTextContentPartParam,
@@ -56,6 +55,7 @@ from .live_part002 import (
     LiveSessionAudioFormatPCMParam,
     LiveSessionAudioFormatPCMUParam,
     LiveSessionCloseParam,
+    LiveSessionStarted,
     LiveSessionStartEvent,
     LiveSessionUpdateParam,
     PropertiesStore,
@@ -68,6 +68,7 @@ from .live_part003 import (
     LiveContextWindowUsage,
     LiveDecisionCompleted,
     LiveDecisionEvent,
+    LiveDecisionInputItemParamContentItem,
     LiveDecisionItemCreated,
     LiveDecisionItemDeleted,
     LiveDelegationCreated,
@@ -77,11 +78,13 @@ from .live_part003 import (
     LiveHostedShellToolInputParamEnvironment,
     LiveInfoEvent,
     LiveInitialAssistantMessageItemParamContentItem,
+    LiveInitialSessionAudioOutputParamVoice,
     LiveLiveError,
     LiveResponsesDelegationSettingsInputParamToolsItem,
+    LiveResponsesDelegationSettingsUpdateInputParamToolsItem,
     LiveSessionClosed,
     LiveSessionCreateParamsDelegation,
-    LiveSessionStarted,
+    LiveSessionResourceParamDelegation,
     LiveSessionUpdated,
     LiveSessionUpdateParamsDelegation,
     LiveSessionUsage,
@@ -91,18 +94,20 @@ from .live_part003 import (
     TargetUri,
     Triggers,
     UnknownDelegation,
+    UnknownLiveDecisionInputItemParamContentItem,
     UnknownLiveHostedShellContainerAutoParamNetworkPolicy,
     UnknownLiveHostedShellContainerAutoParamSkillsItem,
     UnknownLiveHostedShellToolInputParamEnvironment,
     UnknownLiveInitialAssistantMessageItemParamContentItem,
     UnknownLiveResponsesDelegationSettingsInputParamToolsItem,
+    UnknownLiveResponsesDelegationSettingsUpdateInputParamToolsItem,
     UnknownLiveSessionCreateParamsDelegation,
+    UnknownLiveSessionResourceParamDelegation,
     UnknownLiveSessionUpdateParamsDelegation,
 )
 from .live_part004 import (
     Input,
     LiveDecisionInputImageParam,
-    LiveDecisionInputItemParamContentItem,
     LiveDecisionQuestionsInputParam,
     LiveDecisionQuestionsInputParam2,
     LiveDecisionsSettingsInputParam,
@@ -114,29 +119,27 @@ from .live_part004 import (
     LiveDelegationTextInputParam,
     LiveHostedShellContainerAutoParam,
     LiveHostedShellToolInputParam,
+    LiveInitialAssistantMessageItemParam,
     LiveInitialDeveloperMessageItemParam,
+    LiveInitialSessionAudioOutputParam,
     LiveInitialSessionAudioParam,
     LiveInitialUserMessageItemParam,
-    LiveResponsesDelegationSettingsInputParam,
-    LiveResponsesDelegationSettingsUpdateInputParamToolsItem,
+    LiveResponsesDelegationSettingsInputParamToolChoice,
+    LiveResponsesDelegationSettingsUpdateInputParamToolChoice,
     LiveSessionCreateRequestTransport,
     LiveSessionCreateRequestTransportRequest,
     LiveSessionCreateResponseTransport,
     LiveSessionCreateResponseTransportVariant1,
-    LiveSessionResourceParamDelegation,
-    UnknownLiveDecisionInputItemParamContentItem,
     UnknownLiveDecisionStoredInputItemParamContentItem,
-    UnknownLiveResponsesDelegationSettingsUpdateInputParamToolsItem,
     UnknownLiveSessionCreateRequestTransport,
     UnknownLiveSessionCreateRequestTransportRequest,
     UnknownLiveSessionCreateResponseTransport,
-    UnknownLiveSessionResourceParamDelegation,
 )
 from .live_part005 import (
     LiveDecisionInputItemParam,
     LiveDecisionStoredInputItemParam,
-    LiveInitialAssistantMessageItemParam,
     LiveMediaSessionCreateParams,
+    LiveResponsesDelegationSettingsInputParam,
     LiveResponsesDelegationSettingsUpdateInputParam,
     LiveSessionCreateParams,
     LiveSessionCreateRequest,
@@ -212,6 +215,7 @@ __all__ = [
     "LiveInitialMessageStatus",
     "LiveInitialOutputTextContentPartParam",
     "LiveInitialSessionAudioOutputParam",
+    "LiveInitialSessionAudioOutputParamVoice",
     "LiveInitialSessionAudioParam",
     "LiveInitialTextContentPartParam",
     "LiveInitialUserMessageItemParam",
@@ -223,8 +227,10 @@ __all__ = [
     "LiveProgrammaticToolInputParam",
     "LiveResponsesDelegationParam",
     "LiveResponsesDelegationSettingsInputParam",
+    "LiveResponsesDelegationSettingsInputParamToolChoice",
     "LiveResponsesDelegationSettingsInputParamToolsItem",
     "LiveResponsesDelegationSettingsUpdateInputParam",
+    "LiveResponsesDelegationSettingsUpdateInputParamToolChoice",
     "LiveResponsesDelegationSettingsUpdateInputParamToolsItem",
     "LiveResponsesDelegationUpdateParam",
     "LiveResponsesServiceTier",
@@ -292,6 +298,7 @@ _deferred_live_part001: tuple[tuple[str, object], ...] = (
     ("LiveDecisionItemDeleteParam", LiveDecisionItemDeleteParam),
     ("LiveDecisionQuestionsInputParam", LiveDecisionQuestionsInputParam),
     ("LiveDecisionsSettingsInputParam", LiveDecisionsSettingsInputParam),
+    ("LiveInitialSessionAudioOutputParam", LiveInitialSessionAudioOutputParam),
     ("LiveResponsesDelegationSettingsInputParam", LiveResponsesDelegationSettingsInputParam),
     ("LiveResponsesDelegationUpdateParam", LiveResponsesDelegationUpdateParam),
     ("LiveSessionCloseParam", LiveSessionCloseParam),
@@ -305,7 +312,6 @@ UnknownLiveClientEvent.model_rebuild()
 LiveConnectParams.model_rebuild()
 LiveMediaSessionAudioParam.model_rebuild()
 LiveMediaSessionForkParams.model_rebuild()
-LiveInitialSessionAudioOutputParam.model_rebuild()
 LiveClientDelegationParam.model_rebuild()
 LiveFileSearchToolInputParam.model_rebuild()
 LiveCodeInterpreterToolInputParam.model_rebuild()
@@ -325,6 +331,7 @@ LiveDecisionScoreQuestionParam.model_rebuild()
 UnknownLiveDecisionQuestion.model_rebuild()
 LiveDecisionsDelegationParam.model_rebuild()
 LiveDecisionTriggerInputParam.model_rebuild()
+LiveInitialInputTextContentPartParam.model_rebuild()
 
 _live_part002 = importlib.import_module(".live_part002", __package__)
 
@@ -341,12 +348,12 @@ _deferred_live_part002: tuple[tuple[str, object], ...] = (
         LiveResponsesDelegationSettingsUpdateInputParam,
     ),
     ("LiveSessionCreateParams", LiveSessionCreateParams),
+    ("LiveSessionResourceParam", LiveSessionResourceParam),
     ("LiveSessionUpdateParams", LiveSessionUpdateParams),
 )
 for _name, _value in _deferred_live_part002:
     setattr(_live_part002, _name, _value)
 
-LiveInitialInputTextContentPartParam.model_rebuild()
 LiveInitialTextContentPartParam.model_rebuild()
 LiveInitialOutputTextContentPartParam.model_rebuild()
 UnknownLiveInitialItem.model_rebuild()
@@ -367,10 +374,12 @@ LiveDecisionInputTextParam.model_rebuild()
 LiveDecisionItemCreateParam.model_rebuild()
 LiveDecisionItemDeleteParam.model_rebuild()
 LiveSessionCloseParam.model_rebuild()
+LiveSessionStarted.model_rebuild()
 
 _live_part003 = importlib.import_module(".live_part003", __package__)
 
 _deferred_live_part003: tuple[tuple[str, object], ...] = (
+    ("LiveDecisionInputImageParam", LiveDecisionInputImageParam),
     ("LiveDecisionStoredInputItemParam", LiveDecisionStoredInputItemParam),
     ("LiveDelegationItem", LiveDelegationItem),
     ("LiveHostedShellContainerAutoParam", LiveHostedShellContainerAutoParam),
@@ -380,7 +389,6 @@ _deferred_live_part003: tuple[tuple[str, object], ...] = (
 for _name, _value in _deferred_live_part003:
     setattr(_live_part003, _name, _value)
 
-LiveSessionStarted.model_rebuild()
 LiveSessionUpdated.model_rebuild()
 LiveDelegationCreated.model_rebuild()
 LiveDecisionCompleted.model_rebuild()
@@ -403,3 +411,6 @@ UnknownLiveHostedShellContainerAutoParamSkillsItem.model_rebuild()
 UnknownLiveInitialAssistantMessageItemParamContentItem.model_rebuild()
 UnknownLiveSessionCreateParamsDelegation.model_rebuild()
 UnknownLiveSessionUpdateParamsDelegation.model_rebuild()
+UnknownLiveResponsesDelegationSettingsUpdateInputParamToolsItem.model_rebuild()
+UnknownLiveDecisionInputItemParamContentItem.model_rebuild()
+UnknownLiveSessionResourceParamDelegation.model_rebuild()

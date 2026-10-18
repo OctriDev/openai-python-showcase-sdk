@@ -6,6 +6,36 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_28: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "LiveSessionClosed": (
+        None,
+        {
+            "event_id": ("event_id", None),
+            "client_event_id": ("client_event_id", None),
+            "type": ("type", None),
+            "reason": ("reason", None),
+            "session": ("session", "LiveSessionResourceParam"),
+            "usage": ("usage", "LiveSessionUsage"),
+        },
+    ),
+    "LiveLiveError": (
+        None,
+        {
+            "type": ("type", None),
+            "code": ("code", None),
+            "message": ("message", None),
+            "param": ("param", None),
+            "client_event_id": ("client_event_id", None),
+        },
+    ),
+    "LiveErrorEvent": (
+        None,
+        {
+            "event_id": ("event_id", None),
+            "client_event_id": ("client_event_id", None),
+            "type": ("type", None),
+            "error": ("error", "LiveLiveError"),
+        },
+    ),
     "LiveInfoEvent": (
         None,
         {
@@ -427,32 +457,6 @@ WIRE_SCHEMAS_PART_28: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "input_image_mask": ("input_image_mask", "BetaImageGenToolInputImageMask"),
             "partial_images": ("partial_images", None),
             "action": ("action", None),
-        },
-    ),
-    "BetaProgrammaticToolCallingParam": (
-        None,
-        {
-            "type": ("type", None),
-        },
-    ),
-    "BetaCodeInterpreterTool": (
-        None,
-        {
-            "type": ("type", None),
-            "container": ("container", "union:BetaAutoCodeInterpreterToolParam"),
-            "allowed_callers": ("allowed_callers", None),
-        },
-    ),
-    "BetaAutoCodeInterpreterToolParam": (
-        None,
-        {
-            "type": ("type", None),
-            "file_ids": ("file_ids", None),
-            "memory_limit": ("memory_limit", None),
-            "network_policy": (
-                "network_policy",
-                "union:BetaContainerNetworkPolicyDisabledParam|BetaContainerNetworkPolicyAllowlistParam~type=disabled,allowlist",
-            ),
         },
     ),
 }

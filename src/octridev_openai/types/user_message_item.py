@@ -40,7 +40,10 @@ class UserMessageItemParam(BaseModel):
     """The item type. Always `message`."""
     role: Literal["user"] | str
     """The message role. Always `user`."""
-    content: list[UserMessageItemParamContentItem] | str
+    content: (
+        Annotated[list[UserMessageItemParamContentItem], WrapValidator(validate_union_candidate)]
+        | str
+    )
     """The message content, as an array of content parts."""
     id: str | None | NotGiven = NOT_GIVEN
     """Optional `string` value serialized in the `id` wire field."""

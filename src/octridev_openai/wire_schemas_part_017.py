@@ -6,6 +6,40 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_17: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "ToolSearchOutputItemParam": (
+        None,
+        {
+            "id": ("id", None),
+            "call_id": ("call_id", None),
+            "type": ("type", None),
+            "execution": ("execution", None),
+            "tools": (
+                "tools",
+                "union:FunctionTool|FileSearchTool|ComputerTool|ComputerUsePreviewTool|WebSearchTool|MCPTool|CodeInterpreterTool|ProgrammaticToolCallingParam|ImageGenTool|LocalShellToolParam|FunctionShellToolParam|CustomToolParam|ToolSearchOutputNamespaceToolParam|ToolSearchToolParam|WebSearchPreviewTool|ApplyPatchToolParam~type=function,file_search,computer,computer_use_preview,web_search,web_search_2025_08_26,mcp,code_interpreter,programmatic_tool_calling,image_generation,local_shell,shell,custom,namespace,tool_search,web_search_preview,web_search_preview_2025_03_11,apply_patch",
+            ),
+            "status": ("status", None),
+        },
+    ),
+    "AdditionalToolsItemParam": (
+        None,
+        {
+            "id": ("id", None),
+            "type": ("type", None),
+            "role": ("role", None),
+            "tools": (
+                "tools",
+                "union:FunctionTool|FileSearchTool|ComputerTool|ComputerUsePreviewTool|WebSearchTool|MCPTool|CodeInterpreterTool|ProgrammaticToolCallingParam|ImageGenTool|LocalShellToolParam|FunctionShellToolParam|CustomToolParam|NamespaceToolParam|ToolSearchToolParam|WebSearchPreviewTool|ApplyPatchToolParam~type=function,file_search,computer,computer_use_preview,web_search,web_search_2025_08_26,mcp,code_interpreter,programmatic_tool_calling,image_generation,local_shell,shell,custom,namespace,tool_search,web_search_preview,web_search_preview_2025_03_11,apply_patch",
+            ),
+        },
+    ),
+    "CompactionSummaryItemParam": (
+        None,
+        {
+            "id": ("id", None),
+            "type": ("type", None),
+            "encrypted_content": ("encrypted_content", None),
+        },
+    ),
     "FunctionShellActionParam": (
         None,
         {
@@ -390,26 +424,6 @@ WIRE_SCHEMAS_PART_17: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         {
             "type": ("type", None),
             "name": ("name", None),
-        },
-    ),
-    "LiveMCPToolChoiceParam": (
-        None,
-        {
-            "type": ("type", None),
-            "server_label": ("server_label", None),
-            "name": ("name", None),
-        },
-    ),
-    "LiveSpecificFileSearchParam": (
-        None,
-        {
-            "type": ("type", None),
-        },
-    ),
-    "LiveSpecificWebSearchParam": (
-        None,
-        {
-            "type": ("type", None),
         },
     ),
 }

@@ -3,23 +3,23 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, WrapValidator, field_validator, model_validator
-from typing_extensions import TypeAliasType
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
 from octridev_openai.types.shared import Metadata
 
-from ..validation import validate_items, validate_required, validate_union_candidate
+from ..validation import validate_enum, validate_items, validate_required
 
 
-class ThreadStreamEventThreadCreated(BaseModel):
+class ThreadStreamEvent(BaseModel):
     """Occurs when a new [thread](https://developers.openai.com/api/docs/assistants/migration) is created."""
 
     model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
 
-    event: Literal["thread.created"] | str
+    event: Literal["thread.created"]
+    """Required enumerated value serialized in the `event` wire field."""
     data: ThreadObject
     """Represents a thread that contains [messages](https://developers.openai.com/api/docs/assistants/migration)."""
     enabled: bool | NotGiven = NOT_GIVEN
@@ -31,12 +31,11 @@ class ThreadStreamEventThreadCreated(BaseModel):
         validate_required(value, ["event", "data"])
         return value
 
-
-# ThreadStreamEvent is a union type
-ThreadStreamEvent = TypeAliasType(
-    "ThreadStreamEvent",
-    "Annotated[ThreadStreamEventThreadCreated, WrapValidator(validate_union_candidate)]",
-)
+    @field_validator("event")
+    @classmethod
+    def _validate_event(cls, value):
+        validate_enum("event", value, ["thread.created"])
+        return value
 
 
 class ThreadObjectToolResourcesCodeInterpreter(BaseModel):

@@ -6,6 +6,30 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_43: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "WebhookEvalRunSucceededData": (
+        None,
+        {
+            "id": ("id", None),
+        },
+    ),
+    "WebhookFineTuningJobCancelledData": (
+        None,
+        {
+            "id": ("id", None),
+        },
+    ),
+    "WebhookFineTuningJobFailedData": (
+        None,
+        {
+            "id": ("id", None),
+        },
+    ),
+    "WebhookFineTuningJobSucceededData": (
+        None,
+        {
+            "id": ("id", None),
+        },
+    ),
     "WebhookLiveCallIncomingData": (
         None,
         {
@@ -124,13 +148,6 @@ WIRE_SCHEMAS_PART_43: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         {
             "image_url": ("image_url", None),
             "file_id": ("file_id", None),
-        },
-    ),
-    "BetaMCPToolRequireApprovalMCPToolApprovalFilter": (
-        None,
-        {
-            "always": ("always", "BetaMCPToolFilter"),
-            "never": ("never", "BetaMCPToolFilter"),
         },
     ),
     "BetaWebSearchToolFilters": (
@@ -356,27 +373,6 @@ WIRE_SCHEMAS_PART_43: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "type": ("type", None),
             "call_id": ("call_id", None),
             "execution": ("execution", None),
-        },
-    ),
-    "BetaResponseSteerRequiredInputVariant6": (
-        None,
-        {
-            "type": ("type", None),
-            "approval_request_id": ("approval_request_id", None),
-        },
-    ),
-    "BetaResponseSteerAcceptedEventSteer": (
-        None,
-        {
-            "id": ("id", None),
-            "previous_response_id": ("previous_response_id", None),
-        },
-    ),
-    "BetaInputAudioInputAudio": (
-        None,
-        {
-            "data": ("data", None),
-            "format": ("format", None),
         },
     ),
 }

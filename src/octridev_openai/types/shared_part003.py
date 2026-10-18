@@ -11,7 +11,6 @@ from typing_extensions import TypeAliasType
 from octridev_openai.client import NOT_GIVEN, NotGiven
 from octridev_openai.types.shared_direct import DirectToolCallCaller, DirectToolCallCallerParam
 from octridev_openai.types.shared_part001 import FilePath
-from octridev_openai.types.shared_part002 import PromptCacheBreakpointConfig
 from octridev_openai.types.shared_program import ProgramToolCallCaller, ProgramToolCallCallerParam
 
 from ..validation import (
@@ -21,31 +20,6 @@ from ..validation import (
     validate_union_candidate,
     validate_uri,
 )
-
-
-class InputTextContent(BaseModel):
-    """A text input to the model."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["input_text"]
-    """The type of the input item. Always `input_text`."""
-    text: str
-    """The text input to the model."""
-    prompt_cache_breakpoint: PromptCacheBreakpointConfig | NotGiven = NOT_GIVEN
-    """Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "text"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["input_text"])
-        return value
 
 
 class FileCitationBody(BaseModel):
@@ -479,4 +453,23 @@ class MoveParam(BaseModel):
     @classmethod
     def _validate_type(cls, value):
         validate_enum("type", value, ["move"])
+        return value
+
+
+class ScreenshotParam(BaseModel):
+    """A screenshot action."""
+
+    type: Literal["screenshot"]
+    """Specifies the event type. For a screenshot action, this property is always set to `screenshot`."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["screenshot"])
         return value

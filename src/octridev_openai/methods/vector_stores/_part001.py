@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator, Iterator
 from typing import Any, Literal, TypeAlias
 
 from pydantic import TypeAdapter, ValidationError as _PydanticValidationError
@@ -13,6 +14,7 @@ from octridev_openai.client import (
     ClientConfig,
     NotGiven,
     RequestOptions,
+    SdkPage,
     encode_path_segment,
     omit_unset,
     sdk_request,
@@ -22,7 +24,6 @@ from octridev_openai.client import (
 from octridev_openai.errors import SdkValidationError, sdk_decode
 from octridev_openai.types import (
     CreateVectorStoreRequestChunkingStrategy,
-    DeleteVectorStoreResponse,
     ErrorResponse,
     ListVectorStoresResponse,
     Metadata,
@@ -172,6 +173,153 @@ def list_vector_stores_sync(
             ListVectorStoresResponse,
         ),
     )
+
+
+async def list_vector_stores_paginated(
+    _client_config: ClientConfig,
+    limit: int | NotGiven = NOT_GIVEN,
+    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
+    after: str | NotGiven = NOT_GIVEN,
+    before: str | NotGiven = NOT_GIVEN,
+    *,
+    request_options: RequestOptions | None = None,
+) -> AsyncIterator[VectorStoreObject]:
+    """Lists vector stores, which are collections of processed files that you can use with
+    the `file_search` tool. Use the cursor parameters to move forward or backward
+    through the results, and set `order` to control sorting by creation time.
+
+    Returns a list of vector stores.
+
+    Args:
+        limit: A limit on the number of objects to be returned. Limit can range between 1 and
+            100, and the default is 20.
+        order: Sort order by the `created_at` timestamp of the objects. `asc` for ascending
+            order and `desc` for descending order.
+        after: A cursor for use in pagination. `after` is an object ID that defines your place
+            in the list. For instance, if you make a list request and receive 100 objects,
+            ending with obj_foo, your subsequent call can include after=obj_foo in order to
+            fetch the next page of the list.
+        before: A cursor for use in pagination. `before` is an object ID that defines your place
+            in the list. For instance, if you make a list request and receive 100 objects,
+            starting with obj_foo, your subsequent call can include before=obj_foo in order
+            to fetch the previous page of the list.
+    """
+    _cursor = after
+    while True:
+        _page = await list_vector_stores(
+            _client_config, limit, order, _cursor, before, request_options=request_options
+        )
+        _items: list[VectorStoreObject] = _page.data if isinstance(_page.data, list) else []
+        if not _items:
+            break
+        for item in _items:
+            yield item
+        if not _page.has_more:
+            break
+        _next = _page.last_id
+        if _next is None or isinstance(_next, NotGiven):
+            break
+        _cursor = _next
+
+
+async def list_vector_stores_pages(
+    _client_config: ClientConfig,
+    limit: int | NotGiven = NOT_GIVEN,
+    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
+    after: str | NotGiven = NOT_GIVEN,
+    before: str | NotGiven = NOT_GIVEN,
+    *,
+    request_options: RequestOptions | None = None,
+) -> AsyncIterator[SdkPage[ListVectorStoresResponse, VectorStoreObject]]:
+    _cursor = after
+    while True:
+        _page = await list_vector_stores(
+            _client_config, limit, order, _cursor, before, request_options=request_options
+        )
+        _items: list[VectorStoreObject] = _page.data if isinstance(_page.data, list) else []
+        if not _items:
+            break
+        _next = _page.last_id
+        _has_more = (
+            bool(_page.has_more) and not isinstance(_next, NotGiven | None) and _next != _cursor
+        )
+        yield SdkPage(data=_page, items=_items, has_more=_has_more)
+        if not _has_more or _next is None or isinstance(_next, NotGiven):
+            break
+        _cursor = _next
+
+
+def list_vector_stores_paginated_sync(
+    _client_config: ClientConfig,
+    limit: int | NotGiven = NOT_GIVEN,
+    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
+    after: str | NotGiven = NOT_GIVEN,
+    before: str | NotGiven = NOT_GIVEN,
+    *,
+    request_options: RequestOptions | None = None,
+) -> Iterator[VectorStoreObject]:
+    """Lists vector stores, which are collections of processed files that you can use with
+    the `file_search` tool. Use the cursor parameters to move forward or backward
+    through the results, and set `order` to control sorting by creation time.
+
+    Returns a list of vector stores.
+
+    Args:
+        limit: A limit on the number of objects to be returned. Limit can range between 1 and
+            100, and the default is 20.
+        order: Sort order by the `created_at` timestamp of the objects. `asc` for ascending
+            order and `desc` for descending order.
+        after: A cursor for use in pagination. `after` is an object ID that defines your place
+            in the list. For instance, if you make a list request and receive 100 objects,
+            ending with obj_foo, your subsequent call can include after=obj_foo in order to
+            fetch the next page of the list.
+        before: A cursor for use in pagination. `before` is an object ID that defines your place
+            in the list. For instance, if you make a list request and receive 100 objects,
+            starting with obj_foo, your subsequent call can include before=obj_foo in order
+            to fetch the previous page of the list.
+    """
+    _cursor = after
+    while True:
+        _page = list_vector_stores_sync(
+            _client_config, limit, order, _cursor, before, request_options=request_options
+        )
+        _items: list[VectorStoreObject] = _page.data if isinstance(_page.data, list) else []
+        if not _items:
+            break
+        yield from _items
+        if not _page.has_more:
+            break
+        _next = _page.last_id
+        if _next is None or isinstance(_next, NotGiven):
+            break
+        _cursor = _next
+
+
+def list_vector_stores_pages_sync(
+    _client_config: ClientConfig,
+    limit: int | NotGiven = NOT_GIVEN,
+    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
+    after: str | NotGiven = NOT_GIVEN,
+    before: str | NotGiven = NOT_GIVEN,
+    *,
+    request_options: RequestOptions | None = None,
+) -> Iterator[SdkPage[ListVectorStoresResponse, VectorStoreObject]]:
+    _cursor = after
+    while True:
+        _page = list_vector_stores_sync(
+            _client_config, limit, order, _cursor, before, request_options=request_options
+        )
+        _items: list[VectorStoreObject] = _page.data if isinstance(_page.data, list) else []
+        if not _items:
+            break
+        _next = _page.last_id
+        _has_more = (
+            bool(_page.has_more) and not isinstance(_next, NotGiven | None) and _next != _cursor
+        )
+        yield SdkPage(data=_page, items=_items, has_more=_has_more)
+        if not _has_more or _next is None or isinstance(_next, NotGiven):
+            break
+        _cursor = _next
 
 
 CreateVectorStoreError: TypeAlias = ErrorResponse
@@ -523,88 +671,20 @@ def modify_vector_store_sync(
     )
 
 
-DeleteVectorStoreError: TypeAlias = ErrorResponse
-
-
-async def delete_vector_store(
-    _client_config: ClientConfig,
-    vector_store_id: str,
-    *,
-    request_options: RequestOptions | None = None,
-) -> DeleteVectorStoreResponse:
-    """Deletes a vector store. Use this operation when you no longer need the store or its
-    associated collection of processed files.
-
-    Delete a vector store.
-
-    Args:
-        vector_store_id: The ID of the vector store to delete.
-    """
-
-    _resp = await sdk_request(
-        "DELETE",
-        f"/vector_stores/{encode_path_segment(vector_store_id)}",
-        operation_id="delete_vector_store",
-        errors={"404": ErrorResponse, "409": ErrorResponse, "429": ErrorResponse},
-        response_decoder="json",
-        request_options=request_options,
-        config=_client_config,
-    )
-    return sdk_decode(
-        _resp,
-        lambda response: _validate_pydantic_response(
-            _validate_response_enums(response.data, "DeleteVectorStoreResponse"),
-            DeleteVectorStoreResponse,
-        ),
-    )
-
-
-def delete_vector_store_sync(
-    _client_config: ClientConfig,
-    vector_store_id: str,
-    *,
-    request_options: RequestOptions | None = None,
-) -> DeleteVectorStoreResponse:
-    """Deletes a vector store. Use this operation when you no longer need the store or its
-    associated collection of processed files.
-
-    Delete a vector store.
-
-    Args:
-        vector_store_id: The ID of the vector store to delete.
-    """
-
-    _resp = sdk_request_sync(
-        "DELETE",
-        f"/vector_stores/{encode_path_segment(vector_store_id)}",
-        operation_id="delete_vector_store",
-        errors={"404": ErrorResponse, "409": ErrorResponse, "429": ErrorResponse},
-        response_decoder="json",
-        request_options=request_options,
-        config=_client_config,
-    )
-    return sdk_decode(
-        _resp,
-        lambda response: _validate_pydantic_response(
-            _validate_response_enums(response.data, "DeleteVectorStoreResponse"),
-            DeleteVectorStoreResponse,
-        ),
-    )
-
-
 __all__ = [
     "CreateVectorStoreError",
-    "DeleteVectorStoreError",
     "GetVectorStoreError",
     "ListVectorStoresError",
     "ModifyVectorStoreError",
     "create_vector_store",
     "create_vector_store_sync",
-    "delete_vector_store",
-    "delete_vector_store_sync",
     "get_vector_store",
     "get_vector_store_sync",
     "list_vector_stores",
+    "list_vector_stores_pages",
+    "list_vector_stores_pages_sync",
+    "list_vector_stores_paginated",
+    "list_vector_stores_paginated_sync",
     "list_vector_stores_sync",
     "modify_vector_store",
     "modify_vector_store_sync",

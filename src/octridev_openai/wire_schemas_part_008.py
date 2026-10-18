@@ -6,6 +6,30 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_8: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "RealtimeBetaServerEventConversationItemDeleted": (
+        None,
+        {
+            "event_id": ("event_id", None),
+            "type": ("type", None),
+            "item_id": ("item_id", None),
+        },
+    ),
+    "RealtimeBetaServerEventConversationItemInputAudioTranscriptionCompleted": (
+        None,
+        {
+            "event_id": ("event_id", None),
+            "type": ("type", None),
+            "item_id": ("item_id", None),
+            "content_index": ("content_index", None),
+            "transcript": ("transcript", None),
+            "languages": ("languages", "TranscriptionLanguage"),
+            "logprobs": ("logprobs", "LogProbProperties"),
+            "usage": (
+                "usage",
+                "union:TranscriptTextUsageTokens|TranscriptTextUsageDuration~type=tokens,duration",
+            ),
+        },
+    ),
     "RealtimeBetaServerEventConversationItemInputAudioTranscriptionDelta": (
         None,
         {
@@ -470,22 +494,6 @@ WIRE_SCHEMAS_PART_8: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = 
         {
             "event_id": ("event_id", None),
             "type": ("type", None),
-        },
-    ),
-    "RealtimeClientEventResponseCancel": (
-        None,
-        {
-            "event_id": ("event_id", None),
-            "type": ("type", None),
-            "response_id": ("response_id", None),
-        },
-    ),
-    "RealtimeClientEventResponseCreate": (
-        None,
-        {
-            "event_id": ("event_id", None),
-            "type": ("type", None),
-            "response": ("response", "RealtimeResponseCreateParams"),
         },
     ),
 }

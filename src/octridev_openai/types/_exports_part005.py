@@ -2,6 +2,13 @@
 # This file is machine-generated from your OpenAPI spec.
 
 from .audio import (
+    CreateTranslationRequest,
+    CreateTranslationResponse,
+    CreateTranslationResponseJson,
+    CreateTranslationResponseVerboseJson,
+    CreateVoiceConsentRequest,
+    CreateVoiceFromConsentRequest,
+    CreateVoiceRequest,
     SpeechAudioDeltaEvent,
     SpeechAudioDoneEvent,
     SpeechAudioDoneEventUsage,
@@ -135,15 +142,6 @@ from .beta import (
     BetaErrorPayload,
     BetaInputAudio,
     BetaInputAudioInputAudio,
-    BetaOutputAudio,
-)
-from .beta_response import (
-    BetaResponseInjectCreatedEvent,
-    BetaResponseInjectEvent,
-    BetaResponseInjectFailedEvent,
-    BetaResponseInjectFailedEventError,
-    BetaResponseSteerAcceptedEvent,
-    BetaResponseSteerAcceptedEventSteer,
 )
 
 __all__ = [
@@ -243,14 +241,14 @@ __all__ = [
     "BetaErrorPayload",
     "BetaInputAudio",
     "BetaInputAudioInputAudio",
-    "BetaOutputAudio",
-    "BetaResponseInjectCreatedEvent",
-    "BetaResponseInjectEvent",
-    "BetaResponseInjectFailedEvent",
-    "BetaResponseInjectFailedEventError",
-    "BetaResponseSteerAcceptedEvent",
-    "BetaResponseSteerAcceptedEventSteer",
     "CreateBatchRequest",
+    "CreateTranslationRequest",
+    "CreateTranslationResponse",
+    "CreateTranslationResponseJson",
+    "CreateTranslationResponseVerboseJson",
+    "CreateVoiceConsentRequest",
+    "CreateVoiceFromConsentRequest",
+    "CreateVoiceRequest",
     "ListAuditLogsResponse",
     "ListBatchesResponse",
     "Provider",
