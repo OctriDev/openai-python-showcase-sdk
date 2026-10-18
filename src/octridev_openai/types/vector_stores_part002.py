@@ -97,6 +97,39 @@ class VectorStoreObject(BaseModel):
         return value
 
 
+class CreateVectorStoreFileBatchRequest(BaseModel):
+    """Typed representation of the `CreateVectorStoreFileBatchRequest` API schema."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    file_ids: list[str] | NotGiven = NOT_GIVEN
+    """A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that the vector store should use. Useful for tools like `file_search` that can access files. If `attributes` or `chunking_strategy` are provided, they will be applied to all files in the batch. The maximum batch size is 2000 files. This endpoint is recommended for multi-file ingestion and helps reduce per-vector-store write request pressure. Mutually exclusive with `files`."""
+    files: list[CreateVectorStoreFileRequest] | NotGiven = NOT_GIVEN
+    """A list of objects that each include a `file_id` plus optional `attributes` or `chunking_strategy`. Use this when you need to override metadata for specific files. The global `attributes` or `chunking_strategy` will be ignored and must be specified for each file. The maximum batch size is 2000 files. This endpoint is recommended for multi-file ingestion and helps reduce per-vector-store write request pressure. Mutually exclusive with `file_ids`."""
+    chunking_strategy: ChunkingStrategyRequestParam | NotGiven = NOT_GIVEN
+    """The chunking strategy used to chunk the file(s). If not set, will use the `auto` strategy."""
+    attributes: VectorStoreFileAttributes | None | NotGiven = NOT_GIVEN
+    """
+    Set of 16 key-value pairs that can be attached to an object. This can be
+    useful for storing additional information about the object in a structured
+    format, and querying for objects via API or the dashboard. Keys are strings
+    with a maximum length of 64 characters. Values are strings with a maximum
+    length of 512 characters, booleans, or numbers.
+    """
+
+    @field_validator("file_ids")
+    @classmethod
+    def _validate_file_ids(cls, value):
+        validate_items("file_ids", value, min=1, max=2000)
+        return value
+
+    @field_validator("files")
+    @classmethod
+    def _validate_files(cls, value):
+        validate_items("files", value, min=1, max=2000)
+        return value
+
+
 class CreateVectorStoreFileRequest(BaseModel):
     """Typed representation of the `CreateVectorStoreFileRequest` API schema."""
 

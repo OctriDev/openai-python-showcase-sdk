@@ -6,6 +6,30 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_10: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "RealtimeServerEventResponseAudioTranscriptDelta": (
+        None,
+        {
+            "event_id": ("event_id", None),
+            "type": ("type", None),
+            "response_id": ("response_id", None),
+            "item_id": ("item_id", None),
+            "output_index": ("output_index", None),
+            "content_index": ("content_index", None),
+            "delta": ("delta", None),
+        },
+    ),
+    "RealtimeServerEventResponseAudioTranscriptDone": (
+        None,
+        {
+            "event_id": ("event_id", None),
+            "type": ("type", None),
+            "response_id": ("response_id", None),
+            "item_id": ("item_id", None),
+            "output_index": ("output_index", None),
+            "content_index": ("content_index", None),
+            "transcript": ("transcript", None),
+        },
+    ),
     "RealtimeServerEventResponseContentPartAdded": (
         None,
         {
@@ -217,7 +241,10 @@ WIRE_SCHEMAS_PART_10: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
                 "AudioTranscriptionResponse",
             ),
             "turn_detection": ("turn_detection", None),
-            "input_audio_noise_reduction": ("input_audio_noise_reduction", None),
+            "input_audio_noise_reduction": (
+                "input_audio_noise_reduction",
+                "RealtimeSessionInputAudioNoiseReduction",
+            ),
             "speed": ("speed", None),
             "tracing": ("tracing", None),
             "tools": ("tools", "RealtimeFunctionTool"),
@@ -324,7 +351,10 @@ WIRE_SCHEMAS_PART_10: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
                 "turn_detection",
                 "RealtimeTranscriptionSessionCreateRequestTurnDetection",
             ),
-            "input_audio_noise_reduction": ("input_audio_noise_reduction", None),
+            "input_audio_noise_reduction": (
+                "input_audio_noise_reduction",
+                "RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction",
+            ),
             "input_audio_format": ("input_audio_format", None),
             "input_audio_transcription": ("input_audio_transcription", "AudioTranscription"),
             "include": ("include", None),
@@ -543,25 +573,6 @@ WIRE_SCHEMAS_PART_10: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "output_index": ("output_index", None),
             "item_id": ("item_id", None),
             "delta": ("delta", None),
-            "sequence_number": ("sequence_number", None),
-        },
-    ),
-    "ResponseCodeInterpreterCallCodeDoneEvent": (
-        None,
-        {
-            "type": ("type", None),
-            "output_index": ("output_index", None),
-            "item_id": ("item_id", None),
-            "code": ("code", None),
-            "sequence_number": ("sequence_number", None),
-        },
-    ),
-    "ResponseCodeInterpreterCallCompletedEvent": (
-        None,
-        {
-            "type": ("type", None),
-            "output_index": ("output_index", None),
-            "item_id": ("item_id", None),
             "sequence_number": ("sequence_number", None),
         },
     ),

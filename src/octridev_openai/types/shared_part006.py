@@ -19,21 +19,22 @@ from octridev_openai.types.shared_part001 import (
     FunctionParameters,
     InputContent,
     Item,
+    MCPToolFilter,
     MessagePhase,
     Metadata,
     OutputMessageContent,
+    ReasoningEffort,
 )
 from octridev_openai.types.shared_part002 import (
     ContainerNetworkPolicyAllowlistParam,
     ContainerNetworkPolicyDisabledParam,
-    ReasoningEffort,
+    InputTextContent,
     SkillReferenceParam,
     WebSearchActionFind,
     WebSearchActionOpenPage,
     WebSearchActionSearch,
 )
 from octridev_openai.types.shared_part003 import (
-    InputTextContent,
     ReasoningTextContent,
     RefusalContent,
     SummaryTextContent,
@@ -71,11 +72,12 @@ if TYPE_CHECKING:
         PromptCacheOptionsParam,
     )
     from octridev_openai.types.shared_part009 import (
+        CustomGrammarFormatParam,
         FunctionToolParam,
         ToolSearchOutputFunctionToolParam,
     )
     from octridev_openai.types.shared_part010 import (
-        CustomGrammarFormatParam,
+        AutoCodeInterpreterToolParam,
         InputFileContentParam,
         InputImageContentParamAutoParam,
     )
@@ -108,6 +110,13 @@ class Error3(BaseModel):
     def _validate_required(cls, value):
         validate_required(value, ["type", "message", "param", "code"])
         return value
+
+
+# CodeInterpreterToolContainer is a union type
+CodeInterpreterToolContainer = TypeAliasType(
+    "CodeInterpreterToolContainer",
+    "Annotated[str, WrapValidator(validate_union_candidate)] | Annotated[AutoCodeInterpreterToolParam, WrapValidator(validate_union_candidate)]",
+)
 
 
 class UnknownAutoCodeInterpreterToolParamNetworkPolicy(BaseModel):
@@ -166,6 +175,28 @@ class UnknownWebSearchToolCallAction(BaseModel):
 WebSearchToolCallAction = TypeAliasType(
     "WebSearchToolCallAction",
     'Annotated[Annotated[WebSearchActionSearch, WrapValidator(validate_union_candidate)] | Annotated[WebSearchActionOpenPage, WrapValidator(validate_union_candidate)] | Annotated[WebSearchActionFind, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownWebSearchToolCallAction))]',
+)
+
+
+class MCPToolRequireApprovalVariant0(BaseModel):
+    """
+    Specify which of the MCP server's tools require approval. Can be
+    `always`, `never`, or a filter object associated with tools
+    that require approval.
+    """
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    always: MCPToolFilter | NotGiven = NOT_GIVEN
+    """A filter object to specify which tools are allowed."""
+    never: MCPToolFilter | NotGiven = NOT_GIVEN
+    """A filter object to specify which tools are allowed."""
+
+
+# MCPToolRequireApproval is a union type
+MCPToolRequireApproval = TypeAliasType(
+    "MCPToolRequireApproval",
+    'Annotated[MCPToolRequireApprovalVariant0, WrapValidator(validate_union_candidate)] | Annotated[Literal["always", "never"], WrapValidator(validate_union_candidate)] | Annotated[str, WrapValidator(validate_union_candidate)]',
 )
 
 
@@ -524,47 +555,6 @@ class ResponseConfigurationUpdate(BaseModel):
     @classmethod
     def _validate_required(cls, value):
         validate_required(value, ["id", "type"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["configuration_update"])
-        return value
-
-
-class ResponseConfigurationUpdateItemParamReasoning(BaseModel):
-    """Updates to reasoning configuration. Only effort is supported."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    effort: ReasoningEffort | NotGiven = NOT_GIVEN
-    """
-    The reasoning effort to use for subsequent responses until another
-    configuration update replaces it.
-    """
-
-
-class ResponseConfigurationUpdateItemParam(BaseModel):
-    """
-    An update to the conversation's response configuration. The configuration
-    remains in effect for subsequent responses until it is replaced by another
-    configuration update.
-    """
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["configuration_update"]
-    """The item type. Always `configuration_update`."""
-    id: str | None | NotGiven = NOT_GIVEN
-    """Optional `string` value serialized in the `id` wire field."""
-    reasoning: ResponseConfigurationUpdateItemParamReasoning | NotGiven = NOT_GIVEN
-    """Updates to reasoning configuration. Only effort is supported."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type"])
         return value
 
     @field_validator("type")

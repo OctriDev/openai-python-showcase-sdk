@@ -29,7 +29,6 @@ from octridev_openai.types.responses_beta_part004 import (
 )
 from octridev_openai.types.responses_beta_part005 import BetaApplyPatchCallStatus
 from octridev_openai.types.responses_beta_part006 import (
-    BetaContainerAutoParamNetworkPolicy,
     BetaFunctionShellAction,
     BetaFunctionShellCallStatus,
     BetaMessagePhase2,
@@ -40,6 +39,7 @@ from octridev_openai.types.responses_beta_part007 import (
     BetaAgentMessageContentItem,
     BetaApplyPatchToolCallOperation,
     BetaCodeInterpreterToolCallOutputsItem,
+    BetaContainerAutoParamNetworkPolicy,
     BetaContainerAutoParamSkillsItem,
     BetaCustomToolParamFormat,
     BetaFunctionShellCallEnvironment,
@@ -49,7 +49,7 @@ from octridev_openai.types.responses_beta_part007 import (
     BetaNamespaceToolParamToolsItem,
     BetaToolSearchOutputNamespaceToolParamToolsItem,
 )
-from octridev_openai.types.responses_beta_part009 import BetaInputItem
+from octridev_openai.types.responses_beta_part008 import BetaInputItem
 from octridev_openai.types.responses_beta_part010 import BetaComputerActionList
 
 from ..validation import (

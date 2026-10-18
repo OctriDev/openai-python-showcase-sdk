@@ -14,18 +14,15 @@ from octridev_openai.client import (
     ClientConfig,
     NotGiven,
     RequestOptions,
-    StreamRequestOptions,
+    SdkPage,
     encode_path_segment,
     omit_unset,
     sdk_request,
     sdk_request_sync,
-    sdk_stream,
-    sdk_stream_sync,
     serialize_query,
 )
 from octridev_openai.errors import SdkValidationError, sdk_decode
 from octridev_openai.types import (
-    AssistantStreamEvent,
     ErrorResponse,
     ListRunStepsResponse,
     RunObject,
@@ -269,6 +266,213 @@ def list_run_steps_sync(
     )
 
 
+async def list_run_steps_paginated(
+    _client_config: ClientConfig,
+    thread_id: str,
+    run_id: str,
+    limit: int | NotGiven = NOT_GIVEN,
+    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
+    after: str | NotGiven = NOT_GIVEN,
+    before: str | NotGiven = NOT_GIVEN,
+    include: list[Literal["step_details.tool_calls[*].file_search.results[*].content"] | str]
+    | NotGiven = NOT_GIVEN,
+    *,
+    request_options: RequestOptions | None = None,
+) -> AsyncIterator[RunStepObject]:
+    """Lists the steps belonging to a run on a thread. Use cursor parameters to page
+    through the steps, and set `order` to control their order by creation time.
+
+    Returns a list of run steps belonging to a run.
+
+    Args:
+        thread_id: The ID of the thread the run and run steps belong to.
+        run_id: The ID of the run the run steps belong to.
+        limit: A limit on the number of objects to be returned. Limit can range between 1 and
+            100, and the default is 20.
+        order: Sort order by the `created_at` timestamp of the objects. `asc` for ascending
+            order and `desc` for descending order.
+        after: A cursor for use in pagination. `after` is an object ID that defines your place
+            in the list. For instance, if you make a list request and receive 100 objects,
+            ending with obj_foo, your subsequent call can include after=obj_foo in order to
+            fetch the next page of the list.
+        before: A cursor for use in pagination. `before` is an object ID that defines your place
+            in the list. For instance, if you make a list request and receive 100 objects,
+            starting with obj_foo, your subsequent call can include before=obj_foo in order
+            to fetch the previous page of the list.
+        include: A list of additional fields to include in the response. Currently the only
+            supported value is `step_details.tool_calls[*].file_search.results[*].content`
+            to fetch the file search result content. See the [file search tool
+            documentation](https://developers.openai.com/api/docs/guides/tools-file-search#r
+            etrieval-customization) for more information.
+    """
+    _cursor = after
+    while True:
+        _page = await list_run_steps(
+            _client_config,
+            thread_id,
+            run_id,
+            limit,
+            order,
+            _cursor,
+            before,
+            include,
+            request_options=request_options,
+        )
+        _items: list[RunStepObject] = _page.data if isinstance(_page.data, list) else []
+        if not _items:
+            break
+        for item in _items:
+            yield item
+        if not _page.has_more:
+            break
+        _next = _page.last_id
+        if _next is None or isinstance(_next, NotGiven):
+            break
+        _cursor = _next
+
+
+async def list_run_steps_pages(
+    _client_config: ClientConfig,
+    thread_id: str,
+    run_id: str,
+    limit: int | NotGiven = NOT_GIVEN,
+    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
+    after: str | NotGiven = NOT_GIVEN,
+    before: str | NotGiven = NOT_GIVEN,
+    include: list[Literal["step_details.tool_calls[*].file_search.results[*].content"] | str]
+    | NotGiven = NOT_GIVEN,
+    *,
+    request_options: RequestOptions | None = None,
+) -> AsyncIterator[SdkPage[ListRunStepsResponse, RunStepObject]]:
+    _cursor = after
+    while True:
+        _page = await list_run_steps(
+            _client_config,
+            thread_id,
+            run_id,
+            limit,
+            order,
+            _cursor,
+            before,
+            include,
+            request_options=request_options,
+        )
+        _items: list[RunStepObject] = _page.data if isinstance(_page.data, list) else []
+        if not _items:
+            break
+        _next = _page.last_id
+        _has_more = (
+            bool(_page.has_more) and not isinstance(_next, NotGiven | None) and _next != _cursor
+        )
+        yield SdkPage(data=_page, items=_items, has_more=_has_more)
+        if not _has_more or _next is None or isinstance(_next, NotGiven):
+            break
+        _cursor = _next
+
+
+def list_run_steps_paginated_sync(
+    _client_config: ClientConfig,
+    thread_id: str,
+    run_id: str,
+    limit: int | NotGiven = NOT_GIVEN,
+    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
+    after: str | NotGiven = NOT_GIVEN,
+    before: str | NotGiven = NOT_GIVEN,
+    include: list[Literal["step_details.tool_calls[*].file_search.results[*].content"] | str]
+    | NotGiven = NOT_GIVEN,
+    *,
+    request_options: RequestOptions | None = None,
+) -> Iterator[RunStepObject]:
+    """Lists the steps belonging to a run on a thread. Use cursor parameters to page
+    through the steps, and set `order` to control their order by creation time.
+
+    Returns a list of run steps belonging to a run.
+
+    Args:
+        thread_id: The ID of the thread the run and run steps belong to.
+        run_id: The ID of the run the run steps belong to.
+        limit: A limit on the number of objects to be returned. Limit can range between 1 and
+            100, and the default is 20.
+        order: Sort order by the `created_at` timestamp of the objects. `asc` for ascending
+            order and `desc` for descending order.
+        after: A cursor for use in pagination. `after` is an object ID that defines your place
+            in the list. For instance, if you make a list request and receive 100 objects,
+            ending with obj_foo, your subsequent call can include after=obj_foo in order to
+            fetch the next page of the list.
+        before: A cursor for use in pagination. `before` is an object ID that defines your place
+            in the list. For instance, if you make a list request and receive 100 objects,
+            starting with obj_foo, your subsequent call can include before=obj_foo in order
+            to fetch the previous page of the list.
+        include: A list of additional fields to include in the response. Currently the only
+            supported value is `step_details.tool_calls[*].file_search.results[*].content`
+            to fetch the file search result content. See the [file search tool
+            documentation](https://developers.openai.com/api/docs/guides/tools-file-search#r
+            etrieval-customization) for more information.
+    """
+    _cursor = after
+    while True:
+        _page = list_run_steps_sync(
+            _client_config,
+            thread_id,
+            run_id,
+            limit,
+            order,
+            _cursor,
+            before,
+            include,
+            request_options=request_options,
+        )
+        _items: list[RunStepObject] = _page.data if isinstance(_page.data, list) else []
+        if not _items:
+            break
+        yield from _items
+        if not _page.has_more:
+            break
+        _next = _page.last_id
+        if _next is None or isinstance(_next, NotGiven):
+            break
+        _cursor = _next
+
+
+def list_run_steps_pages_sync(
+    _client_config: ClientConfig,
+    thread_id: str,
+    run_id: str,
+    limit: int | NotGiven = NOT_GIVEN,
+    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
+    after: str | NotGiven = NOT_GIVEN,
+    before: str | NotGiven = NOT_GIVEN,
+    include: list[Literal["step_details.tool_calls[*].file_search.results[*].content"] | str]
+    | NotGiven = NOT_GIVEN,
+    *,
+    request_options: RequestOptions | None = None,
+) -> Iterator[SdkPage[ListRunStepsResponse, RunStepObject]]:
+    _cursor = after
+    while True:
+        _page = list_run_steps_sync(
+            _client_config,
+            thread_id,
+            run_id,
+            limit,
+            order,
+            _cursor,
+            before,
+            include,
+            request_options=request_options,
+        )
+        _items: list[RunStepObject] = _page.data if isinstance(_page.data, list) else []
+        if not _items:
+            break
+        _next = _page.last_id
+        _has_more = (
+            bool(_page.has_more) and not isinstance(_next, NotGiven | None) and _next != _cursor
+        )
+        yield SdkPage(data=_page, items=_items, has_more=_has_more)
+        if not _has_more or _next is None or isinstance(_next, NotGiven):
+            break
+        _cursor = _next
+
+
 GetRunStepError: TypeAlias = ErrorResponse
 
 
@@ -469,127 +673,21 @@ def submit_assistants_tool_outputs_to_run_sync(
     )
 
 
-SubmitAssistantsToolOutputsToRunStreamError: TypeAlias = ErrorResponse
-
-
-async def submit_assistants_tool_outputs_to_run_stream(
-    _client_config: ClientConfig,
-    thread_id: str,
-    run_id: str,
-    tool_outputs: list[SubmitToolOutputsRunRequestToolOutputsItem],
-    stream: bool | None,
-    *,
-    request_options: StreamRequestOptions | None = None,
-) -> AsyncIterator[AssistantStreamEvent]:
-    """Submits tool outputs for a run that is waiting for tool results. Provide the outputs
-    for all completed tool calls in one request so the run can continue. Set `stream` to
-    receive run events as server-sent events.
-
-    When a run has the `status: "requires_action"` and `required_action.type` is
-    `submit_tool_outputs`, this endpoint can be used to submit the outputs from the tool
-    calls once they're all completed. All outputs must be submitted in a single request.
-
-    Args:
-        thread_id: The ID of the
-            [thread](https://developers.openai.com/api/docs/assistants/migration) to which
-            this run belongs.
-        run_id: The ID of the run that requires the tool output submission.
-        tool_outputs: A list of tools for which the outputs are being submitted.
-        stream: Optional `boolean` value serialized in the `stream` wire field.
-    """
-
-    async for _ev in sdk_stream(
-        "POST",
-        f"/threads/{encode_path_segment(thread_id)}/runs/{encode_path_segment(run_id)}/submit_tool_outputs",
-        json=omit_unset(
-            {
-                "tool_outputs": (
-                    NOT_GIVEN
-                    if tool_outputs is NOT_GIVEN
-                    else to_wire(tool_outputs, "SubmitToolOutputsRunRequestToolOutputsItem")
-                ),
-                "stream": (NOT_GIVEN if stream is NOT_GIVEN else to_wire(stream, "bool | None")),
-            }
-        ),
-        operation_id="submit_assistants_tool_outputs_to_run_stream",
-        errors={"429": ErrorResponse},
-        stream_format="sse",
-        request_options=request_options,
-        config=_client_config,
-    ):
-        if _ev.data == "[DONE]":
-            return
-        yield sdk_decode(
-            _ev, lambda event: _validate_pydantic_response(event.data, AssistantStreamEvent)
-        )
-
-
-def submit_assistants_tool_outputs_to_run_stream_sync(
-    _client_config: ClientConfig,
-    thread_id: str,
-    run_id: str,
-    tool_outputs: list[SubmitToolOutputsRunRequestToolOutputsItem],
-    stream: bool | None,
-    *,
-    request_options: StreamRequestOptions | None = None,
-) -> Iterator[AssistantStreamEvent]:
-    """Submits tool outputs for a run that is waiting for tool results. Provide the outputs
-    for all completed tool calls in one request so the run can continue. Set `stream` to
-    receive run events as server-sent events.
-
-    When a run has the `status: "requires_action"` and `required_action.type` is
-    `submit_tool_outputs`, this endpoint can be used to submit the outputs from the tool
-    calls once they're all completed. All outputs must be submitted in a single request.
-
-    Args:
-        thread_id: The ID of the
-            [thread](https://developers.openai.com/api/docs/assistants/migration) to which
-            this run belongs.
-        run_id: The ID of the run that requires the tool output submission.
-        tool_outputs: A list of tools for which the outputs are being submitted.
-        stream: Optional `boolean` value serialized in the `stream` wire field.
-    """
-
-    for _ev in sdk_stream_sync(
-        "POST",
-        f"/threads/{encode_path_segment(thread_id)}/runs/{encode_path_segment(run_id)}/submit_tool_outputs",
-        json=omit_unset(
-            {
-                "tool_outputs": (
-                    NOT_GIVEN
-                    if tool_outputs is NOT_GIVEN
-                    else to_wire(tool_outputs, "SubmitToolOutputsRunRequestToolOutputsItem")
-                ),
-                "stream": (NOT_GIVEN if stream is NOT_GIVEN else to_wire(stream, "bool | None")),
-            }
-        ),
-        operation_id="submit_assistants_tool_outputs_to_run_stream",
-        errors={"429": ErrorResponse},
-        stream_format="sse",
-        request_options=request_options,
-        config=_client_config,
-    ):
-        if _ev.data == "[DONE]":
-            return
-        yield sdk_decode(
-            _ev, lambda event: _validate_pydantic_response(event.data, AssistantStreamEvent)
-        )
-
-
 __all__ = [
     "CancelRunError",
     "GetRunStepError",
     "ListRunStepsError",
     "SubmitAssistantsToolOutputsToRunError",
-    "SubmitAssistantsToolOutputsToRunStreamError",
     "cancel_run",
     "cancel_run_sync",
     "get_run_step",
     "get_run_step_sync",
     "list_run_steps",
+    "list_run_steps_pages",
+    "list_run_steps_pages_sync",
+    "list_run_steps_paginated",
+    "list_run_steps_paginated_sync",
     "list_run_steps_sync",
     "submit_assistants_tool_outputs_to_run",
-    "submit_assistants_tool_outputs_to_run_stream",
-    "submit_assistants_tool_outputs_to_run_stream_sync",
     "submit_assistants_tool_outputs_to_run_sync",
 ]

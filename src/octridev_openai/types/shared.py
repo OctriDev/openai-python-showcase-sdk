@@ -30,7 +30,8 @@ from .shared_part001 import (
     OpenAIFile,
     OutputMessageContent,
     ParallelToolCalls,
-    PermissionErrorResponse,
+    PublicAssignOrganizationGroupRoleBody,
+    ReasoningEffort,
     UnknownComputerAction,
     UnknownFunctionAndCustomToolCallOutput,
     UnknownInputContent,
@@ -42,14 +43,13 @@ from .shared_part002 import (
     ContainerNetworkPolicyDisabledParam,
     ContainerNetworkPolicyDomainSecretParam,
     IncludeEnum,
+    InputTextContent,
     MessageRole,
     MessageStatus,
     PromptCacheBreakpointConfig,
     PromptCacheBreakpointParam,
     PromptCacheModeEnum,
     PromptCacheTTLEnum,
-    PublicAssignOrganizationGroupRoleBody,
-    ReasoningEffort,
     ReasoningItem,
     ResponseFormatJsonObject,
     ResponseFormatJsonSchemaSchema,
@@ -88,13 +88,13 @@ from .shared_part003 import (
     ImageGenToolCallError,
     ImageGenToolCallModerationDetails,
     ImageOutputFormat,
-    InputTextContent,
     KeyPressAction,
     LogProb,
     MessagePhase2,
     MoveParam,
     ReasoningTextContent,
     RefusalContent,
+    ScreenshotParam,
     SummaryTextContent,
     TextContent,
     ToolCallCaller,
@@ -136,7 +136,6 @@ from .shared_part004 import (
     InputFidelity,
     ProgrammaticToolCallingParam,
     RankerVersionType,
-    ScreenshotParam,
     ScrollParam,
     ToolSearchExecutionType,
     TypeParam,
@@ -178,6 +177,7 @@ from .shared_part006 import (
     ApplyPatchToolCallOperation,
     AutoCodeInterpreterToolParamNetworkPolicy,
     CodeInterpreterToolCallOutputsItem,
+    CodeInterpreterToolContainer,
     CompoundFilterFiltersItem,
     ComputerActionList,
     ContainerAutoParamNetworkPolicy,
@@ -194,13 +194,13 @@ from .shared_part006 import (
     FunctionShellToolParamEnvironment,
     InputItem,
     InputMessageContentList,
+    MCPToolRequireApproval,
+    MCPToolRequireApprovalVariant0,
     MessageContentItem,
     ModelResponseProperties,
     NamespaceToolParamToolsItem,
     OutputMessage,
     ResponseConfigurationUpdate,
-    ResponseConfigurationUpdateItemParam,
-    ResponseConfigurationUpdateItemParamReasoning,
     ResponseConfigurationUpdateReasoning,
     ToolSearchOutputNamespaceToolParamToolsItem,
     UnknownApplyPatchToolCallOperation,
@@ -227,21 +227,22 @@ from .shared_part007 import (
     CustomToolCall,
     FileSearchToolCall,
     FileSearchToolCallResultsItem,
-    FunctionToolCall,
     InputFileContent,
     InputImageContent,
     OutputTextContent,
     Prompt,
     PromptCacheOptionsParam,
+    ResponseConfigurationUpdateItemParam,
+    ResponseConfigurationUpdateItemParamReasoning,
     ResponseFormatJsonSchema,
     ResponseFormatJsonSchemaJsonSchema,
     TextResponseFormatJsonSchema,
 )
 from .shared_part008 import (
-    CodeInterpreterTool,
     ComputerToolCallOutputResource,
     ComputerToolCallOutputResourceVariant1,
     CustomToolCallOutput,
+    FunctionToolCall,
     FunctionToolCallOutput,
     FunctionToolCallOutputResource,
     FunctionToolCallOutputResourceVariant1,
@@ -255,52 +256,52 @@ from .shared_part008 import (
 from .shared_part009 import (
     ApplyPatchToolParam,
     ComputerUsePreviewTool,
+    CustomGrammarFormatParam,
     FileSearchTool,
+    FunctionShellCallOutput,
     FunctionTool,
     FunctionToolParam,
-    MCPTool,
-    MCPToolRequireApprovalMCPToolApprovalFilter,
+    ImageGenTool,
+    ImageGenToolInputImageMask,
     RankingOptions,
     ToolSearchOutputFunctionToolParam,
+    WebSearchPreviewTool,
     WebSearchTool,
     WebSearchToolFilters,
 )
 from .shared_part010 import (
+    ApplyPatchToolCallItemParam,
     ApplyPatchToolCallOutput,
+    ApplyPatchToolCallOutputItemParam,
+    AutoCodeInterpreterToolParam,
+    CodeInterpreterTool,
+    CodeInterpreterToolCall,
     ComputerCallOutputItemParam,
-    CustomGrammarFormatParam,
-    FunctionShellCallOutput,
+    FunctionShellCallOutputContentParam,
     FunctionShellCallOutputItemParam,
-    ImageGenTool,
-    ImageGenToolInputImageMask,
     InputFileContentParam,
     InputImageContentParamAutoParam,
     MCPToolCall,
     ToolSearchCallItemParam,
     ToolSearchOutputItemParam,
-    WebSearchPreviewTool,
 )
 from .shared_part011 import (
-    ApplyPatchToolCallItemParam,
-    ApplyPatchToolCallOutputItemParam,
-    AutoCodeInterpreterToolParam,
-    CodeInterpreterToolCall,
+    ApplyPatchToolCall,
     CompoundFilter,
     ContainerAutoParam,
     CustomToolParam,
+    FunctionCallOutputItemParam,
     FunctionShellCall,
     FunctionShellCallOutputContent,
-    FunctionShellCallOutputContentParam,
     FunctionShellToolParam,
+    MCPTool,
     Message,
     NamespaceToolParam,
     WebSearchToolCall,
 )
 from .shared_part012 import (
-    ApplyPatchToolCall,
     ComputerToolCall,
     EasyInputMessage,
-    FunctionCallOutputItemParam,
     FunctionShellCallItemParam,
     InputMessage,
     ToolSearchOutputNamespaceToolParam,
@@ -340,6 +341,7 @@ __all__ = [
     "CodeInterpreterTool",
     "CodeInterpreterToolCall",
     "CodeInterpreterToolCallOutputsItem",
+    "CodeInterpreterToolContainer",
     "ComparisonFilter",
     "CompletionUsage",
     "CompletionUsageCompletionTokensDetails",
@@ -471,7 +473,8 @@ __all__ = [
     "MCPToolCallStatus",
     "MCPToolExecutionError",
     "MCPToolFilter",
-    "MCPToolRequireApprovalMCPToolApprovalFilter",
+    "MCPToolRequireApproval",
+    "MCPToolRequireApprovalVariant0",
     "Message",
     "MessageContentItem",
     "MessagePhase",
@@ -491,7 +494,6 @@ __all__ = [
     "OutputMessageContent",
     "OutputTextContent",
     "ParallelToolCalls",
-    "PermissionErrorResponse",
     "ProgrammaticToolCallingParam",
     "ProjectEventTypeEnum",
     "Prompt",
@@ -603,7 +605,6 @@ _deferred_shared_part001: tuple[tuple[str, object], ...] = (
     ("CustomToolCallOutput", CustomToolCallOutput),
     ("DoubleClickAction", DoubleClickAction),
     ("DragParam", DragParam),
-    ("Error3", Error3),
     ("FileSearchToolCall", FileSearchToolCall),
     ("FunctionCallOutputItemParam", FunctionCallOutputItemParam),
     ("FunctionShellCallItemParam", FunctionShellCallItemParam),
@@ -656,7 +657,7 @@ UnknownMCPToolCallError.model_rebuild()
 MCPToolFilter.model_rebuild()
 OpenAIFile.model_rebuild()
 UnknownOutputMessageContent.model_rebuild()
-PermissionErrorResponse.model_rebuild()
+PublicAssignOrganizationGroupRoleBody.model_rebuild()
 
 _shared_part002 = importlib.import_module(".shared_part002", __package__)
 
@@ -672,7 +673,6 @@ _deferred_shared_part002: tuple[tuple[str, object], ...] = (
     ("ImageGenTool", ImageGenTool),
     ("InputFileContent", InputFileContent),
     ("InputImageContent", InputImageContent),
-    ("InputTextContent", InputTextContent),
     ("MCPTool", MCPTool),
     ("NamespaceToolParam", NamespaceToolParam),
     ("ProgrammaticToolCallingParam", ProgrammaticToolCallingParam),
@@ -687,7 +687,6 @@ _deferred_shared_part002: tuple[tuple[str, object], ...] = (
 for _name, _value in _deferred_shared_part002:
     setattr(_shared_part002, _name, _value)
 
-PublicAssignOrganizationGroupRoleBody.model_rebuild()
 ReasoningItem.model_rebuild()
 ResponseFormatJsonObject.model_rebuild()
 ResponseFormatText.model_rebuild()
@@ -705,6 +704,7 @@ ContainerNetworkPolicyDisabledParam.model_rebuild()
 ContainerNetworkPolicyDomainSecretParam.model_rebuild()
 ContainerNetworkPolicyAllowlistParam.model_rebuild()
 PromptCacheBreakpointConfig.model_rebuild()
+InputTextContent.model_rebuild()
 
 _shared_part004 = importlib.import_module(".shared_part004", __package__)
 
@@ -712,7 +712,6 @@ _deferred_shared_part004: tuple[tuple[str, object], ...] = (("CompoundFilter", C
 for _name, _value in _deferred_shared_part004:
     setattr(_shared_part004, _name, _value)
 
-ScreenshotParam.model_rebuild()
 ScrollParam.model_rebuild()
 TypeParam.model_rebuild()
 WaitParam.model_rebuild()
@@ -737,6 +736,7 @@ ApplyPatchUpdateFileOperation.model_rebuild()
 _shared_part006 = importlib.import_module(".shared_part006", __package__)
 
 _deferred_shared_part006: tuple[tuple[str, object], ...] = (
+    ("AutoCodeInterpreterToolParam", AutoCodeInterpreterToolParam),
     ("CompoundFilter", CompoundFilter),
     ("ComputerScreenshotContent", ComputerScreenshotContent),
     ("ContainerAutoParam", ContainerAutoParam),
@@ -760,6 +760,7 @@ UnknownAutoCodeInterpreterToolParamNetworkPolicy.model_rebuild()
 UnknownCodeInterpreterToolCallOutputsItem.model_rebuild()
 UnknownMessageContentItem.model_rebuild()
 UnknownWebSearchToolCallAction.model_rebuild()
+MCPToolRequireApprovalVariant0.model_rebuild()
 UnknownFunctionShellToolParamEnvironment.model_rebuild()
 UnknownContainerAutoParamNetworkPolicy.model_rebuild()
 UnknownContainerAutoParamSkillsItem.model_rebuild()
@@ -778,50 +779,26 @@ ModelResponseProperties.model_rebuild()
 OutputMessage.model_rebuild()
 ResponseConfigurationUpdateReasoning.model_rebuild()
 ResponseConfigurationUpdate.model_rebuild()
-ResponseConfigurationUpdateItemParamReasoning.model_rebuild()
-ResponseConfigurationUpdateItemParam.model_rebuild()
 
-_shared_part008 = importlib.import_module(".shared_part008", __package__)
+_shared_part009 = importlib.import_module(".shared_part009", __package__)
 
-_deferred_shared_part008: tuple[tuple[str, object], ...] = (
-    ("AutoCodeInterpreterToolParam", AutoCodeInterpreterToolParam),
-)
-for _name, _value in _deferred_shared_part008:
-    setattr(_shared_part008, _name, _value)
-
-FunctionToolCallResourceVariant1.model_rebuild()
-FunctionToolCallResource.model_rebuild()
-CustomToolCallOutput.model_rebuild()
-FunctionToolCallOutput.model_rebuild()
-FunctionToolCallOutputResourceVariant1.model_rebuild()
-FunctionToolCallOutputResource.model_rebuild()
-ImageGenToolCall.model_rebuild()
-ComputerToolCallOutputResourceVariant1.model_rebuild()
-ComputerToolCallOutputResource.model_rebuild()
-ToolSearchCall.model_rebuild()
-ToolSearchToolParam.model_rebuild()
-ToolSearchOutput.model_rebuild()
-CodeInterpreterTool.model_rebuild()
-
-_shared_part010 = importlib.import_module(".shared_part010", __package__)
-
-_deferred_shared_part010: tuple[tuple[str, object], ...] = (
+_deferred_shared_part009: tuple[tuple[str, object], ...] = (
     ("FunctionShellCallOutputContent", FunctionShellCallOutputContent),
-    ("FunctionShellCallOutputContentParam", FunctionShellCallOutputContentParam),
 )
-for _name, _value in _deferred_shared_part010:
-    setattr(_shared_part010, _name, _value)
+for _name, _value in _deferred_shared_part009:
+    setattr(_shared_part009, _name, _value)
 
+FunctionTool.model_rebuild()
+FunctionToolParam.model_rebuild()
+ApplyPatchToolParam.model_rebuild()
+ToolSearchOutputFunctionToolParam.model_rebuild()
+RankingOptions.model_rebuild()
+WebSearchToolFilters.model_rebuild()
+WebSearchTool.model_rebuild()
+FileSearchTool.model_rebuild()
+ComputerUsePreviewTool.model_rebuild()
 ImageGenToolInputImageMask.model_rebuild()
 ImageGenTool.model_rebuild()
 CustomGrammarFormatParam.model_rebuild()
 WebSearchPreviewTool.model_rebuild()
 FunctionShellCallOutput.model_rebuild()
-ApplyPatchToolCallOutput.model_rebuild()
-MCPToolCall.model_rebuild()
-InputImageContentParamAutoParam.model_rebuild()
-ComputerCallOutputItemParam.model_rebuild()
-ToolSearchCallItemParam.model_rebuild()
-ToolSearchOutputItemParam.model_rebuild()
-InputFileContentParam.model_rebuild()
-FunctionShellCallOutputItemParam.model_rebuild()

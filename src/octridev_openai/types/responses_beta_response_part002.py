@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, WrapValidator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
 from octridev_openai.types.responses_beta import (
@@ -30,7 +30,7 @@ from octridev_openai.types.responses_beta_response_part001 import (
 )
 from octridev_openai.types.responses_beta_service import BetaServiceTierResponses
 
-from ..validation import validate_required
+from ..validation import validate_required, validate_union_candidate
 
 
 class BetaResponseVariant2IncompleteDetails(BaseModel):
@@ -77,7 +77,9 @@ class BetaResponseVariant2(BaseModel):
       the model, you might consider using the `output_text` property where
       supported in SDKs.
     """
-    instructions: str | list[BetaInputItem] | None
+    instructions: (
+        str | Annotated[list[BetaInputItem], WrapValidator(validate_union_candidate)] | None
+    )
     """
     A system (or developer) message inserted into the model's context.
 
@@ -236,7 +238,9 @@ class BetaResponse(BaseModel):
       the model, you might consider using the `output_text` property where
       supported in SDKs.
     """
-    instructions: str | list[BetaInputItem] | None
+    instructions: (
+        str | Annotated[list[BetaInputItem], WrapValidator(validate_union_candidate)] | None
+    )
     """
     A system (or developer) message inserted into the model's context.
 

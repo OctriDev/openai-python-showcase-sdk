@@ -6,6 +6,29 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_36: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "AuditLogServiceAccountUpdated": (
+        None,
+        {
+            "id": ("id", None),
+            "changes_requested": (
+                "changes_requested",
+                "AuditLogServiceAccountUpdatedChangesRequested",
+            ),
+        },
+    ),
+    "AuditLogServiceAccountDeleted": (
+        None,
+        {
+            "id": ("id", None),
+        },
+    ),
+    "AuditLogWorkloadIdentityProviderCreated": (
+        None,
+        {
+            "id": ("id", None),
+            "data": ("data", None),
+        },
+    ),
     "AuditLogWorkloadIdentityProviderUpdated": (
         None,
         {
@@ -350,25 +373,6 @@ WIRE_SCHEMAS_PART_36: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
     "ChatCompletionNamedToolChoiceFunction": (
         None,
         {
-            "name": ("name", None),
-        },
-    ),
-    "ChatCompletionNamedToolChoiceCustomCustom": (
-        None,
-        {
-            "name": ("name", None),
-        },
-    ),
-    "ChatCompletionRequestAssistantMessageAudio": (
-        None,
-        {
-            "id": ("id", None),
-        },
-    ),
-    "ChatCompletionRequestAssistantMessageFunctionCall": (
-        None,
-        {
-            "arguments": ("arguments", None),
             "name": ("name", None),
         },
     ),

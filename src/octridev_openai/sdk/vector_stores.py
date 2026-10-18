@@ -26,10 +26,22 @@ from ..methods.vector_stores import (
     get_vector_store_file_sync,
     get_vector_store_sync,
     list_files_in_vector_store_batch,
+    list_files_in_vector_store_batch_pages,
+    list_files_in_vector_store_batch_pages_sync,
+    list_files_in_vector_store_batch_paginated,
+    list_files_in_vector_store_batch_paginated_sync,
     list_files_in_vector_store_batch_sync,
     list_vector_store_files,
+    list_vector_store_files_pages,
+    list_vector_store_files_pages_sync,
+    list_vector_store_files_paginated,
+    list_vector_store_files_paginated_sync,
     list_vector_store_files_sync,
     list_vector_stores,
+    list_vector_stores_pages,
+    list_vector_stores_pages_sync,
+    list_vector_stores_paginated,
+    list_vector_stores_paginated_sync,
     list_vector_stores_sync,
     modify_vector_store,
     modify_vector_store_sync,
@@ -46,6 +58,10 @@ class _VectorStoresNamespace:
     def __init__(self, config: ClientConfig) -> None:
         self.list = partial(list_vector_stores_sync, config)
         self.list.__doc__ = list_vector_stores_sync.__doc__
+        self.list_paginated = partial(list_vector_stores_paginated_sync, config)
+        self.list_paginated.__doc__ = list_vector_stores_paginated_sync.__doc__
+        self.list_pages = partial(list_vector_stores_pages_sync, config)
+        self.list_pages.__doc__ = list_vector_stores_pages_sync.__doc__
         self.create = partial(create_vector_store_sync, config)
         self.create.__doc__ = create_vector_store_sync.__doc__
         self.get = partial(get_vector_store_sync, config)
@@ -62,8 +78,22 @@ class _VectorStoresNamespace:
         self.cancel_file_batch.__doc__ = cancel_vector_store_file_batch_sync.__doc__
         self.list_files_in_batch = partial(list_files_in_vector_store_batch_sync, config)
         self.list_files_in_batch.__doc__ = list_files_in_vector_store_batch_sync.__doc__
+        self.list_files_in_batch_paginated = partial(
+            list_files_in_vector_store_batch_paginated_sync, config
+        )
+        self.list_files_in_batch_paginated.__doc__ = (
+            list_files_in_vector_store_batch_paginated_sync.__doc__
+        )
+        self.list_files_in_batch_pages = partial(
+            list_files_in_vector_store_batch_pages_sync, config
+        )
+        self.list_files_in_batch_pages.__doc__ = list_files_in_vector_store_batch_pages_sync.__doc__
         self.list_files = partial(list_vector_store_files_sync, config)
         self.list_files.__doc__ = list_vector_store_files_sync.__doc__
+        self.list_files_paginated = partial(list_vector_store_files_paginated_sync, config)
+        self.list_files_paginated.__doc__ = list_vector_store_files_paginated_sync.__doc__
+        self.list_files_pages = partial(list_vector_store_files_pages_sync, config)
+        self.list_files_pages.__doc__ = list_vector_store_files_pages_sync.__doc__
         self.create_file = partial(create_vector_store_file_sync, config)
         self.create_file.__doc__ = create_vector_store_file_sync.__doc__
         self.get_file = partial(get_vector_store_file_sync, config)
@@ -82,6 +112,10 @@ class _AsyncVectorStoresNamespace:
     def __init__(self, config: ClientConfig) -> None:
         self.list = partial(list_vector_stores, config)
         self.list.__doc__ = list_vector_stores.__doc__
+        self.list_paginated = partial(list_vector_stores_paginated, config)
+        self.list_paginated.__doc__ = list_vector_stores_paginated.__doc__
+        self.list_pages = partial(list_vector_stores_pages, config)
+        self.list_pages.__doc__ = list_vector_stores_pages.__doc__
         self.create = partial(create_vector_store, config)
         self.create.__doc__ = create_vector_store.__doc__
         self.get = partial(get_vector_store, config)
@@ -98,8 +132,20 @@ class _AsyncVectorStoresNamespace:
         self.cancel_file_batch.__doc__ = cancel_vector_store_file_batch.__doc__
         self.list_files_in_batch = partial(list_files_in_vector_store_batch, config)
         self.list_files_in_batch.__doc__ = list_files_in_vector_store_batch.__doc__
+        self.list_files_in_batch_paginated = partial(
+            list_files_in_vector_store_batch_paginated, config
+        )
+        self.list_files_in_batch_paginated.__doc__ = (
+            list_files_in_vector_store_batch_paginated.__doc__
+        )
+        self.list_files_in_batch_pages = partial(list_files_in_vector_store_batch_pages, config)
+        self.list_files_in_batch_pages.__doc__ = list_files_in_vector_store_batch_pages.__doc__
         self.list_files = partial(list_vector_store_files, config)
         self.list_files.__doc__ = list_vector_store_files.__doc__
+        self.list_files_paginated = partial(list_vector_store_files_paginated, config)
+        self.list_files_paginated.__doc__ = list_vector_store_files_paginated.__doc__
+        self.list_files_pages = partial(list_vector_store_files_pages, config)
+        self.list_files_pages.__doc__ = list_vector_store_files_pages.__doc__
         self.create_file = partial(create_vector_store_file, config)
         self.create_file.__doc__ = create_vector_store_file.__doc__
         self.get_file = partial(get_vector_store_file, config)

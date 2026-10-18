@@ -6,6 +6,22 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_9: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "RealtimeClientEventResponseCancel": (
+        None,
+        {
+            "event_id": ("event_id", None),
+            "type": ("type", None),
+            "response_id": ("response_id", None),
+        },
+    ),
+    "RealtimeClientEventResponseCreate": (
+        None,
+        {
+            "event_id": ("event_id", None),
+            "type": ("type", None),
+            "response": ("response", "RealtimeResponseCreateParams"),
+        },
+    ),
     "RealtimeClientEventSessionUpdate": (
         None,
         {
@@ -506,30 +522,6 @@ WIRE_SCHEMAS_PART_9: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = 
             "item_id": ("item_id", None),
             "output_index": ("output_index", None),
             "content_index": ("content_index", None),
-        },
-    ),
-    "RealtimeServerEventResponseAudioTranscriptDelta": (
-        None,
-        {
-            "event_id": ("event_id", None),
-            "type": ("type", None),
-            "response_id": ("response_id", None),
-            "item_id": ("item_id", None),
-            "output_index": ("output_index", None),
-            "content_index": ("content_index", None),
-            "delta": ("delta", None),
-        },
-    ),
-    "RealtimeServerEventResponseAudioTranscriptDone": (
-        None,
-        {
-            "event_id": ("event_id", None),
-            "type": ("type", None),
-            "response_id": ("response_id", None),
-            "item_id": ("item_id", None),
-            "output_index": ("output_index", None),
-            "content_index": ("content_index", None),
-            "transcript": ("transcript", None),
         },
     ),
 }

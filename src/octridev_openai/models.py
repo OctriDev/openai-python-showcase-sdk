@@ -556,6 +556,7 @@ from .types import (
     CreateVaultCredentialAuthParamStaticBearer,
     CreateVaultCredentialParams,
     CreateVaultParams,
+    CreateVectorStoreFileBatchRequest,
     CreateVectorStoreFileRequest,
     CreateVectorStoreRequest,
     CreateVideoCharacterBody,
@@ -774,6 +775,7 @@ from .types import (
     ImageGenToolCallError,
     ImageGenToolCallModerationDetails,
     ImageGenUsage,
+    ImageRefParam,
     ImageRefParam2,
     ImagesResponse,
     ImagesUsage,
@@ -1543,6 +1545,7 @@ from .types import (
     ThreadListResource,
     ThreadObject,
     ThreadResource,
+    ThreadStreamEvent,
     ToggleCertificatesRequest,
     TokenCountsBody,
     TokenCountsResource,
@@ -3550,10 +3553,7 @@ _SCHEMAS: dict[str, Any] = {
         "required": ["type", "container"],
         "properties": {
             "type": {"python": "type", "type": "string", "enum": ["code_interpreter"]},
-            "container": {
-                "python": "container",
-                "oneOf": [{"type": "string"}, {"ref": "AutoCodeInterpreterToolParam"}],
-            },
+            "container": {"python": "container", "ref": "CodeInterpreterToolContainer"},
             "allowed_callers": {
                 "python": "allowed_callers",
                 "type": "array",
@@ -4002,10 +4002,6 @@ _SCHEMAS: dict[str, Any] = {
                                 },
                             },
                         },
-                        "oneOf": [
-                            {"required": ["vector_store_ids"]},
-                            {"required": ["vector_stores"]},
-                        ],
                     },
                 },
             },
@@ -4093,7 +4089,15 @@ _SCHEMAS: dict[str, Any] = {
                 "minimum": 0,
                 "maximum": 20,
             },
-            "response_format": {"python": "response_format", "ref": "ResponseFormat"},
+            "response_format": {
+                "python": "response_format",
+                "oneOf": [
+                    {"ref": "ResponseFormatText"},
+                    {"ref": "ResponseFormatJsonSchema"},
+                    {"ref": "ResponseFormatJsonObject"},
+                ],
+                "openTag": ["type", ["text", "json_schema", "json_object"]],
+            },
             "audio": {
                 "python": "audio",
                 "type": ["object", "null"],
@@ -4123,7 +4127,14 @@ _SCHEMAS: dict[str, Any] = {
                 "maximum": 9223372036854776000,
             },
             "stream_options": {"python": "stream_options", "ref": "ChatCompletionStreamOptions"},
-            "tools": {"python": "tools", "type": "array", "items": {"ref": "ToolsItem"}},
+            "tools": {
+                "python": "tools",
+                "type": "array",
+                "items": {
+                    "oneOf": [{"ref": "ChatCompletionTool"}, {"ref": "CustomToolChatCompletions"}],
+                    "openTag": ["type", ["function", "custom"]],
+                },
+            },
             "tool_choice": {"python": "tool_choice", "ref": "ChatCompletionToolChoiceOption"},
             "parallel_tool_calls": {"python": "parallel_tool_calls", "ref": "ParallelToolCalls"},
             "function_call": {
@@ -4199,7 +4210,15 @@ _SCHEMAS: dict[str, Any] = {
                         "minimum": 0,
                         "maximum": 20,
                     },
-                    "response_format": {"python": "response_format", "ref": "ResponseFormat"},
+                    "response_format": {
+                        "python": "response_format",
+                        "oneOf": [
+                            {"ref": "ResponseFormatText"},
+                            {"ref": "ResponseFormatJsonSchema"},
+                            {"ref": "ResponseFormatJsonObject"},
+                        ],
+                        "openTag": ["type", ["text", "json_schema", "json_object"]],
+                    },
                     "audio": {
                         "python": "audio",
                         "type": ["object", "null"],
@@ -4232,7 +4251,17 @@ _SCHEMAS: dict[str, Any] = {
                         "python": "stream_options",
                         "ref": "ChatCompletionStreamOptions",
                     },
-                    "tools": {"python": "tools", "type": "array", "items": {"ref": "ToolsItem"}},
+                    "tools": {
+                        "python": "tools",
+                        "type": "array",
+                        "items": {
+                            "oneOf": [
+                                {"ref": "ChatCompletionTool"},
+                                {"ref": "CustomToolChatCompletions"},
+                            ],
+                            "openTag": ["type", ["function", "custom"]],
+                        },
+                    },
                     "tool_choice": {
                         "python": "tool_choice",
                         "ref": "ChatCompletionToolChoiceOption",
@@ -5382,17 +5411,7 @@ _SCHEMAS: dict[str, Any] = {
             "model": {"python": "model", "type": "string"},
             "input": {"python": "input", "type": "string", "maxLength": 4096},
             "instructions": {"python": "instructions", "type": "string", "maxLength": 4096},
-            "voice": {
-                "python": "voice",
-                "anyOf": [
-                    {"anyOf": [{"ref": "VoiceIdsShared"}, {"type": "string"}]},
-                    {
-                        "type": "object",
-                        "required": ["id"],
-                        "properties": {"id": {"python": "id", "type": "string"}},
-                    },
-                ],
-            },
+            "voice": {"python": "voice", "ref": "CreateSpeechRequestVoice"},
             "response_format": {"python": "response_format", "type": "string"},
             "speed": {"python": "speed", "type": "number", "minimum": 0.25, "maximum": 4},
             "stream_format": {"python": "stream_format", "type": "string"},
@@ -5558,10 +5577,6 @@ _SCHEMAS: dict[str, Any] = {
                                 },
                             },
                         },
-                        "oneOf": [
-                            {"required": ["vector_store_ids"]},
-                            {"required": ["vector_stores"]},
-                        ],
                     },
                 },
             },
@@ -5598,8 +5613,7 @@ _SCHEMAS: dict[str, Any] = {
             "stream": {"python": "stream", "type": "boolean", "nullable": True},
             "chunking_strategy": {
                 "python": "chunking_strategy",
-                "nullable": True,
-                "anyOf": [{"type": "string"}, {"ref": "VadConfig"}],
+                "ref": "CreateTranscriptionRequestChunkingStrategy",
             },
             "known_speaker_names": {
                 "python": "known_speaker_names",
@@ -5746,7 +5760,6 @@ _SCHEMAS: dict[str, Any] = {
             },
             "attributes": {"python": "attributes", "ref": "VectorStoreFileAttributes"},
         },
-        "anyOf": [{"required": ["file_ids"]}, {"required": ["files"]}],
     },
     "CreateVectorStoreFileRequest": {
         "type": "object",
@@ -7464,7 +7477,6 @@ _SCHEMAS: dict[str, Any] = {
             },
             "file_id": {"python": "file_id", "type": "string"},
         },
-        "anyOf": [{"required": ["image_url"]}, {"required": ["file_id"]}],
     },
     "ImagesResponse": {
         "type": "object",
@@ -7872,6 +7884,7 @@ _SCHEMAS: dict[str, Any] = {
         },
     },
     "ListMessagesResponse": {
+        "type": "object",
         "required": ["object", "data", "first_id", "last_id", "has_more"],
         "properties": {
             "object": {"python": "object", "type": "string"},
@@ -7914,6 +7927,7 @@ _SCHEMAS: dict[str, Any] = {
         },
     },
     "ListRunStepsResponse": {
+        "type": "object",
         "required": ["object", "data", "first_id", "last_id", "has_more"],
         "properties": {
             "object": {"python": "object", "type": "string"},
@@ -7935,6 +7949,7 @@ _SCHEMAS: dict[str, Any] = {
         },
     },
     "ListVectorStoreFilesResponse": {
+        "type": "object",
         "required": ["object", "data", "first_id", "last_id", "has_more"],
         "properties": {
             "object": {"python": "object", "type": "string"},
@@ -7945,6 +7960,7 @@ _SCHEMAS: dict[str, Any] = {
         },
     },
     "ListVectorStoresResponse": {
+        "type": "object",
         "required": ["object", "data", "first_id", "last_id", "has_more"],
         "properties": {
             "object": {"python": "object", "type": "string"},
@@ -8405,20 +8421,7 @@ _SCHEMAS: dict[str, Any] = {
                 "minItems": 1,
                 "items": {"ref": "CallableToolAllowedCaller"},
             },
-            "require_approval": {
-                "python": "require_approval",
-                "nullable": True,
-                "oneOf": [
-                    {
-                        "type": "object",
-                        "properties": {
-                            "always": {"python": "always", "ref": "MCPToolFilter"},
-                            "never": {"python": "never", "ref": "MCPToolFilter"},
-                        },
-                    },
-                    {"type": "string"},
-                ],
-            },
+            "require_approval": {"python": "require_approval", "ref": "MCPToolRequireApproval"},
             "defer_loading": {"python": "defer_loading", "type": "boolean"},
         },
     },
@@ -8805,6 +8808,7 @@ _SCHEMAS: dict[str, Any] = {
     },
     "Metadata": {"type": "object", "nullable": True, "additionalProperties": {"type": "string"}},
     "Model": {
+        "type": "object",
         "required": ["id", "object", "created", "owned_by"],
         "properties": {
             "id": {"python": "id", "type": "string"},
@@ -8821,7 +8825,7 @@ _SCHEMAS: dict[str, Any] = {
     "ModelIdsCompaction": {
         "anyOf": [{"ref": "ModelIdsResponses"}, {"type": "string"}, {"type": "null"}]
     },
-    "ModelIdsLive": {"anyOf": [{"type": "string", "minLength": 1}, {"type": "string"}]},
+    "ModelIdsLive": {"type": "string", "minLength": 1},
     "ModelIdsResponses": {"anyOf": [{"ref": "ModelIdsShared"}, {"type": "string"}]},
     "ModelIdsShared": {"type": "string"},
     "ModelResponseProperties": {
@@ -8975,6 +8979,7 @@ _SCHEMAS: dict[str, Any] = {
     },
     "NoiseReductionType": {"type": "string"},
     "OpenAIFile": {
+        "type": "object",
         "required": ["id", "object", "bytes", "created_at", "filename", "purpose", "status"],
         "properties": {
             "id": {"python": "id", "type": "string"},
@@ -9236,9 +9241,7 @@ _SCHEMAS: dict[str, Any] = {
     "PermissionErrorResponse": {
         "type": "object",
         "required": ["error"],
-        "properties": {
-            "error": {"python": "error", "anyOf": [{"ref": "Error3"}, {"type": "string"}]}
-        },
+        "properties": {"error": {"python": "error", "ref": "PermissionErrorResponseError"}},
     },
     "PredictionContent": {
         "type": "object",
@@ -10572,95 +10575,7 @@ _SCHEMAS: dict[str, Any] = {
         "required": ["sdp"],
         "properties": {
             "sdp": {"python": "sdp", "type": "string"},
-            "session": {
-                "python": "session",
-                "required": ["type"],
-                "properties": {
-                    "type": {"python": "type", "type": "string", "enum": ["realtime"]},
-                    "output_modalities": {
-                        "python": "output_modalities",
-                        "type": "array",
-                        "items": {"type": "string"},
-                    },
-                    "model": {"python": "model", "type": "string"},
-                    "instructions": {"python": "instructions", "type": "string"},
-                    "audio": {
-                        "python": "audio",
-                        "type": "object",
-                        "properties": {
-                            "input": {
-                                "python": "input",
-                                "type": "object",
-                                "properties": {
-                                    "format": {"python": "format", "ref": "RealtimeAudioFormats"},
-                                    "transcription": {
-                                        "python": "transcription",
-                                        "ref": "AudioTranscription",
-                                    },
-                                    "noise_reduction": {
-                                        "python": "noise_reduction",
-                                        "properties": {
-                                            "type": {"python": "type", "ref": "NoiseReductionType"}
-                                        },
-                                    },
-                                    "turn_detection": {
-                                        "python": "turn_detection",
-                                        "ref": "RealtimeTurnDetection",
-                                    },
-                                },
-                            },
-                            "output": {
-                                "python": "output",
-                                "type": "object",
-                                "properties": {
-                                    "format": {"python": "format", "ref": "RealtimeAudioFormats"},
-                                    "voice": {"python": "voice", "ref": "VoiceIdsOrCustomVoice"},
-                                    "speed": {
-                                        "python": "speed",
-                                        "type": "number",
-                                        "minimum": 0.25,
-                                        "maximum": 1.5,
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    "include": {"python": "include", "type": "array", "items": {"type": "string"}},
-                    "tracing": {
-                        "python": "tracing",
-                        "oneOf": [
-                            {"type": "string"},
-                            {
-                                "type": "object",
-                                "properties": {
-                                    "workflow_name": {"python": "workflow_name", "type": "string"},
-                                    "group_id": {"python": "group_id", "type": "string"},
-                                    "metadata": {"python": "metadata", "type": "object"},
-                                },
-                            },
-                            {"type": "null"},
-                        ],
-                    },
-                    "tools": {
-                        "python": "tools",
-                        "type": "array",
-                        "items": {"ref": "RealtimeSessionCreateRequestGAToolsItem"},
-                    },
-                    "tool_choice": {
-                        "python": "tool_choice",
-                        "ref": "RealtimeSessionCreateRequestGAToolChoice",
-                    },
-                    "parallel_tool_calls": {"python": "parallel_tool_calls", "type": "boolean"},
-                    "reasoning": {"python": "reasoning", "ref": "RealtimeReasoning"},
-                    "max_output_tokens": {
-                        "python": "max_output_tokens",
-                        "oneOf": [{"type": "integer"}, {"type": "string"}],
-                    },
-                    "truncation": {"python": "truncation", "ref": "RealtimeTruncation"},
-                    "prompt": {"python": "prompt", "ref": "Prompt"},
-                },
-                "allOf": [{"ref": "RealtimeSessionCreateRequestGA"}],
-            },
+            "session": {"python": "session", "ref": "RealtimeSessionCreateRequestGA"},
         },
     },
     "RealtimeCallReferRequest": {
@@ -12049,41 +11964,16 @@ _SCHEMAS: dict[str, Any] = {
             "output_audio_format": {"python": "output_audio_format", "type": "string"},
             "input_audio_transcription": {
                 "python": "input_audio_transcription",
-                "nullable": True,
-                "properties": {
-                    "model": {"python": "model", "type": "string"},
-                    "language": {"python": "language", "type": ["string", "null"]},
-                    "languages": {
-                        "python": "languages",
-                        "type": "array",
-                        "minItems": 1,
-                        "items": {"type": "string"},
-                    },
-                    "prompt": {"python": "prompt", "type": "string"},
-                },
-                "allOf": [{"ref": "AudioTranscriptionResponse"}],
+                "ref": "AudioTranscriptionResponse",
             },
             "turn_detection": {"python": "turn_detection", "ref": "RealtimeTurnDetection"},
             "input_audio_noise_reduction": {
                 "python": "input_audio_noise_reduction",
+                "type": "object",
                 "properties": {"type": {"python": "type", "ref": "NoiseReductionType"}},
             },
             "speed": {"python": "speed", "type": "number", "minimum": 0.25, "maximum": 1.5},
-            "tracing": {
-                "python": "tracing",
-                "nullable": True,
-                "oneOf": [
-                    {"type": "string"},
-                    {
-                        "type": "object",
-                        "properties": {
-                            "workflow_name": {"python": "workflow_name", "type": "string"},
-                            "group_id": {"python": "group_id", "type": "string"},
-                            "metadata": {"python": "metadata", "type": "object"},
-                        },
-                    },
-                ],
-            },
+            "tracing": {"python": "tracing", "ref": "RealtimeSessionTracing"},
             "tools": {"python": "tools", "type": "array", "items": {"ref": "RealtimeFunctionTool"}},
             "tool_choice": {"python": "tool_choice", "type": "string"},
             "temperature": {"python": "temperature", "type": "number"},
@@ -12125,20 +12015,7 @@ _SCHEMAS: dict[str, Any] = {
                 "properties": {"model": {"python": "model", "type": "string"}},
             },
             "speed": {"python": "speed", "type": "number", "minimum": 0.25, "maximum": 1.5},
-            "tracing": {
-                "python": "tracing",
-                "oneOf": [
-                    {"type": "string"},
-                    {
-                        "type": "object",
-                        "properties": {
-                            "workflow_name": {"python": "workflow_name", "type": "string"},
-                            "group_id": {"python": "group_id", "type": "string"},
-                            "metadata": {"python": "metadata", "type": "object"},
-                        },
-                    },
-                ],
-            },
+            "tracing": {"python": "tracing", "ref": "RealtimeSessionCreateRequestTracing"},
             "turn_detection": {
                 "python": "turn_detection",
                 "type": "object",
@@ -12199,6 +12076,7 @@ _SCHEMAS: dict[str, Any] = {
                             },
                             "noise_reduction": {
                                 "python": "noise_reduction",
+                                "type": "object",
                                 "properties": {
                                     "type": {"python": "type", "ref": "NoiseReductionType"}
                                 },
@@ -12319,20 +12197,7 @@ _SCHEMAS: dict[str, Any] = {
                     },
                 },
             },
-            "tracing": {
-                "python": "tracing",
-                "oneOf": [
-                    {"type": "string"},
-                    {
-                        "type": "object",
-                        "properties": {
-                            "workflow_name": {"python": "workflow_name", "type": "string"},
-                            "group_id": {"python": "group_id", "type": "string"},
-                            "metadata": {"python": "metadata", "type": "object"},
-                        },
-                    },
-                ],
-            },
+            "tracing": {"python": "tracing", "ref": "RealtimeSessionCreateResponseTracing"},
             "turn_detection": {
                 "python": "turn_detection",
                 "type": ["object", "null"],
@@ -12413,21 +12278,7 @@ _SCHEMAS: dict[str, Any] = {
                 "type": ["array", "null"],
                 "items": {"type": "string"},
             },
-            "tracing": {
-                "python": "tracing",
-                "nullable": True,
-                "oneOf": [
-                    {"type": "string"},
-                    {
-                        "type": "object",
-                        "properties": {
-                            "workflow_name": {"python": "workflow_name", "type": "string"},
-                            "group_id": {"python": "group_id", "type": "string"},
-                            "metadata": {"python": "metadata", "type": "object"},
-                        },
-                    },
-                ],
-            },
+            "tracing": {"python": "tracing", "ref": "RealtimeSessionCreateResponseGATracing"},
             "tools": {
                 "python": "tools",
                 "type": "array",
@@ -12461,6 +12312,7 @@ _SCHEMAS: dict[str, Any] = {
             },
             "input_audio_noise_reduction": {
                 "python": "input_audio_noise_reduction",
+                "type": "object",
                 "properties": {"type": {"python": "type", "ref": "NoiseReductionType"}},
             },
             "input_audio_format": {"python": "input_audio_format", "type": "string"},
@@ -12491,6 +12343,7 @@ _SCHEMAS: dict[str, Any] = {
                             },
                             "noise_reduction": {
                                 "python": "noise_reduction",
+                                "type": "object",
                                 "properties": {
                                     "type": {"python": "type", "ref": "NoiseReductionType"}
                                 },
@@ -17033,17 +16886,13 @@ _SCHEMAS: dict[str, Any] = {
         },
     },
     "ThreadStreamEvent": {
-        "oneOf": [
-            {
-                "type": "object",
-                "required": ["event", "data"],
-                "properties": {
-                    "enabled": {"python": "enabled", "type": "boolean"},
-                    "event": {"python": "event", "type": "string"},
-                    "data": {"python": "data", "ref": "ThreadObject"},
-                },
-            }
-        ]
+        "type": "object",
+        "required": ["event", "data"],
+        "properties": {
+            "enabled": {"python": "enabled", "type": "boolean"},
+            "event": {"python": "event", "type": "string", "enum": ["thread.created"]},
+            "data": {"python": "data", "ref": "ThreadObject"},
+        },
     },
     "ToggleCertificatesRequest": {
         "type": "object",
@@ -20412,10 +20261,7 @@ _SCHEMAS: dict[str, Any] = {
     "LiveInitialSessionAudioOutputParam": {
         "type": "object",
         "properties": {
-            "voice": {
-                "python": "voice",
-                "oneOf": [{"type": "string"}, {"ref": "LiveCustomVoiceParam"}],
-            }
+            "voice": {"python": "voice", "ref": "LiveInitialSessionAudioOutputParamVoice"}
         },
     },
     "LiveClientDelegationParam": {
@@ -20737,43 +20583,7 @@ _SCHEMAS: dict[str, Any] = {
             },
             "tool_choice": {
                 "python": "tool_choice",
-                "oneOf": [
-                    {"ref": "LiveToolChoiceEnum"},
-                    {
-                        "oneOf": [
-                            {"ref": "LiveFunctionToolChoiceParam"},
-                            {"ref": "LiveMCPToolChoiceParam"},
-                            {"ref": "LiveSpecificFileSearchParam"},
-                            {"ref": "LiveSpecificWebSearchParam"},
-                            {"ref": "LiveSpecificWebSearchPreviewParam"},
-                            {"ref": "LiveSpecificImageGenParam"},
-                            {"ref": "LiveSpecificComputerParam"},
-                            {"ref": "LiveSpecificCodeInterpreterParam"},
-                            {"ref": "LiveSpecificProgrammaticToolCallingParam"},
-                            {"ref": "LiveSpecificFunctionShellParam"},
-                            {"ref": "LiveSpecificCustomToolParam"},
-                            {"ref": "LiveSpecificApplyPatchParam"},
-                        ],
-                        "openTag": [
-                            "type",
-                            [
-                                "function",
-                                "mcp",
-                                "file_search",
-                                "web_search",
-                                "web_search_preview",
-                                "image_generation",
-                                "computer",
-                                "code_interpreter",
-                                "programmatic_tool_calling",
-                                "shell",
-                                "custom",
-                                "apply_patch",
-                            ],
-                        ],
-                    },
-                    {"ref": "LiveAllowedToolsChoiceParam"},
-                ],
+                "ref": "LiveResponsesDelegationSettingsInputParamToolChoice",
             },
             "parallel_tool_calls": {
                 "python": "parallel_tool_calls",
@@ -21058,43 +20868,7 @@ _SCHEMAS: dict[str, Any] = {
             },
             "tool_choice": {
                 "python": "tool_choice",
-                "oneOf": [
-                    {"ref": "LiveToolChoiceEnum"},
-                    {
-                        "oneOf": [
-                            {"ref": "LiveFunctionToolChoiceParam"},
-                            {"ref": "LiveMCPToolChoiceParam"},
-                            {"ref": "LiveSpecificFileSearchParam"},
-                            {"ref": "LiveSpecificWebSearchParam"},
-                            {"ref": "LiveSpecificWebSearchPreviewParam"},
-                            {"ref": "LiveSpecificImageGenParam"},
-                            {"ref": "LiveSpecificComputerParam"},
-                            {"ref": "LiveSpecificCodeInterpreterParam"},
-                            {"ref": "LiveSpecificProgrammaticToolCallingParam"},
-                            {"ref": "LiveSpecificFunctionShellParam"},
-                            {"ref": "LiveSpecificCustomToolParam"},
-                            {"ref": "LiveSpecificApplyPatchParam"},
-                        ],
-                        "openTag": [
-                            "type",
-                            [
-                                "function",
-                                "mcp",
-                                "file_search",
-                                "web_search",
-                                "web_search_preview",
-                                "image_generation",
-                                "computer",
-                                "code_interpreter",
-                                "programmatic_tool_calling",
-                                "shell",
-                                "custom",
-                                "apply_patch",
-                            ],
-                        ],
-                    },
-                    {"ref": "LiveAllowedToolsChoiceParam"},
-                ],
+                "ref": "LiveResponsesDelegationSettingsUpdateInputParamToolChoice",
             },
             "parallel_tool_calls": {
                 "python": "parallel_tool_calls",
@@ -21653,10 +21427,7 @@ _SCHEMAS: dict[str, Any] = {
         "type": "object",
         "required": ["error"],
         "properties": {
-            "error": {
-                "python": "error",
-                "oneOf": [{"ref": "DecisionsUsageErrorDetails"}, {"type": "string"}],
-            }
+            "error": {"python": "error", "ref": "DecisionsUsagePermissionErrorResponseError"}
         },
     },
     "ExternalStorageOrder": {"type": "string"},
@@ -23966,8 +23737,8 @@ _SCHEMAS: dict[str, Any] = {
             "name": {"python": "name", "type": "string", "minLength": 0},
             "arguments": {"python": "arguments"},
             "status": {"python": "status", "ref": "FunctionCallStatusResource"},
-            "output": {"python": "output", "anyOf": [{}, {"type": "null"}]},
-            "error": {"python": "error", "anyOf": [{}, {"type": "null"}]},
+            "output": {"python": "output", "nullable": True, "anyOf": [{}, {"type": "null"}]},
+            "error": {"python": "error", "nullable": True, "anyOf": [{}, {"type": "null"}]},
         },
     },
     "ComputerScreenshotResource": {
@@ -27025,7 +26796,7 @@ _SCHEMAS: dict[str, Any] = {
         "type": "object",
         "required": ["type", "action", "fields"],
         "properties": {
-            "type": {"python": "type", "type": "string"},
+            "type": {"python": "type", "type": "string", "enum": ["browser_authentication"]},
             "action": {"python": "action", "type": "string", "enum": ["submit"]},
             "fields": {
                 "python": "fields",
@@ -27046,7 +26817,7 @@ _SCHEMAS: dict[str, Any] = {
         "type": "object",
         "required": ["type", "action"],
         "properties": {
-            "type": {"python": "type", "type": "string"},
+            "type": {"python": "type", "type": "string", "enum": ["browser_authentication"]},
             "action": {"python": "action", "type": "string", "enum": ["cancel"]},
         },
     },
@@ -29436,10 +29207,7 @@ _SCHEMAS: dict[str, Any] = {
         "required": ["type", "container"],
         "properties": {
             "type": {"python": "type", "type": "string", "enum": ["code_interpreter"]},
-            "container": {
-                "python": "container",
-                "oneOf": [{"type": "string"}, {"ref": "BetaAutoCodeInterpreterToolParam"}],
-            },
+            "container": {"python": "container", "ref": "BetaCodeInterpreterToolContainer"},
             "allowed_callers": {
                 "python": "allowed_callers",
                 "type": "array",
@@ -29503,20 +29271,7 @@ _SCHEMAS: dict[str, Any] = {
                 "minItems": 1,
                 "items": {"ref": "BetaCallableToolAllowedCaller"},
             },
-            "require_approval": {
-                "python": "require_approval",
-                "nullable": True,
-                "oneOf": [
-                    {
-                        "type": "object",
-                        "properties": {
-                            "always": {"python": "always", "ref": "BetaMCPToolFilter"},
-                            "never": {"python": "never", "ref": "BetaMCPToolFilter"},
-                        },
-                    },
-                    {"type": "string"},
-                ],
-            },
+            "require_approval": {"python": "require_approval", "ref": "BetaMCPToolRequireApproval"},
             "defer_loading": {"python": "defer_loading", "type": "boolean"},
         },
     },
@@ -35827,6 +35582,19 @@ _SCHEMAS: dict[str, Any] = {
         ],
         "openTag": ["type", ["aws", "azure", "gcp", "oci"]],
     },
+    "CreateTranscriptionResponse": {
+        "anyOf": [
+            {"ref": "CreateTranscriptionResponseJson"},
+            {"ref": "CreateTranscriptionResponseDiarizedJson"},
+            {"ref": "CreateTranscriptionResponseVerboseJson"},
+        ]
+    },
+    "CreateTranslationResponse": {
+        "oneOf": [
+            {"ref": "CreateTranslationResponseJson"},
+            {"ref": "CreateTranslationResponseVerboseJson"},
+        ]
+    },
     "AssistantObjectToolsItem": {
         "oneOf": [
             {"ref": "AssistantToolsCode"},
@@ -35948,6 +35716,9 @@ _SCHEMAS: dict[str, Any] = {
         ],
         "openTag": ["type", ["moderation_results", "error"]],
     },
+    "CodeInterpreterToolContainer": {
+        "oneOf": [{"type": "string"}, {"ref": "AutoCodeInterpreterToolParam"}]
+    },
     "AutoCodeInterpreterToolParamNetworkPolicy": {
         "oneOf": [
             {"ref": "ContainerNetworkPolicyDisabledParam"},
@@ -35998,6 +35769,19 @@ _SCHEMAS: dict[str, Any] = {
             {"ref": "WebSearchActionFind"},
         ],
         "openTag": ["type", ["search", "open_page", "find_in_page"]],
+    },
+    "MCPToolRequireApproval": {
+        "nullable": True,
+        "oneOf": [
+            {
+                "type": "object",
+                "properties": {
+                    "always": {"python": "always", "ref": "MCPToolFilter"},
+                    "never": {"python": "never", "ref": "MCPToolFilter"},
+                },
+            },
+            {"type": "string"},
+        ],
     },
     "FunctionShellToolParamEnvironment": {
         "nullable": True,
@@ -36089,18 +35873,6 @@ _SCHEMAS: dict[str, Any] = {
             },
         ],
     },
-    "ResponseFormat": {
-        "oneOf": [
-            {"ref": "ResponseFormatText"},
-            {"ref": "ResponseFormatJsonSchema"},
-            {"ref": "ResponseFormatJsonObject"},
-        ],
-        "openTag": ["type", ["text", "json_schema", "json_object"]],
-    },
-    "ToolsItem": {
-        "oneOf": [{"ref": "ChatCompletionTool"}, {"ref": "CustomToolChatCompletions"}],
-        "openTag": ["type", ["function", "custom"]],
-    },
     "CustomToolChatCompletionsCustomFormat": {
         "oneOf": [
             {
@@ -36147,7 +35919,7 @@ _SCHEMAS: dict[str, Any] = {
                     "template": {
                         "python": "template",
                         "type": "array",
-                        "items": {"ref": "TemplateItem"},
+                        "items": {"oneOf": [{"ref": "EasyInputMessage"}, {"ref": "EvalItem"}]},
                     },
                 },
             },
@@ -36161,7 +35933,6 @@ _SCHEMAS: dict[str, Any] = {
             },
         ]
     },
-    "TemplateItem": {"oneOf": [{"ref": "EasyInputMessage"}, {"ref": "EvalItem"}]},
     "CreateEvalCompletionsRunDataSourceSamplingParamsResponseFormat": {
         "oneOf": [
             {"ref": "ResponseFormatText"},
@@ -36214,7 +35985,19 @@ _SCHEMAS: dict[str, Any] = {
                     "template": {
                         "python": "template",
                         "type": "array",
-                        "items": {"ref": "TemplateItem2"},
+                        "items": {
+                            "oneOf": [
+                                {
+                                    "type": "object",
+                                    "required": ["role", "content"],
+                                    "properties": {
+                                        "role": {"python": "role", "type": "string"},
+                                        "content": {"python": "content", "type": "string"},
+                                    },
+                                },
+                                {"ref": "EvalItem"},
+                            ]
+                        },
                     },
                 },
             },
@@ -36226,19 +36009,6 @@ _SCHEMAS: dict[str, Any] = {
                     "item_reference": {"python": "item_reference", "type": "string"},
                 },
             },
-        ]
-    },
-    "TemplateItem2": {
-        "oneOf": [
-            {
-                "type": "object",
-                "required": ["role", "content"],
-                "properties": {
-                    "role": {"python": "role", "type": "string"},
-                    "content": {"python": "content", "type": "string"},
-                },
-            },
-            {"ref": "EvalItem"},
         ]
     },
     "CreateEvalResponsesRunDataSourceSource": {
@@ -36331,6 +36101,17 @@ _SCHEMAS: dict[str, Any] = {
         ],
         "openTag": ["type", ["code_interpreter", "file_search", "function"]],
     },
+    "CreateSpeechRequestVoice": {
+        "anyOf": [
+            {"ref": "VoiceIdsShared"},
+            {"type": "string"},
+            {
+                "type": "object",
+                "required": ["id"],
+                "properties": {"id": {"python": "id", "type": "string"}},
+            },
+        ]
+    },
     "CreateThreadRequestToolResourcesFileSearchVectorStoresItemChunkingStrategy": {
         "type": "object",
         "oneOf": [
@@ -36372,6 +36153,10 @@ _SCHEMAS: dict[str, Any] = {
             {"ref": "AssistantToolsFunction"},
         ],
         "openTag": ["type", ["code_interpreter", "file_search", "function"]],
+    },
+    "CreateTranscriptionRequestChunkingStrategy": {
+        "nullable": True,
+        "anyOf": [{"type": "string"}, {"ref": "VadConfig"}],
     },
     "CreateTranscriptionResponseDiarizedJsonUsage": {
         "type": "object",
@@ -36430,6 +36215,9 @@ _SCHEMAS: dict[str, Any] = {
         ],
         "openTag": ["type", ["static", "other"]],
     },
+    "LiveInitialSessionAudioOutputParamVoice": {
+        "oneOf": [{"type": "string"}, {"type": "string"}, {"ref": "LiveCustomVoiceParam"}]
+    },
     "LiveResponsesDelegationSettingsInputParamToolsItem": {
         "oneOf": [
             {"ref": "LiveFunctionToolInputParam"},
@@ -36485,6 +36273,45 @@ _SCHEMAS: dict[str, Any] = {
     "LiveHostedShellContainerAutoParamSkillsItem": {
         "oneOf": [{"ref": "LiveSkillReferenceParam"}, {"ref": "LiveInlineSkillParam"}],
         "openTag": ["type", ["skill_reference", "inline"]],
+    },
+    "LiveResponsesDelegationSettingsInputParamToolChoice": {
+        "oneOf": [
+            {"ref": "LiveToolChoiceEnum"},
+            {
+                "oneOf": [
+                    {"ref": "LiveFunctionToolChoiceParam"},
+                    {"ref": "LiveMCPToolChoiceParam"},
+                    {"ref": "LiveSpecificFileSearchParam"},
+                    {"ref": "LiveSpecificWebSearchParam"},
+                    {"ref": "LiveSpecificWebSearchPreviewParam"},
+                    {"ref": "LiveSpecificImageGenParam"},
+                    {"ref": "LiveSpecificComputerParam"},
+                    {"ref": "LiveSpecificCodeInterpreterParam"},
+                    {"ref": "LiveSpecificProgrammaticToolCallingParam"},
+                    {"ref": "LiveSpecificFunctionShellParam"},
+                    {"ref": "LiveSpecificCustomToolParam"},
+                    {"ref": "LiveSpecificApplyPatchParam"},
+                ],
+                "openTag": [
+                    "type",
+                    [
+                        "function",
+                        "mcp",
+                        "file_search",
+                        "web_search",
+                        "web_search_preview",
+                        "image_generation",
+                        "computer",
+                        "code_interpreter",
+                        "programmatic_tool_calling",
+                        "shell",
+                        "custom",
+                        "apply_patch",
+                    ],
+                ],
+            },
+            {"ref": "LiveAllowedToolsChoiceParam"},
+        ]
     },
     "LiveAllowedToolsChoiceParamToolsItem": {
         "oneOf": [
@@ -36579,6 +36406,45 @@ _SCHEMAS: dict[str, Any] = {
             ],
         ],
     },
+    "LiveResponsesDelegationSettingsUpdateInputParamToolChoice": {
+        "oneOf": [
+            {"ref": "LiveToolChoiceEnum"},
+            {
+                "oneOf": [
+                    {"ref": "LiveFunctionToolChoiceParam"},
+                    {"ref": "LiveMCPToolChoiceParam"},
+                    {"ref": "LiveSpecificFileSearchParam"},
+                    {"ref": "LiveSpecificWebSearchParam"},
+                    {"ref": "LiveSpecificWebSearchPreviewParam"},
+                    {"ref": "LiveSpecificImageGenParam"},
+                    {"ref": "LiveSpecificComputerParam"},
+                    {"ref": "LiveSpecificCodeInterpreterParam"},
+                    {"ref": "LiveSpecificProgrammaticToolCallingParam"},
+                    {"ref": "LiveSpecificFunctionShellParam"},
+                    {"ref": "LiveSpecificCustomToolParam"},
+                    {"ref": "LiveSpecificApplyPatchParam"},
+                ],
+                "openTag": [
+                    "type",
+                    [
+                        "function",
+                        "mcp",
+                        "file_search",
+                        "web_search",
+                        "web_search_preview",
+                        "image_generation",
+                        "computer",
+                        "code_interpreter",
+                        "programmatic_tool_calling",
+                        "shell",
+                        "custom",
+                        "apply_patch",
+                    ],
+                ],
+            },
+            {"ref": "LiveAllowedToolsChoiceParam"},
+        ]
+    },
     "LiveDecisionInputItemParamContentItem": {
         "oneOf": [{"ref": "LiveDecisionInputTextParam"}, {"ref": "LiveDecisionInputImageParam"}],
         "openTag": ["type", ["input_text", "input_image"]],
@@ -36619,6 +36485,7 @@ _SCHEMAS: dict[str, Any] = {
         ],
         "openTag": ["type", ["code_interpreter", "file_search", "function"]],
     },
+    "PermissionErrorResponseError": {"anyOf": [{"ref": "Error3"}, {"type": "string"}]},
     "RealtimeMCPToolCallError": {
         "nullable": True,
         "oneOf": [
@@ -36636,10 +36503,37 @@ _SCHEMAS: dict[str, Any] = {
         ],
         "openTag": ["type", ["function", "mcp"]],
     },
+    "RealtimeSessionCreateRequestTracing": {
+        "oneOf": [
+            {"type": "string"},
+            {
+                "type": "object",
+                "properties": {
+                    "workflow_name": {"python": "workflow_name", "type": "string"},
+                    "group_id": {"python": "group_id", "type": "string"},
+                    "metadata": {"python": "metadata", "type": "object"},
+                },
+            },
+        ]
+    },
     "RealtimeBetaServerEventConversationItemInputAudioTranscriptionCompletedUsage": {
         "type": "object",
         "oneOf": [{"ref": "TranscriptTextUsageTokens"}, {"ref": "TranscriptTextUsageDuration"}],
         "openTag": ["type", ["tokens", "duration"]],
+    },
+    "RealtimeSessionTracing": {
+        "nullable": True,
+        "oneOf": [
+            {"type": "string"},
+            {
+                "type": "object",
+                "properties": {
+                    "workflow_name": {"python": "workflow_name", "type": "string"},
+                    "group_id": {"python": "group_id", "type": "string"},
+                    "metadata": {"python": "metadata", "type": "object"},
+                },
+            },
+        ],
     },
     "RealtimeSessionCreateRequestGAToolsItem": {
         "oneOf": [{"ref": "RealtimeFunctionTool"}, {"ref": "MCPTool"}]
@@ -36685,6 +36579,20 @@ _SCHEMAS: dict[str, Any] = {
         ],
         "openTag": ["type", ["realtime", "transcription"]],
     },
+    "RealtimeSessionCreateResponseGATracing": {
+        "nullable": True,
+        "oneOf": [
+            {"type": "string"},
+            {
+                "type": "object",
+                "properties": {
+                    "workflow_name": {"python": "workflow_name", "type": "string"},
+                    "group_id": {"python": "group_id", "type": "string"},
+                    "metadata": {"python": "metadata", "type": "object"},
+                },
+            },
+        ],
+    },
     "RealtimeSessionCreateResponseGAToolsItem": {
         "oneOf": [{"ref": "RealtimeFunctionTool"}, {"ref": "MCPTool"}]
     },
@@ -36714,6 +36622,19 @@ _SCHEMAS: dict[str, Any] = {
             {"ref": "RealtimeTranscriptionSessionCreateResponseGA"},
         ],
         "openTag": ["type", ["realtime", "transcription"]],
+    },
+    "RealtimeSessionCreateResponseTracing": {
+        "oneOf": [
+            {"type": "string"},
+            {
+                "type": "object",
+                "properties": {
+                    "workflow_name": {"python": "workflow_name", "type": "string"},
+                    "group_id": {"python": "group_id", "type": "string"},
+                    "metadata": {"python": "metadata", "type": "object"},
+                },
+            },
+        ]
     },
     "ModerationInput": {
         "oneOf": [{"ref": "ModerationResultBody"}, {"ref": "ModerationErrorBody"}],
@@ -36798,6 +36719,9 @@ _SCHEMAS: dict[str, Any] = {
     "VectorStoreSearchRequestFilters": {
         "oneOf": [{"ref": "ComparisonFilter"}, {"ref": "CompoundFilter"}],
         "openTag": ["type", ["eq", "ne", "gt", "gte", "lt", "lte", "in", "nin", "and", "or"]],
+    },
+    "DecisionsUsagePermissionErrorResponseError": {
+        "oneOf": [{"ref": "DecisionsUsageErrorDetails"}, {"type": "string"}]
     },
     "ExternalStorageResponseProvider": {
         "oneOf": [
@@ -36901,6 +36825,22 @@ _SCHEMAS: dict[str, Any] = {
     "BetaCompoundFilterFiltersItem": {
         "oneOf": [{"ref": "BetaComparisonFilter"}, {"ref": "BetaCompoundFilter"}],
         "openTag": ["type", ["eq", "ne", "gt", "gte", "lt", "lte", "in", "nin", "and", "or"]],
+    },
+    "BetaMCPToolRequireApproval": {
+        "nullable": True,
+        "oneOf": [
+            {
+                "type": "object",
+                "properties": {
+                    "always": {"python": "always", "ref": "BetaMCPToolFilter"},
+                    "never": {"python": "never", "ref": "BetaMCPToolFilter"},
+                },
+            },
+            {"type": "string"},
+        ],
+    },
+    "BetaCodeInterpreterToolContainer": {
+        "oneOf": [{"type": "string"}, {"ref": "BetaAutoCodeInterpreterToolParam"}]
     },
     "BetaAutoCodeInterpreterToolParamNetworkPolicy": {
         "oneOf": [
@@ -37298,6 +37238,7 @@ _MODEL_TYPES: dict[str, type[Any]] = {
     "CreateTranslationResponseJson": CreateTranslationResponseJson,
     "CreateTranslationResponseVerboseJson": CreateTranslationResponseVerboseJson,
     "CreateUploadRequest": CreateUploadRequest,
+    "CreateVectorStoreFileBatchRequest": CreateVectorStoreFileBatchRequest,
     "CreateVectorStoreFileRequest": CreateVectorStoreFileRequest,
     "CreateVectorStoreRequest": CreateVectorStoreRequest,
     "CreateVoiceConsentRequest": CreateVoiceConsentRequest,
@@ -37393,6 +37334,7 @@ _MODEL_TYPES: dict[str, type[Any]] = {
     "ImageGenCompletedEvent": ImageGenCompletedEvent,
     "ImageGenPartialImageEvent": ImageGenPartialImageEvent,
     "ImageGenTool": ImageGenTool,
+    "ImageRefParam": ImageRefParam,
     "ImagesResponse": ImagesResponse,
     "ImagesUsage": ImagesUsage,
     "InputAudio": InputAudio,
@@ -37799,6 +37741,7 @@ _MODEL_TYPES: dict[str, type[Any]] = {
     "SubmitToolOutputsRunRequest": SubmitToolOutputsRunRequest,
     "TextResponseFormatJsonSchema": TextResponseFormatJsonSchema,
     "ThreadObject": ThreadObject,
+    "ThreadStreamEvent": ThreadStreamEvent,
     "ToggleCertificatesRequest": ToggleCertificatesRequest,
     "ToolChoiceAllowed": ToolChoiceAllowed,
     "ToolChoiceCustom": ToolChoiceCustom,
@@ -39939,6 +39882,16 @@ def create_create_upload_request(value: Mapping[str, object]) -> CreateUploadReq
     return cast(CreateUploadRequest, _construct_model(value, "CreateUploadRequest"))
 
 
+def create_create_vector_store_file_batch_request(
+    value: Mapping[str, object],
+) -> CreateVectorStoreFileBatchRequest:
+    """Construct one CreateVectorStoreFileBatchRequest after applying its schema constraints."""
+    return cast(
+        CreateVectorStoreFileBatchRequest,
+        _construct_model(value, "CreateVectorStoreFileBatchRequest"),
+    )
+
+
 def create_create_vector_store_file_request(
     value: Mapping[str, object],
 ) -> CreateVectorStoreFileRequest:
@@ -40475,6 +40428,11 @@ def create_image_gen_partial_image_event(value: Mapping[str, object]) -> ImageGe
 def create_image_gen_tool(value: Mapping[str, object]) -> ImageGenTool:
     """Construct one ImageGenTool after applying its schema constraints."""
     return cast(ImageGenTool, _construct_model(value, "ImageGenTool"))
+
+
+def create_image_ref_param(value: Mapping[str, object]) -> ImageRefParam:
+    """Construct one ImageRefParam after applying its schema constraints."""
+    return cast(ImageRefParam, _construct_model(value, "ImageRefParam"))
 
 
 def create_images_response(value: Mapping[str, object]) -> ImagesResponse:
@@ -43738,6 +43696,11 @@ def create_text_response_format_json_schema(
 def create_thread_object(value: Mapping[str, object]) -> ThreadObject:
     """Construct one ThreadObject after applying its schema constraints."""
     return cast(ThreadObject, _construct_model(value, "ThreadObject"))
+
+
+def create_thread_stream_event(value: Mapping[str, object]) -> ThreadStreamEvent:
+    """Construct one ThreadStreamEvent after applying its schema constraints."""
+    return cast(ThreadStreamEvent, _construct_model(value, "ThreadStreamEvent"))
 
 
 def create_toggle_certificates_request(value: Mapping[str, object]) -> ToggleCertificatesRequest:
@@ -51774,6 +51737,7 @@ __all__ = [
     "create_create_vault_credential_auth_param_static_bearer",
     "create_create_vault_credential_params",
     "create_create_vault_params",
+    "create_create_vector_store_file_batch_request",
     "create_create_vector_store_file_request",
     "create_create_vector_store_request",
     "create_create_video_character_body",
@@ -51992,6 +51956,7 @@ __all__ = [
     "create_image_gen_tool_call_error",
     "create_image_gen_tool_call_moderation_details",
     "create_image_gen_usage",
+    "create_image_ref_param",
     "create_image_ref_param2",
     "create_images_response",
     "create_images_usage",
@@ -52762,6 +52727,7 @@ __all__ = [
     "create_thread_list_resource",
     "create_thread_object",
     "create_thread_resource",
+    "create_thread_stream_event",
     "create_toggle_certificates_request",
     "create_token_counts_body",
     "create_token_counts_resource",

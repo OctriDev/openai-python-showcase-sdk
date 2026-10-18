@@ -27,6 +27,9 @@ from .evals_eval_part001 import (
     EvalRunOutputItemSampleUsage,
 )
 from .evals_eval_part002 import (
+    CreateEvalCompletionsRunDataSourceInputMessages,
+    CreateEvalCompletionsRunDataSourceInputMessagesVariant0,
+    CreateEvalCompletionsRunDataSourceInputMessagesVariant1,
     CreateEvalCompletionsRunDataSourceSamplingParamsResponseFormat,
     CreateEvalCompletionsRunDataSourceSource,
     CreateEvalJsonlRunDataSourceSource,
@@ -34,15 +37,15 @@ from .evals_eval_part002 import (
     CreateEvalLogsDataSourceConfig,
     CreateEvalRequestDataSourceConfig,
     CreateEvalRequestTestingCriteriaItem,
+    CreateEvalResponsesRunDataSourceInputMessages,
+    CreateEvalResponsesRunDataSourceInputMessagesVariant0,
+    CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemChatMessage,
+    CreateEvalResponsesRunDataSourceInputMessagesVariant1,
     CreateEvalResponsesRunDataSourceSource,
     CreateEvalRunRequestDataSource,
     CreateEvalStoredCompletionsDataSourceConfig,
     EvalDataSourceConfig,
-    EvalGraderScoreModel,
-    EvalGraderScoreModelSamplingParams,
-    EvalGraderScoreModelVariant1,
     EvalLogsDataSourceConfig,
-    EvalResponsesSource,
     EvalRunDataSource,
     EvalRunOutputItemList,
     EvalRunOutputItemResult,
@@ -62,26 +65,24 @@ from .evals_eval_part002 import (
 )
 from .evals_eval_part003 import (
     CreateEvalCompletionsRunDataSource,
-    CreateEvalCompletionsRunDataSourceInputMessages,
-    CreateEvalCompletionsRunDataSourceInputMessagesVariant0,
-    CreateEvalCompletionsRunDataSourceInputMessagesVariant1,
     CreateEvalCompletionsRunDataSourceSamplingParams,
     CreateEvalJsonlRunDataSource,
     CreateEvalRequest,
-    CreateEvalResponsesRunDataSourceInputMessages,
-    CreateEvalResponsesRunDataSourceInputMessagesVariant0,
-    CreateEvalResponsesRunDataSourceInputMessagesVariant1,
+    CreateEvalResponsesRunDataSource,
+    CreateEvalResponsesRunDataSourceSamplingParams,
+    CreateEvalResponsesRunDataSourceSamplingParamsText,
     CreateEvalRunRequest,
     Eval,
+    EvalGraderScoreModel,
+    EvalGraderScoreModelSamplingParams,
+    EvalGraderScoreModelVariant1,
+    EvalResponsesSource,
+)
+from .evals_eval_part004 import (
     EvalRun,
     EvalRunPerModelUsageItem,
     EvalRunPerTestingCriteriaResultsItem,
     EvalRunResultCounts,
-)
-from .evals_eval_part004 import (
-    CreateEvalResponsesRunDataSource,
-    CreateEvalResponsesRunDataSourceSamplingParams,
-    CreateEvalResponsesRunDataSourceSamplingParamsText,
 )
 
 __all__ = [
@@ -105,6 +106,7 @@ __all__ = [
     "CreateEvalResponsesRunDataSource",
     "CreateEvalResponsesRunDataSourceInputMessages",
     "CreateEvalResponsesRunDataSourceInputMessagesVariant0",
+    "CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemChatMessage",
     "CreateEvalResponsesRunDataSourceInputMessagesVariant1",
     "CreateEvalResponsesRunDataSourceSamplingParams",
     "CreateEvalResponsesRunDataSourceSamplingParamsText",
@@ -198,17 +200,24 @@ _deferred_evals_eval_part002: tuple[tuple[str, object], ...] = (
     ("CreateEvalCompletionsRunDataSource", CreateEvalCompletionsRunDataSource),
     ("CreateEvalJsonlRunDataSource", CreateEvalJsonlRunDataSource),
     ("CreateEvalResponsesRunDataSource", CreateEvalResponsesRunDataSource),
+    ("EvalGraderScoreModel", EvalGraderScoreModel),
+    ("EvalResponsesSource", EvalResponsesSource),
 )
 for _name, _value in _deferred_evals_eval_part002:
     setattr(_evals_eval_part002, _name, _value)
 
 EvalRunOutputItemList.model_rebuild()
 EvalRunOutputItemResult.model_rebuild()
+CreateEvalCompletionsRunDataSourceInputMessagesVariant0.model_rebuild()
+CreateEvalCompletionsRunDataSourceInputMessagesVariant1.model_rebuild()
 UnknownCreateEvalCompletionsRunDataSourceSamplingParamsResponseFormat.model_rebuild()
 UnknownCreateEvalCompletionsRunDataSourceSource.model_rebuild()
 UnknownCreateEvalJsonlRunDataSourceSource.model_rebuild()
 UnknownCreateEvalRequestDataSourceConfig.model_rebuild()
 UnknownCreateEvalRequestTestingCriteriaItem.model_rebuild()
+CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemChatMessage.model_rebuild()
+CreateEvalResponsesRunDataSourceInputMessagesVariant0.model_rebuild()
+CreateEvalResponsesRunDataSourceInputMessagesVariant1.model_rebuild()
 UnknownCreateEvalResponsesRunDataSourceSource.model_rebuild()
 UnknownCreateEvalRunRequestDataSource.model_rebuild()
 UnknownEvalDataSourceConfig.model_rebuild()
@@ -220,7 +229,3 @@ CreateEvalStoredCompletionsDataSourceConfig.model_rebuild()
 EvalLogsDataSourceConfig.model_rebuild()
 EvalStoredCompletionsDataSourceConfig.model_rebuild()
 EvalStoredCompletionsSource.model_rebuild()
-EvalGraderScoreModelVariant1.model_rebuild()
-EvalGraderScoreModelSamplingParams.model_rebuild()
-EvalGraderScoreModel.model_rebuild()
-EvalResponsesSource.model_rebuild()

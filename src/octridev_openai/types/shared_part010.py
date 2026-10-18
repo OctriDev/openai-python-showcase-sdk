@@ -3,217 +3,40 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
 from octridev_openai.types.shared_part001 import ComputerScreenshotImage, MCPToolCallError
 from octridev_openai.types.shared_part002 import PromptCacheBreakpointParam, ToolSearchOutputTool
-from octridev_openai.types.shared_part003 import (
-    ImageGenActionEnum,
-    ToolCallCaller,
-    ToolCallCallerParam,
-)
+from octridev_openai.types.shared_part003 import ToolCallCaller, ToolCallCallerParam
 from octridev_openai.types.shared_part004 import (
     ApplyPatchCallOutputStatus,
-    ApproximateLocation,
+    CallableToolAllowedCaller,
     ComputerCallSafetyCheckParam,
+    ContainerMemoryLimit,
     EmptyModelParam,
-    FunctionShellCallOutputStatusEnum,
-    GrammarSyntax1,
-    InputFidelity,
     ToolSearchExecutionType,
 )
 from octridev_openai.types.shared_part005 import (
+    ApplyPatchCallOutputStatusParam,
+    ApplyPatchCallStatusParam,
+    ApplyPatchOperationParam,
     DetailEnum,
     FileDetailEnum,
     FunctionCallItemStatus,
     FunctionShellCallItemStatus,
+    FunctionShellCallOutputOutcomeParam,
     MCPToolCallStatus,
 )
-from octridev_openai.types.shared_search import SearchContentType, SearchContextSize
+from octridev_openai.types.shared_part006 import (
+    AutoCodeInterpreterToolParamNetworkPolicy,
+    CodeInterpreterToolCallOutputsItem,
+    CodeInterpreterToolContainer,
+)
 
-from ..validation import validate_enum, validate_length, validate_range, validate_required
-
-if TYPE_CHECKING:
-    from octridev_openai.types.shared_part011 import (
-        FunctionShellCallOutputContent,
-        FunctionShellCallOutputContentParam,
-    )
-
-
-class ImageGenToolInputImageMask(BaseModel):
-    """
-    Optional mask for inpainting. Contains `image_url`
-    (string, optional) and `file_id` (string, optional).
-    """
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    image_url: str | NotGiven = NOT_GIVEN
-    """Base64-encoded mask image."""
-    file_id: str | NotGiven = NOT_GIVEN
-    """File ID for the mask image."""
-
-
-class ImageGenTool(BaseModel):
-    """A tool that generates images using the GPT image models."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["image_generation"]
-    """The type of the image generation tool. Always `image_generation`."""
-    model: str | NotGiven = NOT_GIVEN
-    """Optional `string` value serialized in the `model` wire field."""
-    quality: Literal["low", "medium", "high", "xhigh", "max", "auto"] | str | NotGiven = NOT_GIVEN
-    """
-    The quality of the generated image. The GPT image models support `low`,
-    `medium`, and `high`. `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`,
-    including their `2026-09-08` snapshots, also support `xhigh` and `max`.
-    Default: `auto`.
-    """
-    size: str | NotGiven = NOT_GIVEN
-    """The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum supported resolution is `3840x2160`. The requested size must also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for models that allow automatic sizing."""
-    output_format: Literal["png", "webp", "jpeg"] | str | NotGiven = NOT_GIVEN
-    """
-    The output format of the generated image. One of `png`, `webp`, or
-    `jpeg`. Default: `png`.
-    """
-    output_compression: int | NotGiven = NOT_GIVEN
-    """Compression level for the output image. Default: 100."""
-    moderation: Literal["auto", "low"] | str | NotGiven = NOT_GIVEN
-    """Moderation level for the generated image. Default: `auto`."""
-    background: Literal["transparent", "opaque", "auto"] | str | NotGiven = NOT_GIVEN
-    """
-    Set the background of the generated image. One of `transparent`, `opaque`,
-    or `auto`. `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including
-    their `2026-09-08` snapshots, support `opaque` and `transparent`
-    backgrounds. Transparent backgrounds are available for supported GPT Image
-    models. For `gpt-image-2` and `gpt-image-2-2026-04-21`, this support is in
-    preview. When using `transparent`, set the output format to `png` or `webp`.
-    Default: `auto`.
-    """
-    input_fidelity: InputFidelity | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `input_fidelity` wire field."""
-    input_image_mask: ImageGenToolInputImageMask | NotGiven = NOT_GIVEN
-    """
-    Optional mask for inpainting. Contains `image_url`
-    (string, optional) and `file_id` (string, optional).
-    """
-    partial_images: int | NotGiven = NOT_GIVEN
-    """Number of partial images to generate in streaming mode, from 0 (default value) to 3."""
-    action: ImageGenActionEnum | NotGiven = NOT_GIVEN
-    """Whether to generate a new image or edit an existing image. Default: `auto`."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["image_generation"])
-        return value
-
-    @field_validator("output_compression")
-    @classmethod
-    def _validate_output_compression(cls, value):
-        validate_range("output_compression", value, min=0, max=100)
-        return value
-
-    @field_validator("partial_images")
-    @classmethod
-    def _validate_partial_images(cls, value):
-        validate_range("partial_images", value, min=0, max=3)
-        return value
-
-
-class CustomGrammarFormatParam(BaseModel):
-    """A grammar defined by the user."""
-
-    type: Literal["grammar"]
-    """Grammar format. Always `grammar`."""
-    syntax: GrammarSyntax1
-    """The syntax of the grammar definition. One of `lark` or `regex`."""
-    definition: str
-    """The grammar definition."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "syntax", "definition"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["grammar"])
-        return value
-
-
-class WebSearchPreviewTool(BaseModel):
-    """This tool searches the web for relevant results to use in a response. Learn more about the [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search)."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["web_search_preview", "web_search_preview_2025_03_11"]
-    """The type of the web search tool. One of `web_search_preview` or `web_search_preview_2025_03_11`."""
-    user_location: ApproximateLocation | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `user_location` wire field."""
-    search_context_size: SearchContextSize | NotGiven = NOT_GIVEN
-    """High level guidance for the amount of context window space to use for the search. One of `low`, `medium`, or `high`. `medium` is the default."""
-    search_content_types: list[SearchContentType] | NotGiven = NOT_GIVEN
-    """Optional array value serialized in the `search_content_types` wire field."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["web_search_preview", "web_search_preview_2025_03_11"])
-        return value
-
-
-class FunctionShellCallOutput(BaseModel):
-    """The output of a shell tool call that was emitted."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["shell_call_output"]
-    """The type of the shell call output. Always `shell_call_output`."""
-    id: str
-    """The unique ID of the shell call output. Populated when this item is returned via API."""
-    call_id: str
-    """The unique ID of the shell tool call generated by the model."""
-    status: FunctionShellCallOutputStatusEnum
-    """The status of the shell call output. One of `in_progress`, `completed`, or `incomplete`."""
-    output: list[FunctionShellCallOutputContent]
-    """An array of shell call output contents"""
-    max_output_length: int | None
-    """Required `integer` value serialized in the `max_output_length` wire field."""
-    caller: ToolCallCaller | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `caller` wire field."""
-    created_by: str | NotGiven = NOT_GIVEN
-    """The identifier of the actor that created the item."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "id", "call_id", "status", "output", "max_output_length"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["shell_call_output"])
-        return value
+from ..validation import validate_enum, validate_items, validate_length, validate_required
 
 
 class ApplyPatchToolCallOutput(BaseModel):
@@ -483,4 +306,202 @@ class FunctionShellCallOutputItemParam(BaseModel):
     @classmethod
     def _validate_type(cls, value):
         validate_enum("type", value, ["shell_call_output"])
+        return value
+
+
+class FunctionShellCallOutputContentParam(BaseModel):
+    """Captured stdout and stderr for a portion of a shell tool call output."""
+
+    stdout: str
+    """Captured stdout output for the shell call."""
+    stderr: str
+    """Captured stderr output for the shell call."""
+    outcome: FunctionShellCallOutputOutcomeParam
+    """The exit or timeout outcome associated with this shell call."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["stdout", "stderr", "outcome"])
+        return value
+
+    @field_validator("stdout")
+    @classmethod
+    def _validate_stdout(cls, value):
+        validate_length("stdout", value, max=10485760)
+        return value
+
+    @field_validator("stderr")
+    @classmethod
+    def _validate_stderr(cls, value):
+        validate_length("stderr", value, max=10485760)
+        return value
+
+
+class ApplyPatchToolCallItemParam(BaseModel):
+    """A tool call representing a request to create, delete, or update files using diff patches."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["apply_patch_call"]
+    """The type of the item. Always `apply_patch_call`."""
+    call_id: str
+    """The unique ID of the apply patch tool call generated by the model."""
+    status: ApplyPatchCallStatusParam
+    """The status of the apply patch tool call. One of `in_progress` or `completed`."""
+    operation: ApplyPatchOperationParam
+    """The specific create, delete, or update instruction for the apply_patch tool call."""
+    id: str | None | NotGiven = NOT_GIVEN
+    """Optional `string` value serialized in the `id` wire field."""
+    caller: ToolCallCallerParam | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `caller` wire field."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "call_id", "status", "operation"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["apply_patch_call"])
+        return value
+
+    @field_validator("call_id")
+    @classmethod
+    def _validate_call_id(cls, value):
+        validate_length("call_id", value, min=1, max=64)
+        return value
+
+
+class ApplyPatchToolCallOutputItemParam(BaseModel):
+    """The streamed output emitted by an apply patch tool call."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["apply_patch_call_output"]
+    """The type of the item. Always `apply_patch_call_output`."""
+    call_id: str
+    """The unique ID of the apply patch tool call generated by the model."""
+    status: ApplyPatchCallOutputStatusParam
+    """The status of the apply patch tool call output. One of `completed` or `failed`."""
+    id: str | None | NotGiven = NOT_GIVEN
+    """Optional `string` value serialized in the `id` wire field."""
+    caller: ToolCallCallerParam | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `caller` wire field."""
+    output: str | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `output` wire field."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "call_id", "status"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["apply_patch_call_output"])
+        return value
+
+    @field_validator("call_id")
+    @classmethod
+    def _validate_call_id(cls, value):
+        validate_length("call_id", value, min=1, max=64)
+        return value
+
+
+class CodeInterpreterTool(BaseModel):
+    """A tool that runs Python code to help generate a response to a prompt."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["code_interpreter"]
+    """The type of the code interpreter tool. Always `code_interpreter`."""
+    container: CodeInterpreterToolContainer
+    """
+    The code interpreter container. Can be a container ID or an object that
+    specifies uploaded file IDs to make available to your code, along with an
+    optional `memory_limit` setting.
+    """
+    allowed_callers: list[CallableToolAllowedCaller] | None | NotGiven = NOT_GIVEN
+    """The tool invocation context(s)."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "container"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["code_interpreter"])
+        return value
+
+    @field_validator("allowed_callers")
+    @classmethod
+    def _validate_allowed_callers(cls, value):
+        if value is not None:
+            validate_items("allowed_callers", value, min=1)
+        return value
+
+
+class AutoCodeInterpreterToolParam(BaseModel):
+    """Configuration for a code interpreter container. Optionally specify the IDs of the files to run the code on."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["auto"] | str
+    """Always `auto`."""
+    file_ids: list[str] | NotGiven = NOT_GIVEN
+    """An optional list of uploaded files to make available to your code."""
+    memory_limit: ContainerMemoryLimit | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `memory_limit` wire field."""
+    network_policy: AutoCodeInterpreterToolParamNetworkPolicy | NotGiven = NOT_GIVEN
+    """Network access policy for the container."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type"])
+        return value
+
+    @field_validator("file_ids")
+    @classmethod
+    def _validate_file_ids(cls, value):
+        validate_items("file_ids", value, max=50)
+        return value
+
+
+class CodeInterpreterToolCall(BaseModel):
+    """A tool call to run code."""
+
+    type: Literal["code_interpreter_call"]
+    """The type of the code interpreter tool call. Always `code_interpreter_call`."""
+    id: str
+    """The unique ID of the code interpreter tool call."""
+    status: Literal["in_progress", "completed", "incomplete", "interpreting", "failed"] | str
+    """The status of the code interpreter tool call. Valid values are `in_progress`, `completed`, `incomplete`, `interpreting`, and `failed`."""
+    container_id: str
+    """The ID of the container used to run the code."""
+    code: str | None
+    """Required `string` value serialized in the `code` wire field."""
+    outputs: list[CodeInterpreterToolCallOutputsItem] | None
+    """
+    The outputs generated by the code interpreter, such as logs or images.
+    Can be null if no outputs are available.
+    """
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "id", "status", "container_id", "code", "outputs"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["code_interpreter_call"])
         return value

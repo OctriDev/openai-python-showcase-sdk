@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, WrapValidator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
 from octridev_openai.types.responses import ResponseTextParam, TruncationEnum
@@ -14,7 +14,7 @@ from octridev_openai.types.responses_reasoning import Reasoning
 from octridev_openai.types.responses_tool import ToolChoiceParam
 from octridev_openai.types.shared import InputItem, Tool
 
-from ..validation import validate_required
+from ..validation import validate_required, validate_union_candidate
 
 
 class TokenCountsResource(BaseModel):
@@ -39,7 +39,9 @@ class TokenCountsBody(BaseModel):
 
     model: str | None | NotGiven = NOT_GIVEN
     """Optional `string` value serialized in the `model` wire field."""
-    input: str | list[InputItem] | None | NotGiven = NOT_GIVEN
+    input: (
+        str | Annotated[list[InputItem], WrapValidator(validate_union_candidate)] | None | NotGiven
+    ) = NOT_GIVEN
     """Text, image, or file inputs to the model, used to generate a response"""
     previous_response_id: str | None | NotGiven = NOT_GIVEN
     """Optional `string` value serialized in the `previous_response_id` wire field."""

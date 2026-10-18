@@ -6,6 +6,42 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_25: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "SessionEventAgentSessionTurnFailed": (
+        None,
+        {
+            "type": ("type", None),
+            "event_id": ("event_id", None),
+            "session_id": ("session_id", None),
+            "turn_id": ("turn_id", None),
+            "turn": ("turn", "TurnResource"),
+            "usage": ("usage", "TokenUsageResource"),
+        },
+    ),
+    "SessionEventAgentSessionTurnCancelled": (
+        None,
+        {
+            "type": ("type", None),
+            "event_id": ("event_id", None),
+            "session_id": ("session_id", None),
+            "turn_id": ("turn_id", None),
+            "turn": ("turn", "TurnResource"),
+            "usage": ("usage", "TokenUsageResource"),
+        },
+    ),
+    "SessionEventAgentSessionTurnItemAdded": (
+        None,
+        {
+            "type": ("type", None),
+            "event_id": ("event_id", None),
+            "session_id": ("session_id", None),
+            "turn_id": ("turn_id", None),
+            "output_index": ("output_index", None),
+            "item": (
+                "item",
+                "union:MessageItemResource|ReasoningItemResource|FunctionCallItemResource|FunctionCallOutputItemResource|AgentMessageItemResource|McpCallItemResource|ComputerUseCallItemResource|BrowserAuthenticationRequestItemResource|ComputerUseApprovalRequestResultItemResource|WebSearchCallItemResource|CommandExecutionItemResource|CreateSubagentCallItemResource|SendSubagentInputCallItemResource|ResumeSubagentCallItemResource|WaitForSubagentsCallItemResource|InterruptSubagentCallItemResource|CloseSubagentCallItemResource~type=message,reasoning,function_call,function_call_output,agent_message,mcp_call,computer_use_call,computer_use_approval_request,computer_use_approval_request_result,web_search_call,command_execution,interrupt_subagent_call,create_subagent_call,send_subagent_input_call,resume_subagent_call,wait_for_subagents_call,close_subagent_call",
+            ),
+        },
+    ),
     "SessionEventAgentSessionIdle": (
         None,
         {
@@ -446,28 +482,6 @@ WIRE_SCHEMAS_PART_25: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
                 "token_endpoint_auth",
                 "union:McpOauthTokenEndpointAuthResourceNone|McpOauthTokenEndpointAuthResourceClientSecretBasic|McpOauthTokenEndpointAuthResourceClientSecretPost~type=none,client_secret_basic,client_secret_post",
             ),
-        },
-    ),
-    "VaultCredentialAuthResourceMcpOauth": (
-        None,
-        {
-            "type": ("type", None),
-            "mcp_server_url": ("mcp_server_url", None),
-            "expires_at": ("expires_at", None),
-            "refresh": ("refresh", "McpOauthRefreshResource"),
-        },
-    ),
-    "VaultCredentialAuthResourceStaticBearer": (
-        None,
-        {
-            "type": ("type", None),
-            "mcp_server_url": ("mcp_server_url", None),
-        },
-    ),
-    "VaultCredentialNetworkingResourceUnrestricted": (
-        None,
-        {
-            "type": ("type", None),
         },
     ),
 }

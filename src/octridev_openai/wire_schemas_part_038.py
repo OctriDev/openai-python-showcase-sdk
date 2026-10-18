@@ -6,6 +6,49 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_38: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "CreateResponseVariant2": (
+        None,
+        {
+            "access_programs": ("access_programs", "AccessProgramsParam"),
+            "prompt_cache_options": ("prompt_cache_options", "ResponsePromptCacheOptionsParam"),
+            "service_tier": ("service_tier", None),
+            "truncation": ("truncation", None),
+            "reasoning": ("reasoning", "Reasoning"),
+            "input": ("input", None),
+            "include": ("include", None),
+            "parallel_tool_calls": ("parallel_tool_calls", None),
+            "store": ("store", None),
+            "instructions": ("instructions", None),
+            "moderation": ("moderation", "ModerationParam"),
+            "stream": ("stream", None),
+            "stream_options": ("stream_options", "ResponseStreamOptions"),
+            "conversation": ("conversation", "union:ConversationParam2"),
+            "context_management": ("context_management", "ContextManagementParam"),
+            "max_output_tokens": ("max_output_tokens", None),
+        },
+    ),
+    "CreateThreadAndRunRequestToolResources": (
+        None,
+        {
+            "code_interpreter": (
+                "code_interpreter",
+                "CreateThreadAndRunRequestToolResourcesCodeInterpreter",
+            ),
+            "file_search": ("file_search", "CreateThreadAndRunRequestToolResourcesFileSearch"),
+        },
+    ),
+    "CreateThreadAndRunRequestToolResourcesCodeInterpreter": (
+        None,
+        {
+            "file_ids": ("file_ids", None),
+        },
+    ),
+    "CreateThreadAndRunRequestToolResourcesFileSearch": (
+        None,
+        {
+            "vector_store_ids": ("vector_store_ids", None),
+        },
+    ),
     "CreateThreadRequestToolResources": (
         None,
         {
@@ -13,13 +56,31 @@ WIRE_SCHEMAS_PART_38: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
                 "code_interpreter",
                 "CreateThreadRequestToolResourcesCodeInterpreter",
             ),
-            "file_search": ("file_search", None),
+            "file_search": ("file_search", "CreateThreadRequestToolResourcesFileSearch"),
         },
     ),
     "CreateThreadRequestToolResourcesCodeInterpreter": (
         None,
         {
             "file_ids": ("file_ids", None),
+        },
+    ),
+    "CreateThreadRequestToolResourcesFileSearch": (
+        None,
+        {
+            "vector_store_ids": ("vector_store_ids", None),
+            "vector_stores": (
+                "vector_stores",
+                "CreateThreadRequestToolResourcesFileSearchVectorStoresItem",
+            ),
+        },
+    ),
+    "CreateThreadRequestToolResourcesFileSearchVectorStoresItem": (
+        None,
+        {
+            "file_ids": ("file_ids", None),
+            "chunking_strategy": ("chunking_strategy", None),
+            "metadata": ("metadata", None),
         },
     ),
     "CreateTranscriptionResponseJsonLogprobsItem": (
@@ -284,13 +345,6 @@ WIRE_SCHEMAS_PART_38: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "id": ("id", None),
         },
     ),
-    "MCPToolRequireApprovalMCPToolApprovalFilter": (
-        None,
-        {
-            "always": ("always", "MCPToolFilter"),
-            "never": ("never", "MCPToolFilter"),
-        },
-    ),
     "MessageContentImageFileObjectImageFile": (
         None,
         {
@@ -352,49 +406,6 @@ WIRE_SCHEMAS_PART_38: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         None,
         {
             "file_id": ("file_id", None),
-        },
-    ),
-    "MessageDeltaContentTextObjectText": (
-        None,
-        {
-            "value": ("value", None),
-            "annotations": (
-                "annotations",
-                "union:MessageDeltaContentTextAnnotationsFileCitationObject|MessageDeltaContentTextAnnotationsFilePathObject~type=file_citation,file_path",
-            ),
-        },
-    ),
-    "MessageDeltaObjectDelta": (
-        None,
-        {
-            "role": ("role", None),
-            "content": (
-                "content",
-                "union:MessageDeltaContentImageFileObject|MessageDeltaContentTextObject|MessageDeltaContentRefusalObject|MessageDeltaContentImageUrlObject~type=image_file,text,refusal,image_url",
-            ),
-        },
-    ),
-    "MessageObjectIncompleteDetails": (
-        None,
-        {
-            "reason": ("reason", None),
-        },
-    ),
-    "MessageObjectAttachmentsItem": (
-        None,
-        {
-            "file_id": ("file_id", None),
-            "tools": (
-                "tools",
-                "union:AssistantToolsCode|AssistantToolsFileSearchTypeOnly~type=code_interpreter,file_search",
-            ),
-        },
-    ),
-    "MessageStreamEventThreadMessageCreated": (
-        None,
-        {
-            "event": ("event", None),
-            "data": ("data", "MessageObject"),
         },
     ),
 }

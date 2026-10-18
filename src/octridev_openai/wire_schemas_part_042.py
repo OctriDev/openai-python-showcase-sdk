@@ -6,6 +6,41 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_42: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "RunStepStreamEventThreadRunStepDelta": (
+        None,
+        {
+            "event": ("event", None),
+            "data": ("data", "RunStepDeltaObject"),
+        },
+    ),
+    "RunStepStreamEventThreadRunStepCompleted": (
+        None,
+        {
+            "event": ("event", None),
+            "data": ("data", "RunStepObject"),
+        },
+    ),
+    "RunStepStreamEventThreadRunStepFailed": (
+        None,
+        {
+            "event": ("event", None),
+            "data": ("data", "RunStepObject"),
+        },
+    ),
+    "RunStepStreamEventThreadRunStepCancelled": (
+        None,
+        {
+            "event": ("event", None),
+            "data": ("data", "RunStepObject"),
+        },
+    ),
+    "RunStepStreamEventThreadRunStepExpired": (
+        None,
+        {
+            "event": ("event", None),
+            "data": ("data", "RunStepObject"),
+        },
+    ),
     "RunStreamEventThreadRunCreated": (
         None,
         {
@@ -115,14 +150,6 @@ WIRE_SCHEMAS_PART_42: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         None,
         {
             "vector_store_ids": ("vector_store_ids", None),
-        },
-    ),
-    "ThreadStreamEventThreadCreated": (
-        None,
-        {
-            "enabled": ("enabled", None),
-            "event": ("event", None),
-            "data": ("data", "ThreadObject"),
         },
     ),
     "TranscriptTextDeltaEventLogprobsItem": (
@@ -330,30 +357,6 @@ WIRE_SCHEMAS_PART_42: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         },
     ),
     "WebhookEvalRunFailedData": (
-        None,
-        {
-            "id": ("id", None),
-        },
-    ),
-    "WebhookEvalRunSucceededData": (
-        None,
-        {
-            "id": ("id", None),
-        },
-    ),
-    "WebhookFineTuningJobCancelledData": (
-        None,
-        {
-            "id": ("id", None),
-        },
-    ),
-    "WebhookFineTuningJobFailedData": (
-        None,
-        {
-            "id": ("id", None),
-        },
-    ),
-    "WebhookFineTuningJobSucceededData": (
         None,
         {
             "id": ("id", None),

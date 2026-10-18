@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Any, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal, TypeAlias
 
 from pydantic import BaseModel, ConfigDict, Field, WrapValidator, field_validator, model_validator
 from typing_extensions import TypeAliasType
@@ -25,18 +25,17 @@ from ..validation import (
 )
 
 if TYPE_CHECKING:
-    from octridev_openai.types.shared_part002 import ReasoningItem
+    from octridev_openai.types.shared_part002 import InputTextContent, ReasoningItem
     from octridev_openai.types.shared_part003 import (
         DoubleClickAction,
         DragParam,
-        InputTextContent,
         KeyPressAction,
         MoveParam,
         RefusalContent,
+        ScreenshotParam,
     )
     from octridev_openai.types.shared_part004 import (
         ComputerCallSafetyCheckParam,
-        ScreenshotParam,
         ScrollParam,
         TypeParam,
         WaitParam,
@@ -46,37 +45,34 @@ if TYPE_CHECKING:
         MCPProtocolError,
         MCPToolExecutionError,
     )
-    from octridev_openai.types.shared_part006 import (
-        Error3,
-        OutputMessage,
-        ResponseConfigurationUpdateItemParam,
-    )
+    from octridev_openai.types.shared_part006 import OutputMessage
     from octridev_openai.types.shared_part007 import (
         AdditionalToolsItemParam,
         CustomToolCall,
         FileSearchToolCall,
-        FunctionToolCall,
         InputFileContent,
         InputImageContent,
         OutputTextContent,
+        ResponseConfigurationUpdateItemParam,
     )
-    from octridev_openai.types.shared_part008 import CustomToolCallOutput, ImageGenToolCall
+    from octridev_openai.types.shared_part008 import (
+        CustomToolCallOutput,
+        FunctionToolCall,
+        ImageGenToolCall,
+    )
     from octridev_openai.types.shared_part010 import (
+        ApplyPatchToolCallItemParam,
+        ApplyPatchToolCallOutputItemParam,
+        CodeInterpreterToolCall,
         ComputerCallOutputItemParam,
         FunctionShellCallOutputItemParam,
         MCPToolCall,
         ToolSearchCallItemParam,
         ToolSearchOutputItemParam,
     )
-    from octridev_openai.types.shared_part011 import (
-        ApplyPatchToolCallItemParam,
-        ApplyPatchToolCallOutputItemParam,
-        CodeInterpreterToolCall,
-        WebSearchToolCall,
-    )
+    from octridev_openai.types.shared_part011 import FunctionCallOutputItemParam, WebSearchToolCall
     from octridev_openai.types.shared_part012 import (
         ComputerToolCall,
-        FunctionCallOutputItemParam,
         FunctionShellCallItemParam,
         InputMessage,
     )
@@ -563,14 +559,25 @@ OutputMessageContent = TypeAliasType(
 ParallelToolCalls = bool
 
 
-class PermissionErrorResponse(BaseModel):
-    """Typed representation of the `PermissionErrorResponse` API schema."""
+class PublicAssignOrganizationGroupRoleBody(BaseModel):
+    """Request payload for assigning a role to a group or user."""
 
-    error: Annotated[Error3, WrapValidator(validate_union_candidate)] | str
-    """Details about the permission error."""
+    role_id: str
+    """Identifier of the role to assign."""
 
     @model_validator(mode="before")
     @classmethod
     def _validate_required(cls, value):
-        validate_required(value, ["error"])
+        validate_required(value, ["role_id"])
         return value
+
+
+# ReasoningEffort is a union type
+ReasoningEffort: TypeAlias = (
+    Annotated[
+        Literal["none", "minimal", "low", "medium", "high", "xhigh", "max"],
+        WrapValidator(validate_union_candidate),
+    ]
+    | Annotated[str, WrapValidator(validate_union_candidate)]
+    | Annotated[None, WrapValidator(validate_union_candidate)]
+)

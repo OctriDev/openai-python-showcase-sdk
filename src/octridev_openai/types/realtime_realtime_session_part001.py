@@ -26,6 +26,65 @@ from octridev_openai.types.shared import (
 
 from ..validation import validate_range, validate_union_candidate
 
+
+class RealtimeSessionCreateRequestTracingVariant1(BaseModel):
+    """Granular configuration for tracing."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    workflow_name: str | NotGiven = NOT_GIVEN
+    """
+    The name of the workflow to attach to this trace. This is used to
+    name the trace in the traces dashboard.
+    """
+    group_id: str | NotGiven = NOT_GIVEN
+    """
+    The group id to attach to this trace to enable filtering and
+    grouping in the traces dashboard.
+    """
+    metadata: dict[str, Any] | NotGiven = NOT_GIVEN
+    """
+    The arbitrary metadata to attach to this trace to enable
+    filtering in the traces dashboard.
+    """
+
+
+# RealtimeSessionCreateRequestTracing is a union type
+RealtimeSessionCreateRequestTracing = TypeAliasType(
+    "RealtimeSessionCreateRequestTracing",
+    'Annotated[Literal["auto"], WrapValidator(validate_union_candidate)] | Annotated[str, WrapValidator(validate_union_candidate)] | Annotated[RealtimeSessionCreateRequestTracingVariant1, WrapValidator(validate_union_candidate)]',
+)
+
+
+class RealtimeSessionTracingVariant1(BaseModel):
+    """Granular configuration for tracing."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    workflow_name: str | NotGiven = NOT_GIVEN
+    """
+    The name of the workflow to attach to this trace. This is used to
+    name the trace in the traces dashboard.
+    """
+    group_id: str | NotGiven = NOT_GIVEN
+    """
+    The group id to attach to this trace to enable filtering and
+    grouping in the traces dashboard.
+    """
+    metadata: dict[str, Any] | NotGiven = NOT_GIVEN
+    """
+    The arbitrary metadata to attach to this trace to enable
+    filtering in the traces dashboard.
+    """
+
+
+# RealtimeSessionTracing is a union type
+RealtimeSessionTracing = TypeAliasType(
+    "RealtimeSessionTracing",
+    'Annotated[Literal["auto"], WrapValidator(validate_union_candidate)] | Annotated[str, WrapValidator(validate_union_candidate)] | Annotated[RealtimeSessionTracingVariant1, WrapValidator(validate_union_candidate)]',
+)
+
+
 # RealtimeSessionCreateRequestGAToolsItem is a union type
 RealtimeSessionCreateRequestGAToolsItem = TypeAliasType(
     "RealtimeSessionCreateRequestGAToolsItem",
@@ -33,10 +92,82 @@ RealtimeSessionCreateRequestGAToolsItem = TypeAliasType(
 )
 
 
+class RealtimeSessionCreateResponseGATracingVariant1(BaseModel):
+    """Granular configuration for tracing."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    workflow_name: str | NotGiven = NOT_GIVEN
+    """
+    The name of the workflow to attach to this trace. This is used to
+    name the trace in the Traces Dashboard.
+    """
+    group_id: str | NotGiven = NOT_GIVEN
+    """
+    The group id to attach to this trace to enable filtering and
+    grouping in the Traces Dashboard.
+    """
+    metadata: dict[str, Any] | NotGiven = NOT_GIVEN
+    """
+    The arbitrary metadata to attach to this trace to enable
+    filtering in the Traces Dashboard.
+    """
+
+
+# RealtimeSessionCreateResponseGATracing is a union type
+RealtimeSessionCreateResponseGATracing = TypeAliasType(
+    "RealtimeSessionCreateResponseGATracing",
+    'Annotated[Literal["auto"], WrapValidator(validate_union_candidate)] | Annotated[str, WrapValidator(validate_union_candidate)] | Annotated[RealtimeSessionCreateResponseGATracingVariant1, WrapValidator(validate_union_candidate)]',
+)
+
+
 # RealtimeSessionCreateResponseGAToolsItem is a union type
 RealtimeSessionCreateResponseGAToolsItem = TypeAliasType(
     "RealtimeSessionCreateResponseGAToolsItem",
     'Annotated[Annotated[RealtimeFunctionTool, WrapValidator(validate_union_candidate)] | Annotated[MCPTool, WrapValidator(validate_union_candidate)], Field(discriminator="type")]',
+)
+
+
+class RealtimeSessionCreateResponseTracingVariant1(BaseModel):
+    """Granular configuration for tracing."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    workflow_name: str | NotGiven = NOT_GIVEN
+    """
+    The name of the workflow to attach to this trace. This is used to
+    name the trace in the traces dashboard.
+    """
+    group_id: str | NotGiven = NOT_GIVEN
+    """
+    The group id to attach to this trace to enable filtering and
+    grouping in the traces dashboard.
+    """
+    metadata: dict[str, Any] | NotGiven = NOT_GIVEN
+    """
+    The arbitrary metadata to attach to this trace to enable
+    filtering in the traces dashboard.
+    """
+
+
+# RealtimeSessionCreateResponseTracing is a union type
+RealtimeSessionCreateResponseTracing = TypeAliasType(
+    "RealtimeSessionCreateResponseTracing",
+    'Annotated[Literal["auto"], WrapValidator(validate_union_candidate)] | Annotated[str, WrapValidator(validate_union_candidate)] | Annotated[RealtimeSessionCreateResponseTracingVariant1, WrapValidator(validate_union_candidate)]',
+)
+
+
+# RealtimeSessionCreateRequestGAToolChoice is a union type
+RealtimeSessionCreateRequestGAToolChoice = TypeAliasType(
+    "RealtimeSessionCreateRequestGAToolChoice",
+    "Annotated[ToolChoiceOptions, WrapValidator(validate_union_candidate)] | Annotated[ToolChoiceFunction, WrapValidator(validate_union_candidate)] | Annotated[ToolChoiceMCP, WrapValidator(validate_union_candidate)]",
+)
+
+
+# RealtimeSessionCreateResponseGAToolChoice is a union type
+RealtimeSessionCreateResponseGAToolChoice = TypeAliasType(
+    "RealtimeSessionCreateResponseGAToolChoice",
+    "Annotated[ToolChoiceOptions, WrapValidator(validate_union_candidate)] | Annotated[ToolChoiceFunction, WrapValidator(validate_union_candidate)] | Annotated[ToolChoiceMCP, WrapValidator(validate_union_candidate)]",
 )
 
 
@@ -111,28 +242,6 @@ class RealtimeSessionCreateResponseAudio(BaseModel):
     """Optional object value serialized in the `output` wire field."""
 
 
-class RealtimeSessionCreateResponseTracingTracingConfiguration(BaseModel):
-    """Granular configuration for tracing."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    workflow_name: str | NotGiven = NOT_GIVEN
-    """
-    The name of the workflow to attach to this trace. This is used to
-    name the trace in the traces dashboard.
-    """
-    group_id: str | NotGiven = NOT_GIVEN
-    """
-    The group id to attach to this trace to enable filtering and
-    grouping in the traces dashboard.
-    """
-    metadata: dict[str, Any] | NotGiven = NOT_GIVEN
-    """
-    The arbitrary metadata to attach to this trace to enable
-    filtering in the traces dashboard.
-    """
-
-
 class RealtimeSessionCreateResponseTurnDetection(BaseModel):
     """
     Configuration for turn detection. Can be set to `null` to turn off. Server
@@ -203,15 +312,7 @@ class RealtimeSessionCreateResponse(BaseModel):
     """
     audio: RealtimeSessionCreateResponseAudio | NotGiven = NOT_GIVEN
     """Configuration for input and output audio for the session."""
-    tracing: (
-        Literal["auto"]
-        | str
-        | Annotated[
-            RealtimeSessionCreateResponseTracingTracingConfiguration,
-            WrapValidator(validate_union_candidate),
-        ]
-        | NotGiven
-    ) = NOT_GIVEN
+    tracing: RealtimeSessionCreateResponseTracing | NotGiven = NOT_GIVEN
     """
     Configuration options for tracing. Set to null to disable tracing. Once
     tracing is enabled for a session, the configuration cannot be modified.
@@ -241,40 +342,17 @@ class RealtimeSessionCreateResponse(BaseModel):
     """
 
 
-# RealtimeSessionCreateRequestGAToolChoice is a union type
-RealtimeSessionCreateRequestGAToolChoice = TypeAliasType(
-    "RealtimeSessionCreateRequestGAToolChoice",
-    "Annotated[ToolChoiceOptions, WrapValidator(validate_union_candidate)] | Annotated[ToolChoiceFunction, WrapValidator(validate_union_candidate)] | Annotated[ToolChoiceMCP, WrapValidator(validate_union_candidate)]",
-)
-
-
-# RealtimeSessionCreateResponseGAToolChoice is a union type
-RealtimeSessionCreateResponseGAToolChoice = TypeAliasType(
-    "RealtimeSessionCreateResponseGAToolChoice",
-    "Annotated[ToolChoiceOptions, WrapValidator(validate_union_candidate)] | Annotated[ToolChoiceFunction, WrapValidator(validate_union_candidate)] | Annotated[ToolChoiceMCP, WrapValidator(validate_union_candidate)]",
-)
-
-
-class RealtimeSessionTracingTracingConfiguration(BaseModel):
-    """Granular configuration for tracing."""
+class RealtimeSessionInputAudioNoiseReduction(BaseModel):
+    """
+    Configuration for input audio noise reduction. This can be set to `null` to turn off.
+    Noise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.
+    Filtering the audio can improve VAD and turn detection accuracy (reducing false positives) and model performance by improving perception of the input audio.
+    """
 
     model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
 
-    workflow_name: str | NotGiven = NOT_GIVEN
-    """
-    The name of the workflow to attach to this trace. This is used to
-    name the trace in the traces dashboard.
-    """
-    group_id: str | NotGiven = NOT_GIVEN
-    """
-    The group id to attach to this trace to enable filtering and
-    grouping in the traces dashboard.
-    """
-    metadata: dict[str, Any] | NotGiven = NOT_GIVEN
-    """
-    The arbitrary metadata to attach to this trace to enable
-    filtering in the traces dashboard.
-    """
+    type: NoiseReductionType | NotGiven = NOT_GIVEN
+    """Type of noise reduction. `near_field` is for close-talking microphones such as headphones, `far_field` is for far-field microphones such as laptop or conference room microphones."""
 
 
 class RealtimeSession(BaseModel):
@@ -342,7 +420,7 @@ class RealtimeSession(BaseModel):
     For `gpt-realtime-whisper` transcription sessions, turn detection must be
     set to `null`; VAD is not supported.
     """
-    input_audio_noise_reduction: Any | NotGiven = NOT_GIVEN
+    input_audio_noise_reduction: RealtimeSessionInputAudioNoiseReduction | NotGiven = NOT_GIVEN
     """
     Configuration for input audio noise reduction. This can be set to `null` to turn off.
     Noise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.
@@ -354,15 +432,7 @@ class RealtimeSession(BaseModel):
     the minimum speed. 1.5 is the maximum speed. This value can only be changed
     in between model turns, not while a response is in progress.
     """
-    tracing: (
-        Literal["auto"]
-        | str
-        | Annotated[
-            RealtimeSessionTracingTracingConfiguration, WrapValidator(validate_union_candidate)
-        ]
-        | None
-        | NotGiven
-    ) = NOT_GIVEN
+    tracing: RealtimeSessionTracing | None | NotGiven = NOT_GIVEN
     """
     Configuration options for tracing. Set to null to disable tracing. Once
     tracing is enabled for a session, the configuration cannot be modified.

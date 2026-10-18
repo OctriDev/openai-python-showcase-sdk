@@ -6,6 +6,31 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_24: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "SessionSpendControlResource": (
+        None,
+        {
+            "limit": ("limit", None),
+            "consumed": ("consumed", None),
+        },
+    ),
+    "ComputerUseApprovalRequestKindResourceBrowserAuthentication": (
+        None,
+        {
+            "type": ("type", None),
+            "reason": ("reason", None),
+            "credential_origin": ("credential_origin", None),
+            "fields": ("fields", "BrowserAuthenticationFieldResource"),
+            "options": ("options", "BrowserAuthenticationOptionResource"),
+        },
+    ),
+    "ComputerUseApprovalRequestKindResourceBrowserOriginAccess": (
+        None,
+        {
+            "type": ("type", None),
+            "reason": ("reason", None),
+            "origin": ("origin", None),
+        },
+    ),
     "SessionRequiredActionResourceComputerUseApprovalRequest": (
         None,
         {
@@ -495,42 +520,6 @@ WIRE_SCHEMAS_PART_24: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "turn_id": ("turn_id", None),
             "turn": ("turn", "TurnResource"),
             "usage": ("usage", "TokenUsageResource"),
-        },
-    ),
-    "SessionEventAgentSessionTurnFailed": (
-        None,
-        {
-            "type": ("type", None),
-            "event_id": ("event_id", None),
-            "session_id": ("session_id", None),
-            "turn_id": ("turn_id", None),
-            "turn": ("turn", "TurnResource"),
-            "usage": ("usage", "TokenUsageResource"),
-        },
-    ),
-    "SessionEventAgentSessionTurnCancelled": (
-        None,
-        {
-            "type": ("type", None),
-            "event_id": ("event_id", None),
-            "session_id": ("session_id", None),
-            "turn_id": ("turn_id", None),
-            "turn": ("turn", "TurnResource"),
-            "usage": ("usage", "TokenUsageResource"),
-        },
-    ),
-    "SessionEventAgentSessionTurnItemAdded": (
-        None,
-        {
-            "type": ("type", None),
-            "event_id": ("event_id", None),
-            "session_id": ("session_id", None),
-            "turn_id": ("turn_id", None),
-            "output_index": ("output_index", None),
-            "item": (
-                "item",
-                "union:MessageItemResource|ReasoningItemResource|FunctionCallItemResource|FunctionCallOutputItemResource|AgentMessageItemResource|McpCallItemResource|ComputerUseCallItemResource|BrowserAuthenticationRequestItemResource|ComputerUseApprovalRequestResultItemResource|WebSearchCallItemResource|CommandExecutionItemResource|CreateSubagentCallItemResource|SendSubagentInputCallItemResource|ResumeSubagentCallItemResource|WaitForSubagentsCallItemResource|InterruptSubagentCallItemResource|CloseSubagentCallItemResource~type=message,reasoning,function_call,function_call_output,agent_message,mcp_call,computer_use_call,computer_use_approval_request,computer_use_approval_request_result,web_search_call,command_execution,interrupt_subagent_call,create_subagent_call,send_subagent_input_call,resume_subagent_call,wait_for_subagents_call,close_subagent_call",
-            ),
         },
     ),
 }

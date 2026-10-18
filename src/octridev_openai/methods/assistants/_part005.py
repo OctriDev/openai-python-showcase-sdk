@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator, Iterator
 from typing import Any, Literal, TypeAlias
 
 from pydantic import TypeAdapter, ValidationError as _PydanticValidationError
@@ -13,6 +14,7 @@ from octridev_openai.client import (
     ClientConfig,
     NotGiven,
     RequestOptions,
+    SdkPage,
     encode_path_segment,
     omit_unset,
     sdk_request,
@@ -23,7 +25,6 @@ from octridev_openai.errors import SdkValidationError, sdk_decode
 from octridev_openai.types import (
     CreateMessageRequestAttachmentsItem,
     CreateMessageRequestContentItem,
-    DeleteMessageResponse,
     ErrorResponse,
     ListMessagesResponse,
     MessageObject,
@@ -183,6 +184,197 @@ def list_messages_sync(
             _validate_response_enums(response.data, "ListMessagesResponse"), ListMessagesResponse
         ),
     )
+
+
+async def list_messages_paginated(
+    _client_config: ClientConfig,
+    thread_id: str,
+    limit: int | NotGiven = NOT_GIVEN,
+    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
+    after: str | NotGiven = NOT_GIVEN,
+    before: str | NotGiven = NOT_GIVEN,
+    run_id: str | NotGiven = NOT_GIVEN,
+    *,
+    request_options: RequestOptions | None = None,
+) -> AsyncIterator[MessageObject]:
+    """Lists messages belonging to a thread. Use `run_id` to filter by the run that
+    generated the messages and `order` to control their creation-time order. Use `after`
+    or `before` cursors to navigate the results.
+
+    Returns a list of messages for a given thread.
+
+    Args:
+        thread_id: The ID of the
+            [thread](https://developers.openai.com/api/docs/assistants/migration) the
+            messages belong to.
+        limit: A limit on the number of objects to be returned. Limit can range between 1 and
+            100, and the default is 20.
+        order: Sort order by the `created_at` timestamp of the objects. `asc` for ascending
+            order and `desc` for descending order.
+        after: A cursor for use in pagination. `after` is an object ID that defines your place
+            in the list. For instance, if you make a list request and receive 100 objects,
+            ending with obj_foo, your subsequent call can include after=obj_foo in order to
+            fetch the next page of the list.
+        before: A cursor for use in pagination. `before` is an object ID that defines your place
+            in the list. For instance, if you make a list request and receive 100 objects,
+            starting with obj_foo, your subsequent call can include before=obj_foo in order
+            to fetch the previous page of the list.
+        run_id: Filter messages by the run ID that generated them.
+    """
+    _cursor = after
+    while True:
+        _page = await list_messages(
+            _client_config,
+            thread_id,
+            limit,
+            order,
+            _cursor,
+            before,
+            run_id,
+            request_options=request_options,
+        )
+        _items: list[MessageObject] = _page.data if isinstance(_page.data, list) else []
+        if not _items:
+            break
+        for item in _items:
+            yield item
+        if not _page.has_more:
+            break
+        _next = _page.last_id
+        if _next is None or isinstance(_next, NotGiven):
+            break
+        _cursor = _next
+
+
+async def list_messages_pages(
+    _client_config: ClientConfig,
+    thread_id: str,
+    limit: int | NotGiven = NOT_GIVEN,
+    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
+    after: str | NotGiven = NOT_GIVEN,
+    before: str | NotGiven = NOT_GIVEN,
+    run_id: str | NotGiven = NOT_GIVEN,
+    *,
+    request_options: RequestOptions | None = None,
+) -> AsyncIterator[SdkPage[ListMessagesResponse, MessageObject]]:
+    _cursor = after
+    while True:
+        _page = await list_messages(
+            _client_config,
+            thread_id,
+            limit,
+            order,
+            _cursor,
+            before,
+            run_id,
+            request_options=request_options,
+        )
+        _items: list[MessageObject] = _page.data if isinstance(_page.data, list) else []
+        if not _items:
+            break
+        _next = _page.last_id
+        _has_more = (
+            bool(_page.has_more) and not isinstance(_next, NotGiven | None) and _next != _cursor
+        )
+        yield SdkPage(data=_page, items=_items, has_more=_has_more)
+        if not _has_more or _next is None or isinstance(_next, NotGiven):
+            break
+        _cursor = _next
+
+
+def list_messages_paginated_sync(
+    _client_config: ClientConfig,
+    thread_id: str,
+    limit: int | NotGiven = NOT_GIVEN,
+    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
+    after: str | NotGiven = NOT_GIVEN,
+    before: str | NotGiven = NOT_GIVEN,
+    run_id: str | NotGiven = NOT_GIVEN,
+    *,
+    request_options: RequestOptions | None = None,
+) -> Iterator[MessageObject]:
+    """Lists messages belonging to a thread. Use `run_id` to filter by the run that
+    generated the messages and `order` to control their creation-time order. Use `after`
+    or `before` cursors to navigate the results.
+
+    Returns a list of messages for a given thread.
+
+    Args:
+        thread_id: The ID of the
+            [thread](https://developers.openai.com/api/docs/assistants/migration) the
+            messages belong to.
+        limit: A limit on the number of objects to be returned. Limit can range between 1 and
+            100, and the default is 20.
+        order: Sort order by the `created_at` timestamp of the objects. `asc` for ascending
+            order and `desc` for descending order.
+        after: A cursor for use in pagination. `after` is an object ID that defines your place
+            in the list. For instance, if you make a list request and receive 100 objects,
+            ending with obj_foo, your subsequent call can include after=obj_foo in order to
+            fetch the next page of the list.
+        before: A cursor for use in pagination. `before` is an object ID that defines your place
+            in the list. For instance, if you make a list request and receive 100 objects,
+            starting with obj_foo, your subsequent call can include before=obj_foo in order
+            to fetch the previous page of the list.
+        run_id: Filter messages by the run ID that generated them.
+    """
+    _cursor = after
+    while True:
+        _page = list_messages_sync(
+            _client_config,
+            thread_id,
+            limit,
+            order,
+            _cursor,
+            before,
+            run_id,
+            request_options=request_options,
+        )
+        _items: list[MessageObject] = _page.data if isinstance(_page.data, list) else []
+        if not _items:
+            break
+        yield from _items
+        if not _page.has_more:
+            break
+        _next = _page.last_id
+        if _next is None or isinstance(_next, NotGiven):
+            break
+        _cursor = _next
+
+
+def list_messages_pages_sync(
+    _client_config: ClientConfig,
+    thread_id: str,
+    limit: int | NotGiven = NOT_GIVEN,
+    order: Literal["asc", "desc"] | str | NotGiven = NOT_GIVEN,
+    after: str | NotGiven = NOT_GIVEN,
+    before: str | NotGiven = NOT_GIVEN,
+    run_id: str | NotGiven = NOT_GIVEN,
+    *,
+    request_options: RequestOptions | None = None,
+) -> Iterator[SdkPage[ListMessagesResponse, MessageObject]]:
+    _cursor = after
+    while True:
+        _page = list_messages_sync(
+            _client_config,
+            thread_id,
+            limit,
+            order,
+            _cursor,
+            before,
+            run_id,
+            request_options=request_options,
+        )
+        _items: list[MessageObject] = _page.data if isinstance(_page.data, list) else []
+        if not _items:
+            break
+        _next = _page.last_id
+        _has_more = (
+            bool(_page.has_more) and not isinstance(_next, NotGiven | None) and _next != _cursor
+        )
+        yield SdkPage(data=_page, items=_items, has_more=_has_more)
+        if not _has_more or _next is None or isinstance(_next, NotGiven):
+            break
+        _cursor = _next
 
 
 CreateMessageError: TypeAlias = ErrorResponse
@@ -510,90 +702,20 @@ def modify_message_sync(
     )
 
 
-DeleteMessageError: TypeAlias = ErrorResponse
-
-
-async def delete_message(
-    _client_config: ClientConfig,
-    thread_id: str,
-    message_id: str,
-    *,
-    request_options: RequestOptions | None = None,
-) -> DeleteMessageResponse:
-    """Deletes a message from a thread. Provide both identifiers to select the thread and
-    the message to remove; the response confirms the deletion.
-
-    Deletes a message.
-
-    Args:
-        thread_id: The ID of the thread to which this message belongs.
-        message_id: The ID of the message to delete.
-    """
-
-    _resp = await sdk_request(
-        "DELETE",
-        f"/threads/{encode_path_segment(thread_id)}/messages/{encode_path_segment(message_id)}",
-        operation_id="delete_message",
-        errors={"429": ErrorResponse},
-        response_decoder="json",
-        request_options=request_options,
-        config=_client_config,
-    )
-    return sdk_decode(
-        _resp,
-        lambda response: _validate_pydantic_response(
-            _validate_response_enums(response.data, "DeleteMessageResponse"), DeleteMessageResponse
-        ),
-    )
-
-
-def delete_message_sync(
-    _client_config: ClientConfig,
-    thread_id: str,
-    message_id: str,
-    *,
-    request_options: RequestOptions | None = None,
-) -> DeleteMessageResponse:
-    """Deletes a message from a thread. Provide both identifiers to select the thread and
-    the message to remove; the response confirms the deletion.
-
-    Deletes a message.
-
-    Args:
-        thread_id: The ID of the thread to which this message belongs.
-        message_id: The ID of the message to delete.
-    """
-
-    _resp = sdk_request_sync(
-        "DELETE",
-        f"/threads/{encode_path_segment(thread_id)}/messages/{encode_path_segment(message_id)}",
-        operation_id="delete_message",
-        errors={"429": ErrorResponse},
-        response_decoder="json",
-        request_options=request_options,
-        config=_client_config,
-    )
-    return sdk_decode(
-        _resp,
-        lambda response: _validate_pydantic_response(
-            _validate_response_enums(response.data, "DeleteMessageResponse"), DeleteMessageResponse
-        ),
-    )
-
-
 __all__ = [
     "CreateMessageError",
-    "DeleteMessageError",
     "GetMessageError",
     "ListMessagesError",
     "ModifyMessageError",
     "create_message",
     "create_message_sync",
-    "delete_message",
-    "delete_message_sync",
     "get_message",
     "get_message_sync",
     "list_messages",
+    "list_messages_pages",
+    "list_messages_pages_sync",
+    "list_messages_paginated",
+    "list_messages_paginated_sync",
     "list_messages_sync",
     "modify_message",
     "modify_message_sync",

@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, WrapValidator, model_validator
+from typing_extensions import TypeAliasType
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
 
@@ -74,17 +75,11 @@ class DecisionsUsageErrorResponse(BaseModel):
         return value
 
 
-class DecisionsUsagePermissionErrorResponse(BaseModel):
-    """Typed representation of the `DecisionsUsagePermissionErrorResponse` API schema."""
-
-    error: Annotated[DecisionsUsageErrorDetails, WrapValidator(validate_union_candidate)] | str
-    """Details about the permission error."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["error"])
-        return value
+# DecisionsUsagePermissionErrorResponseError is a union type
+DecisionsUsagePermissionErrorResponseError = TypeAliasType(
+    "DecisionsUsagePermissionErrorResponseError",
+    "Annotated[DecisionsUsageErrorDetails, WrapValidator(validate_union_candidate)] | Annotated[str, WrapValidator(validate_union_candidate)]",
+)
 
 
 class DecisionsUsageResult(BaseModel):
@@ -145,4 +140,17 @@ class DecisionsUsageResult(BaseModel):
     @classmethod
     def _validate_required(cls, value):
         validate_required(value, ["object", "input_tokens", "output_tokens", "num_model_requests"])
+        return value
+
+
+class DecisionsUsagePermissionErrorResponse(BaseModel):
+    """Typed representation of the `DecisionsUsagePermissionErrorResponse` API schema."""
+
+    error: DecisionsUsagePermissionErrorResponseError
+    """Details about the permission error."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["error"])
         return value

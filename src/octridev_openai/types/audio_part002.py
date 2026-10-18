@@ -11,6 +11,9 @@ from typing_extensions import TypeAliasType
 from octridev_openai.client import NOT_GIVEN, NotGiven
 from octridev_openai.types.audio_part001 import (
     AudioResponseFormat,
+    CreateTranscriptionResponseVerboseJson,
+    CreateTranslationResponseJson,
+    CreateTranslationResponseVerboseJson,
     TranscriptionDiarizedSegment,
     TranscriptionInclude,
     TranscriptionLanguage,
@@ -226,6 +229,27 @@ class VoiceResource(BaseModel):
         return value
 
 
+# CreateTranscriptionResponse is a union type
+CreateTranscriptionResponse = TypeAliasType(
+    "CreateTranscriptionResponse",
+    "Annotated[CreateTranscriptionResponseJson, WrapValidator(validate_union_candidate)] | Annotated[CreateTranscriptionResponseDiarizedJson, WrapValidator(validate_union_candidate)] | Annotated[CreateTranscriptionResponseVerboseJson, WrapValidator(validate_union_candidate)]",
+)
+
+
+# CreateTranslationResponse is a union type
+CreateTranslationResponse = TypeAliasType(
+    "CreateTranslationResponse",
+    "Annotated[CreateTranslationResponseJson, WrapValidator(validate_union_candidate)] | Annotated[CreateTranslationResponseVerboseJson, WrapValidator(validate_union_candidate)]",
+)
+
+
+# CreateTranscriptionRequestChunkingStrategy is a union type
+CreateTranscriptionRequestChunkingStrategy = TypeAliasType(
+    "CreateTranscriptionRequestChunkingStrategy",
+    'Annotated[Literal["auto"], WrapValidator(validate_union_candidate)] | Annotated[str, WrapValidator(validate_union_candidate)] | Annotated[VadConfig, WrapValidator(validate_union_candidate)]',
+)
+
+
 class UnknownCreateTranscriptionResponseDiarizedJsonUsage(BaseModel):
     """A `CreateTranscriptionResponseDiarizedJsonUsage` whose `type` names no branch this SDK knows, kept as received."""
 
@@ -249,6 +273,30 @@ class UnknownCreateTranscriptionResponseJsonUsage(BaseModel):
 CreateTranscriptionResponseJsonUsage = TypeAliasType(
     "CreateTranscriptionResponseJsonUsage",
     'Annotated[Annotated[TranscriptTextUsageTokens, WrapValidator(validate_union_candidate)] | Annotated[TranscriptTextUsageDuration, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownCreateTranscriptionResponseJsonUsage))]',
+)
+
+
+class CreateSpeechRequestVoiceVariant2(BaseModel):
+    """Custom voice reference."""
+
+    id: str
+    """
+    The custom voice ID, e.g. `voice_1234`.
+
+    @example "voice_1234"
+    """
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["id"])
+        return value
+
+
+# CreateSpeechRequestVoice is a union type
+CreateSpeechRequestVoice = TypeAliasType(
+    "CreateSpeechRequestVoice",
+    'Annotated[VoiceIdsShared, WrapValidator(validate_union_candidate)] | Annotated[Literal["fable", "onyx", "nova"], WrapValidator(validate_union_candidate)] | Annotated[str, WrapValidator(validate_union_candidate)] | Annotated[CreateSpeechRequestVoiceVariant2, WrapValidator(validate_union_candidate)]',
 )
 
 
@@ -295,13 +343,7 @@ class CreateTranscriptionRequest(BaseModel):
     """
     stream: bool | None | NotGiven = NOT_GIVEN
     """Optional `boolean` value serialized in the `stream` wire field."""
-    chunking_strategy: (
-        Literal["auto"]
-        | str
-        | Annotated[VadConfig, WrapValidator(validate_union_candidate)]
-        | None
-        | NotGiven
-    ) = NOT_GIVEN
+    chunking_strategy: CreateTranscriptionRequestChunkingStrategy | None | NotGiven = NOT_GIVEN
     """Controls how the audio is cut into chunks. When set to `"auto"`, the server first normalizes loudness and then uses voice activity detection (VAD) to choose boundaries. `server_vad` object can be provided to tweak VAD detection parameters manually. If unset, the audio is transcribed as a single block. Required when using `gpt-4o-transcribe-diarize` for inputs longer than 30 seconds."""
     known_speaker_names: list[str] | NotGiven = NOT_GIVEN
     """Optional list of speaker names that correspond to the audio samples provided in `known_speaker_references[]`. Each entry should be a short identifier (for example `customer` or `agent`). Up to 4 speakers are supported."""
@@ -330,75 +372,6 @@ class CreateTranscriptionRequest(BaseModel):
     @classmethod
     def _validate_known_speaker_references(cls, value):
         validate_items("known_speaker_references", value, max=4)
-        return value
-
-
-class CreateSpeechRequestVoiceVariant1(BaseModel):
-    """Custom voice reference."""
-
-    id: str
-    """
-    The custom voice ID, e.g. `voice_1234`.
-
-    @example "voice_1234"
-    """
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["id"])
-        return value
-
-
-class CreateSpeechRequest(BaseModel):
-    """Typed representation of the `CreateSpeechRequest` API schema."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    model: str
-    """One of the available [TTS models](https://developers.openai.com/api/docs/guides/text-to-speech): `tts-1`, `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`."""
-    input: str
-    """The text to generate audio for. The maximum length is 4096 characters."""
-    voice: (
-        Annotated[VoiceIdsShared, WrapValidator(validate_union_candidate)]
-        | Literal["fable", "onyx", "nova"]
-        | str
-        | Annotated[CreateSpeechRequestVoiceVariant1, WrapValidator(validate_union_candidate)]
-    )
-    """The voice to use when generating the audio. Supported built-in voices are `alloy`, `ash`, `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Previews of the voices are available in the [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options). Custom voices must be created from audio samples."""
-    instructions: str | NotGiven = NOT_GIVEN
-    """Control the voice of your generated audio with additional instructions. Does not work with `tts-1` or `tts-1-hd`."""
-    response_format: Literal["mp3", "opus", "aac", "flac", "wav", "pcm"] | str | NotGiven = (
-        NOT_GIVEN
-    )
-    """The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and `pcm`."""
-    speed: float | NotGiven = NOT_GIVEN
-    """The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the default."""
-    stream_format: Literal["sse", "audio"] | str | NotGiven = NOT_GIVEN
-    """The format to stream the audio in. Supported formats are `sse` and `audio`. `sse` is not supported for `tts-1` or `tts-1-hd`."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["model", "input", "voice"])
-        return value
-
-    @field_validator("input")
-    @classmethod
-    def _validate_input(cls, value):
-        validate_length("input", value, max=4096)
-        return value
-
-    @field_validator("instructions")
-    @classmethod
-    def _validate_instructions(cls, value):
-        validate_length("instructions", value, max=4096)
-        return value
-
-    @field_validator("speed")
-    @classmethod
-    def _validate_speed(cls, value):
-        validate_range("speed", value, min=0.25, max=4)
         return value
 
 
@@ -456,4 +429,51 @@ class CreateTranscriptionResponseJson(BaseModel):
     @classmethod
     def _validate_required(cls, value):
         validate_required(value, ["text"])
+        return value
+
+
+class CreateSpeechRequest(BaseModel):
+    """Typed representation of the `CreateSpeechRequest` API schema."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    model: str
+    """One of the available [TTS models](https://developers.openai.com/api/docs/guides/text-to-speech): `tts-1`, `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`."""
+    input: str
+    """The text to generate audio for. The maximum length is 4096 characters."""
+    voice: CreateSpeechRequestVoice
+    """The voice to use when generating the audio. Supported built-in voices are `alloy`, `ash`, `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Previews of the voices are available in the [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options). Custom voices must be created from audio samples."""
+    instructions: str | NotGiven = NOT_GIVEN
+    """Control the voice of your generated audio with additional instructions. Does not work with `tts-1` or `tts-1-hd`."""
+    response_format: Literal["mp3", "opus", "aac", "flac", "wav", "pcm"] | str | NotGiven = (
+        NOT_GIVEN
+    )
+    """The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and `pcm`."""
+    speed: float | NotGiven = NOT_GIVEN
+    """The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the default."""
+    stream_format: Literal["sse", "audio"] | str | NotGiven = NOT_GIVEN
+    """The format to stream the audio in. Supported formats are `sse` and `audio`. `sse` is not supported for `tts-1` or `tts-1-hd`."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["model", "input", "voice"])
+        return value
+
+    @field_validator("input")
+    @classmethod
+    def _validate_input(cls, value):
+        validate_length("input", value, max=4096)
+        return value
+
+    @field_validator("instructions")
+    @classmethod
+    def _validate_instructions(cls, value):
+        validate_length("instructions", value, max=4096)
+        return value
+
+    @field_validator("speed")
+    @classmethod
+    def _validate_speed(cls, value):
+        validate_range("speed", value, min=0.25, max=4)
         return value

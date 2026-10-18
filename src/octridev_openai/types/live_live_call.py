@@ -8,15 +8,9 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
-from octridev_openai.types.live import (
-    Delegation,
-    Input,
-    LiveMediaSessionAudioParam,
-    ModelIdsLive,
-    Triggers,
-)
+from octridev_openai.types.live import Delegation, Input, LiveMediaSessionAudioParam, Triggers
 
-from ..validation import validate_items, validate_range, validate_required
+from ..validation import validate_items, validate_length, validate_range, validate_required
 
 
 class LiveCallAcceptRequest(BaseModel):
@@ -77,7 +71,7 @@ class LiveCallAcceptSession(BaseModel):
 
     model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
 
-    model: ModelIdsLive
+    model: str
     """
     The Live model to use for the accepted call.
 
@@ -102,6 +96,12 @@ class LiveCallAcceptSession(BaseModel):
     @classmethod
     def _validate_required(cls, value):
         validate_required(value, ["model", "type"])
+        return value
+
+    @field_validator("model")
+    @classmethod
+    def _validate_model(cls, value):
+        validate_length("model", value, min=1)
         return value
 
     @field_validator("triggers")

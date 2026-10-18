@@ -6,6 +6,28 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_4: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "EvalRun": (
+        None,
+        {
+            "object": ("object", None),
+            "id": ("id", None),
+            "eval_id": ("eval_id", None),
+            "status": ("status", None),
+            "model": ("model", None),
+            "name": ("name", None),
+            "created_at": ("created_at", None),
+            "report_url": ("report_url", None),
+            "result_counts": ("result_counts", "EvalRunResultCounts"),
+            "per_model_usage": ("per_model_usage", None),
+            "per_testing_criteria_results": ("per_testing_criteria_results", None),
+            "data_source": (
+                "data_source",
+                "union:CreateEvalJsonlRunDataSource|CreateEvalCompletionsRunDataSource|CreateEvalResponsesRunDataSource~type=jsonl,completions,responses",
+            ),
+            "metadata": ("metadata", None),
+            "error": ("error", "EvalApiError"),
+        },
+    ),
     "EvalRunList": (
         None,
         {
@@ -508,19 +530,6 @@ WIRE_SCHEMAS_PART_4: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = 
             "input_image_mask": ("input_image_mask", "ImageGenToolInputImageMask"),
             "partial_images": ("partial_images", None),
             "action": ("action", None),
-        },
-    ),
-    "ImagesResponse": (
-        None,
-        {
-            "safety_identifier": ("safety_identifier", None),
-            "created": ("created", None),
-            "data": ("data", "Image"),
-            "background": ("background", None),
-            "output_format": ("output_format", None),
-            "size": ("size", None),
-            "quality": ("quality", None),
-            "usage": ("usage", "ImageGenUsage"),
         },
     ),
 }

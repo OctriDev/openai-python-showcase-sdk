@@ -4,9 +4,9 @@
 from __future__ import annotations
 
 from collections.abc import AsyncIterator, Iterator
-from typing import Annotated, Any, Literal, TypeAlias
+from typing import Any, Literal, TypeAlias
 
-from pydantic import TypeAdapter, ValidationError as _PydanticValidationError, WrapValidator
+from pydantic import TypeAdapter, ValidationError as _PydanticValidationError
 
 import octridev_openai.types as _response_types
 from octridev_openai.client import (
@@ -26,15 +26,13 @@ from octridev_openai.client import (
 from octridev_openai.errors import SdkValidationError, sdk_decode
 from octridev_openai.types import (
     AudioResponseFormat,
+    CreateTranscriptionRequestChunkingStrategy,
     CreateTranscriptionResponseStreamEvent,
-    CreateTranslationResponseJson,
-    CreateTranslationResponseVerboseJson,
+    CreateTranslationResponse,
     ErrorResponse,
     TranscriptionInclude,
-    VadConfig,
     VoiceConsentResource,
 )
-from octridev_openai.validation import validate_union_candidate
 from octridev_openai.wire import _validate_response_enums, to_wire
 
 
@@ -80,7 +78,7 @@ async def create_transcription_stream(
     temperature: float | NotGiven = NOT_GIVEN,
     include: list[TranscriptionInclude] | NotGiven = NOT_GIVEN,
     timestamp_granularities: list[Literal["word", "segment"] | str] | NotGiven = NOT_GIVEN,
-    chunking_strategy: Literal["auto"] | str | VadConfig | None | NotGiven = NOT_GIVEN,
+    chunking_strategy: CreateTranscriptionRequestChunkingStrategy | None | NotGiven = NOT_GIVEN,
     known_speaker_names: list[str] | NotGiven = NOT_GIVEN,
     known_speaker_references: list[str] | NotGiven = NOT_GIVEN,
     *,
@@ -195,7 +193,9 @@ async def create_transcription_stream(
                     (
                         NOT_GIVEN
                         if chunking_strategy is NOT_GIVEN
-                        else to_wire(chunking_strategy, "VadConfig")
+                        else to_wire(
+                            chunking_strategy, "CreateTranscriptionRequestChunkingStrategy | None"
+                        )
                     ),
                     "application/json",
                 ),
@@ -249,7 +249,7 @@ def create_transcription_stream_sync(
     temperature: float | NotGiven = NOT_GIVEN,
     include: list[TranscriptionInclude] | NotGiven = NOT_GIVEN,
     timestamp_granularities: list[Literal["word", "segment"] | str] | NotGiven = NOT_GIVEN,
-    chunking_strategy: Literal["auto"] | str | VadConfig | None | NotGiven = NOT_GIVEN,
+    chunking_strategy: CreateTranscriptionRequestChunkingStrategy | None | NotGiven = NOT_GIVEN,
     known_speaker_names: list[str] | NotGiven = NOT_GIVEN,
     known_speaker_references: list[str] | NotGiven = NOT_GIVEN,
     *,
@@ -364,7 +364,9 @@ def create_transcription_stream_sync(
                     (
                         NOT_GIVEN
                         if chunking_strategy is NOT_GIVEN
-                        else to_wire(chunking_strategy, "VadConfig")
+                        else to_wire(
+                            chunking_strategy, "CreateTranscriptionRequestChunkingStrategy | None"
+                        )
                     ),
                     "application/json",
                 ),
@@ -419,10 +421,7 @@ async def create_translation(
     temperature: float | NotGiven = NOT_GIVEN,
     *,
     request_options: RequestOptions | None = None,
-) -> (
-    Annotated[CreateTranslationResponseJson, WrapValidator(validate_union_candidate)]
-    | Annotated[CreateTranslationResponseVerboseJson, WrapValidator(validate_union_candidate)]
-):
+) -> CreateTranslationResponse:
     """Translates an audio file into English and returns the result in a selected format.
     Provide the `file` and `model`, then optionally use `prompt` to guide the
     translation style. Send the file as multipart form data with metadata that lets the
@@ -488,16 +487,7 @@ async def create_translation(
     )
     return sdk_decode(
         _resp,
-        lambda response: _validate_pydantic_response(
-            _validate_response_enums(
-                response.data,
-                "union:CreateTranslationResponseJson|CreateTranslationResponseVerboseJson",
-            ),
-            Annotated[CreateTranslationResponseJson, WrapValidator(validate_union_candidate)]
-            | Annotated[
-                CreateTranslationResponseVerboseJson, WrapValidator(validate_union_candidate)
-            ],
-        ),
+        lambda response: _validate_pydantic_response(response.data, CreateTranslationResponse),
     )
 
 
@@ -512,10 +502,7 @@ def create_translation_sync(
     temperature: float | NotGiven = NOT_GIVEN,
     *,
     request_options: RequestOptions | None = None,
-) -> (
-    Annotated[CreateTranslationResponseJson, WrapValidator(validate_union_candidate)]
-    | Annotated[CreateTranslationResponseVerboseJson, WrapValidator(validate_union_candidate)]
-):
+) -> CreateTranslationResponse:
     """Translates an audio file into English and returns the result in a selected format.
     Provide the `file` and `model`, then optionally use `prompt` to guide the
     translation style. Send the file as multipart form data with metadata that lets the
@@ -581,16 +568,7 @@ def create_translation_sync(
     )
     return sdk_decode(
         _resp,
-        lambda response: _validate_pydantic_response(
-            _validate_response_enums(
-                response.data,
-                "union:CreateTranslationResponseJson|CreateTranslationResponseVerboseJson",
-            ),
-            Annotated[CreateTranslationResponseJson, WrapValidator(validate_union_candidate)]
-            | Annotated[
-                CreateTranslationResponseVerboseJson, WrapValidator(validate_union_candidate)
-            ],
-        ),
+        lambda response: _validate_pydantic_response(response.data, CreateTranslationResponse),
     )
 
 

@@ -163,11 +163,11 @@ from .responses_beta_part006 import (
     BetaAgentMessageItemParamContentItem,
     BetaAutoCodeInterpreterToolParamNetworkPolicy,
     BetaCacheMissReasonTypeEnum,
+    BetaCodeInterpreterToolContainer,
     BetaCompactionBody,
     BetaCompoundFilterFiltersItem,
     BetaComputerCallOutputStatus,
     BetaComputerToolCallOutput,
-    BetaContainerAutoParamNetworkPolicy,
     BetaContainerReferenceResource,
     BetaContextManagementParam,
     BetaCyberAccessProgramEnum,
@@ -177,10 +177,11 @@ from .responses_beta_part006 import (
     BetaFunctionShellCallOutputStatusEnum,
     BetaFunctionShellCallOutputTimeoutOutcome,
     BetaFunctionShellCallStatus,
-    BetaFunctionShellToolParamEnvironment,
     BetaIncludeEnum,
     BetaItemField,
     BetaLocalEnvironmentResource,
+    BetaMCPToolRequireApproval,
+    BetaMCPToolRequireApprovalVariant0,
     BetaMessagePhase2,
     BetaMessageRole,
     BetaMessageStatus,
@@ -201,9 +202,7 @@ from .responses_beta_part006 import (
     BetaWebSearchToolCallAction,
     UnknownBetaAgentMessageItemParamContentItem,
     UnknownBetaAutoCodeInterpreterToolParamNetworkPolicy,
-    UnknownBetaContainerAutoParamNetworkPolicy,
     UnknownBetaFunctionCallOutputItemParamOutputItem,
-    UnknownBetaFunctionShellToolParamEnvironment,
     UnknownBetaItemField,
     UnknownBetaOutputContent,
     UnknownBetaOutputItem,
@@ -216,13 +215,15 @@ from .responses_beta_part007 import (
     BetaAgentMessageContentItem,
     BetaApplyPatchToolCallOperation,
     BetaApplyPatchToolParam,
-    BetaCodeInterpreterTool,
     BetaCodeInterpreterToolCallOutputsItem,
+    BetaContainerAutoParamNetworkPolicy,
     BetaContainerAutoParamSkillsItem,
     BetaCustomToolParamFormat,
     BetaFunctionShellCallEnvironment,
     BetaFunctionShellCallItemParamEnvironment,
     BetaFunctionShellCallOutputContentOutcome,
+    BetaFunctionShellToolParamEnvironment,
+    BetaFunctionTool,
     BetaFunctionToolParam,
     BetaMessageContentItem,
     BetaNamespaceToolParamToolsItem,
@@ -239,11 +240,13 @@ from .responses_beta_part007 import (
     UnknownBetaAgentMessageContentItem,
     UnknownBetaApplyPatchToolCallOperation,
     UnknownBetaCodeInterpreterToolCallOutputsItem,
+    UnknownBetaContainerAutoParamNetworkPolicy,
     UnknownBetaContainerAutoParamSkillsItem,
     UnknownBetaCustomToolParamFormat,
     UnknownBetaFunctionShellCallEnvironment,
     UnknownBetaFunctionShellCallItemParamEnvironment,
     UnknownBetaFunctionShellCallOutputContentOutcome,
+    UnknownBetaFunctionShellToolParamEnvironment,
     UnknownBetaMessageContentItem,
     UnknownBetaNamespaceToolParamToolsItem,
     UnknownBetaToolSearchOutputNamespaceToolParamToolsItem,
@@ -251,12 +254,14 @@ from .responses_beta_part007 import (
 from .responses_beta_part008 import (
     BetaComputerUsePreviewTool,
     BetaCustomGrammarFormatParam,
+    BetaCustomToolCall,
     BetaFileSearchTool,
-    BetaFunctionTool,
+    BetaFunctionToolCall,
     BetaImageGenTool,
     BetaImageGenToolInputImageMask,
-    BetaMCPTool,
-    BetaMCPToolRequireApprovalMCPToolApprovalFilter,
+    BetaInputFileContent,
+    BetaInputItem,
+    BetaProgramOutputItemParam,
     BetaRankingOptions,
     BetaToolSearchOutputFunctionToolParam,
     BetaToolSearchToolParam,
@@ -265,25 +270,23 @@ from .responses_beta_part008 import (
 from .responses_beta_part009 import (
     BetaApplyPatchToolCallItemParam,
     BetaApplyPatchToolCallOutputItemParam,
+    BetaComputerCallOutputItemParam,
     BetaComputerScreenshotContent,
-    BetaCustomToolCall,
     BetaCustomToolCallOutput,
+    BetaFunctionShellCallOutputContentParam,
     BetaFunctionShellCallOutputItemParam,
-    BetaFunctionToolCall,
     BetaFunctionToolCallOutput,
-    BetaInputFileContent,
+    BetaImageGenToolCall,
     BetaInputImageContent,
-    BetaInputItem,
     BetaMCPToolCall,
-    BetaProgramOutputItemParam,
+    BetaToolSearchCallItemParam,
 )
 from .responses_beta_part010 import (
     BetaComputerActionList,
-    BetaComputerCallOutputItemParam,
+    BetaCustomToolCallOutputResource,
+    BetaCustomToolCallOutputResourceVariant1,
     BetaFileSearchToolCall,
     BetaFileSearchToolCallResultsItem,
-    BetaFunctionShellCallOutputContentParam,
-    BetaImageGenToolCall,
     BetaInputFileContentParam,
     BetaInputImageContentParamAutoParam,
     BetaInputMessageContentList,
@@ -291,14 +294,15 @@ from .responses_beta_part010 import (
     BetaMultiAgentCallOutputItemParam,
     BetaOutputMessage,
     BetaOutputTextContent,
+    BetaPromptCacheOptions,
     BetaPromptCacheOptionsParam,
-    BetaToolSearchCallItemParam,
+    BetaResponsePromptCacheOptionsParam,
+    BetaToolSearchOutput,
     BetaToolSearchOutputItemParam,
 )
 from .responses_beta_part011 import (
+    BetaAdditionalTools,
     BetaApplyPatchToolCallOutput,
-    BetaCustomToolCallOutputResource,
-    BetaCustomToolCallOutputResourceVariant1,
     BetaCustomToolCallResource,
     BetaCustomToolCallResourceVariant1,
     BetaFunctionShellCallOutput,
@@ -306,24 +310,22 @@ from .responses_beta_part011 import (
     BetaFunctionToolCallOutputResourceVariant1,
     BetaFunctionToolCallResource,
     BetaFunctionToolCallResourceVariant1,
-    BetaPromptCacheOptions,
-    BetaResponsePromptCacheOptionsParam,
+    BetaMultiAgentCall,
+    BetaMultiAgentCallOutput,
+    BetaProgramOutput,
     BetaToolSearchCall,
-    BetaToolSearchOutput,
 )
 from .responses_beta_part012 import (
-    BetaAdditionalTools,
     BetaAgentMessageItemParam,
     BetaAutoCodeInterpreterToolParam,
+    BetaCodeInterpreterTool,
     BetaCompoundFilter,
     BetaComputerToolCallOutputResource,
     BetaComputerToolCallOutputResourceVariant1,
     BetaFunctionCallOutputItemParam,
     BetaFunctionShellToolParam,
-    BetaMultiAgentCall,
-    BetaMultiAgentCallOutput,
+    BetaMCPTool,
     BetaOutputTextContentParam,
-    BetaProgramOutput,
     BetaPrompt,
     BetaPromptCacheMissDiagnosticsBody,
     BetaWebSearchToolCall,
@@ -386,6 +388,7 @@ __all__ = [
     "BetaCodeInterpreterTool",
     "BetaCodeInterpreterToolCall",
     "BetaCodeInterpreterToolCallOutputsItem",
+    "BetaCodeInterpreterToolContainer",
     "BetaCompactionBody",
     "BetaCompactionSummaryItemParam",
     "BetaCompactionTriggerItemParam",
@@ -531,7 +534,8 @@ __all__ = [
     "BetaMCPToolCallStatus",
     "BetaMCPToolExecutionError",
     "BetaMCPToolFilter",
-    "BetaMCPToolRequireApprovalMCPToolApprovalFilter",
+    "BetaMCPToolRequireApproval",
+    "BetaMCPToolRequireApprovalVariant0",
     "BetaMessage",
     "BetaMessageContentItem",
     "BetaMessagePhase",
@@ -912,11 +916,11 @@ _deferred_responses_beta_part006: tuple[tuple[str, object], ...] = (
     ("BetaAgentMessage", BetaAgentMessage),
     ("BetaApplyPatchToolCall", BetaApplyPatchToolCall),
     ("BetaApplyPatchToolCallOutput", BetaApplyPatchToolCallOutput),
+    ("BetaAutoCodeInterpreterToolParam", BetaAutoCodeInterpreterToolParam),
     ("BetaCodeInterpreterToolCall", BetaCodeInterpreterToolCall),
     ("BetaCompoundFilter", BetaCompoundFilter),
     ("BetaComputerToolCall", BetaComputerToolCall),
     ("BetaComputerToolCallOutputResource", BetaComputerToolCallOutputResource),
-    ("BetaContainerAutoParam", BetaContainerAutoParam),
     ("BetaCustomToolCall", BetaCustomToolCall),
     ("BetaCustomToolCallOutput", BetaCustomToolCallOutput),
     ("BetaCustomToolCallOutputResource", BetaCustomToolCallOutputResource),
@@ -968,15 +972,14 @@ UnknownBetaWebSearchToolCallAction.model_rebuild()
 UnknownBetaFunctionCallOutputItemParamOutputItem.model_rebuild()
 UnknownBetaAgentMessageItemParamContentItem.model_rebuild()
 UnknownBetaOutputTextContentParamAnnotationsItem.model_rebuild()
+BetaMCPToolRequireApprovalVariant0.model_rebuild()
 UnknownBetaAutoCodeInterpreterToolParamNetworkPolicy.model_rebuild()
-UnknownBetaFunctionShellToolParamEnvironment.model_rebuild()
-UnknownBetaContainerAutoParamNetworkPolicy.model_rebuild()
 
 _responses_beta_part007 = importlib.import_module(".responses_beta_part007", __package__)
 
 _deferred_responses_beta_part007: tuple[tuple[str, object], ...] = (
-    ("BetaAutoCodeInterpreterToolParam", BetaAutoCodeInterpreterToolParam),
     ("BetaComputerScreenshotContent", BetaComputerScreenshotContent),
+    ("BetaContainerAutoParam", BetaContainerAutoParam),
     ("BetaCustomGrammarFormatParam", BetaCustomGrammarFormatParam),
     ("BetaCustomToolParam", BetaCustomToolParam),
     ("BetaInputFileContent", BetaInputFileContent),
@@ -987,6 +990,8 @@ _deferred_responses_beta_part007: tuple[tuple[str, object], ...] = (
 for _name, _value in _deferred_responses_beta_part007:
     setattr(_responses_beta_part007, _name, _value)
 
+UnknownBetaFunctionShellToolParamEnvironment.model_rebuild()
+UnknownBetaContainerAutoParamNetworkPolicy.model_rebuild()
 UnknownBetaContainerAutoParamSkillsItem.model_rebuild()
 UnknownBetaCustomToolParamFormat.model_rebuild()
 UnknownBetaToolSearchOutputNamespaceToolParamToolsItem.model_rebuild()
@@ -1008,29 +1013,29 @@ BetaResponseConfigurationUpdate.model_rebuild()
 BetaAdditionalToolsItemParam.model_rebuild()
 BetaApplyPatchToolParam.model_rebuild()
 BetaFunctionToolParam.model_rebuild()
-BetaCodeInterpreterTool.model_rebuild()
+BetaFunctionTool.model_rebuild()
 
-_responses_beta_part009 = importlib.import_module(".responses_beta_part009", __package__)
+_responses_beta_part008 = importlib.import_module(".responses_beta_part008", __package__)
 
-_deferred_responses_beta_part009: tuple[tuple[str, object], ...] = (
+_deferred_responses_beta_part008: tuple[tuple[str, object], ...] = (
     ("BetaEasyInputMessage", BetaEasyInputMessage),
-    ("BetaFunctionShellCallOutputContentParam", BetaFunctionShellCallOutputContentParam),
 )
-for _name, _value in _deferred_responses_beta_part009:
-    setattr(_responses_beta_part009, _name, _value)
+for _name, _value in _deferred_responses_beta_part008:
+    setattr(_responses_beta_part008, _name, _value)
 
+BetaToolSearchOutputFunctionToolParam.model_rebuild()
+BetaWebSearchPreviewTool.model_rebuild()
+BetaToolSearchToolParam.model_rebuild()
+BetaCustomGrammarFormatParam.model_rebuild()
+BetaImageGenToolInputImageMask.model_rebuild()
+BetaImageGenTool.model_rebuild()
+BetaComputerUsePreviewTool.model_rebuild()
+BetaFileSearchTool.model_rebuild()
+BetaRankingOptions.model_rebuild()
 BetaProgramOutputItemParam.model_rebuild()
 BetaCustomToolCall.model_rebuild()
 BetaFunctionToolCall.model_rebuild()
 BetaInputFileContent.model_rebuild()
-BetaInputImageContent.model_rebuild()
-BetaComputerScreenshotContent.model_rebuild()
-BetaCustomToolCallOutput.model_rebuild()
-BetaFunctionToolCallOutput.model_rebuild()
-BetaMCPToolCall.model_rebuild()
-BetaApplyPatchToolCallOutputItemParam.model_rebuild()
-BetaApplyPatchToolCallItemParam.model_rebuild()
-BetaFunctionShellCallOutputItemParam.model_rebuild()
 
 _responses_beta_part010 = importlib.import_module(".responses_beta_part010", __package__)
 
@@ -1040,10 +1045,6 @@ _deferred_responses_beta_part010: tuple[tuple[str, object], ...] = (
 for _name, _value in _deferred_responses_beta_part010:
     setattr(_responses_beta_part010, _name, _value)
 
-BetaFunctionShellCallOutputContentParam.model_rebuild()
-BetaImageGenToolCall.model_rebuild()
-BetaToolSearchCallItemParam.model_rebuild()
-BetaComputerCallOutputItemParam.model_rebuild()
 BetaToolSearchOutputItemParam.model_rebuild()
 BetaMultiAgentCallOutputItemParam.model_rebuild()
 BetaMultiAgentCallItemParam.model_rebuild()
@@ -1054,6 +1055,11 @@ BetaFileSearchToolCall.model_rebuild()
 BetaOutputMessage.model_rebuild()
 BetaOutputTextContent.model_rebuild()
 BetaPromptCacheOptionsParam.model_rebuild()
+BetaPromptCacheOptions.model_rebuild()
+BetaResponsePromptCacheOptionsParam.model_rebuild()
+BetaCustomToolCallOutputResourceVariant1.model_rebuild()
+BetaCustomToolCallOutputResource.model_rebuild()
+BetaToolSearchOutput.model_rebuild()
 
 _responses_beta_part011 = importlib.import_module(".responses_beta_part011", __package__)
 
@@ -1063,11 +1069,6 @@ _deferred_responses_beta_part011: tuple[tuple[str, object], ...] = (
 for _name, _value in _deferred_responses_beta_part011:
     setattr(_responses_beta_part011, _name, _value)
 
-BetaPromptCacheOptions.model_rebuild()
-BetaResponsePromptCacheOptionsParam.model_rebuild()
-BetaCustomToolCallOutputResourceVariant1.model_rebuild()
-BetaCustomToolCallOutputResource.model_rebuild()
-BetaToolSearchOutput.model_rebuild()
 BetaFunctionToolCallOutputResourceVariant1.model_rebuild()
 BetaFunctionToolCallOutputResource.model_rebuild()
 BetaCustomToolCallResourceVariant1.model_rebuild()
@@ -1077,3 +1078,7 @@ BetaFunctionToolCallResourceVariant1.model_rebuild()
 BetaFunctionToolCallResource.model_rebuild()
 BetaApplyPatchToolCallOutput.model_rebuild()
 BetaFunctionShellCallOutput.model_rebuild()
+BetaProgramOutput.model_rebuild()
+BetaAdditionalTools.model_rebuild()
+BetaMultiAgentCallOutput.model_rebuild()
+BetaMultiAgentCall.model_rebuild()

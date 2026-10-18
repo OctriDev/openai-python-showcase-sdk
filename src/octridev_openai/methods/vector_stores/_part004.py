@@ -20,12 +20,13 @@ from octridev_openai.client import (
 )
 from octridev_openai.errors import SdkValidationError, sdk_decode
 from octridev_openai.types import (
+    ChunkingStrategyRequestParam,
+    DeleteVectorStoreFileResponse,
     ErrorResponse,
-    VectorStoreSearchRequestFilters,
-    VectorStoreSearchRequestRankingOptions,
-    VectorStoreSearchResultsPage,
+    VectorStoreFileAttributes,
+    VectorStoreFileContentResponse,
+    VectorStoreFileObject,
 )
-from octridev_openai.validation import validate_range
 from octridev_openai.wire import _validate_response_enums, to_wire
 
 
@@ -55,67 +56,70 @@ def _validate_pydantic_response(value: Any, response_type: Any) -> Any:
         ) from error
 
 
-SearchVectorStoreError: TypeAlias = ErrorResponse
+CreateVectorStoreFileError: TypeAlias = ErrorResponse
 
 
-async def search_vector_store(
+async def create_vector_store_file(
     _client_config: ClientConfig,
     vector_store_id: str,
-    query: str | list[str],
-    rewrite_query: bool | NotGiven = NOT_GIVEN,
-    max_num_results: int | NotGiven = NOT_GIVEN,
-    filters: VectorStoreSearchRequestFilters | NotGiven = NOT_GIVEN,
-    ranking_options: VectorStoreSearchRequestRankingOptions | NotGiven = NOT_GIVEN,
+    file_id: str,
+    chunking_strategy: ChunkingStrategyRequestParam | NotGiven = NOT_GIVEN,
+    attributes: VectorStoreFileAttributes | None | NotGiven = NOT_GIVEN,
     *,
     request_options: RequestOptions | None = None,
-) -> VectorStoreSearchResultsPage:
-    """Searches a vector store for relevant file chunks using one or more queries and
-    optional file-attribute filters. Set `max_num_results` to control the result count
-    and `ranking_options` to configure ranking; use `next_page` to continue when more
-    results are available.
+) -> VectorStoreFileObject:
+    """Creates an attachment between a file and a vector store. Supply the file's `file_id`
+    and optionally configure `chunking_strategy` or attach `attributes`; use file
+    batches for multi-file ingestion. The response includes the attached file's
+    processing status.
 
-    Search a vector store for relevant chunks based on a query and file attributes
-    filter.
+    Create a vector store file by attaching a
+    [File](https://developers.openai.com/api/reference/resources/files) to a [vector
+    store](https://developers.openai.com/api/reference/resources/vector_stores).
 
     Args:
-        vector_store_id: The ID of the vector store to search.
-        query: A query string for a search
-        rewrite_query: Whether to rewrite the natural language query for vector search.
-        max_num_results: The maximum number of results to return. This number should be between 1 and 50
-            inclusive.
-        filters: A filter to apply based on file attributes.
-        ranking_options: Ranking options for search.
+        vector_store_id: The ID of the vector store for which to create a File.
+        file_id: A [File](https://developers.openai.com/api/reference/resources/files) ID that
+            the vector store should use. Useful for tools like `file_search` that can access
+            files. For multi-file ingestion, we recommend
+            [`file_batches`](https://developers.openai.com/api/reference/resources/vector_st
+            ores/subresources/file_batches/methods/create) to minimize per-vector-store
+            write requests.
+        chunking_strategy: The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+            strategy.
+        attributes: Set of 16 key-value pairs that can be attached to an object. This can be useful
+            for storing additional information about the object in a structured format, and
+            querying for objects via API or the dashboard. Keys are strings with a maximum
+            length of 64 characters. Values are strings with a maximum length of 512
+            characters, booleans, or numbers.
     """
-
-    if not isinstance(max_num_results, NotGiven) and max_num_results is not None:
-        validate_range("max_num_results", max_num_results, min=1, max=50)
 
     _resp = await sdk_request(
         "POST",
-        f"/vector_stores/{encode_path_segment(vector_store_id)}/search",
+        f"/vector_stores/{encode_path_segment(vector_store_id)}/files",
         json=omit_unset(
             {
-                "query": (NOT_GIVEN if query is NOT_GIVEN else to_wire(query, "str | list[str]")),
-                "rewrite_query": (
-                    NOT_GIVEN if rewrite_query is NOT_GIVEN else to_wire(rewrite_query, "bool")
-                ),
-                "max_num_results": (
-                    NOT_GIVEN if max_num_results is NOT_GIVEN else to_wire(max_num_results, "int")
-                ),
-                "filters": (
+                "file_id": (NOT_GIVEN if file_id is NOT_GIVEN else to_wire(file_id, "str")),
+                "chunking_strategy": (
                     NOT_GIVEN
-                    if filters is NOT_GIVEN
-                    else to_wire(filters, "VectorStoreSearchRequestFilters")
+                    if chunking_strategy is NOT_GIVEN
+                    else to_wire(chunking_strategy, "ChunkingStrategyRequestParam")
                 ),
-                "ranking_options": (
+                "attributes": (
                     NOT_GIVEN
-                    if ranking_options is NOT_GIVEN
-                    else to_wire(ranking_options, "VectorStoreSearchRequestRankingOptions")
+                    if attributes is NOT_GIVEN
+                    else to_wire(attributes, "VectorStoreFileAttributes | None")
                 ),
             }
         ),
-        operation_id="search_vector_store",
-        errors={"400": ErrorResponse, "404": ErrorResponse, "429": ErrorResponse},
+        operation_id="create_vector_store_file",
+        errors={
+            "400": ErrorResponse,
+            "404": ErrorResponse,
+            "409": ErrorResponse,
+            "429": ErrorResponse,
+            "500": ErrorResponse,
+        },
         response_decoder="json",
         request_options=request_options,
         config=_client_config,
@@ -123,70 +127,72 @@ async def search_vector_store(
     return sdk_decode(
         _resp,
         lambda response: _validate_pydantic_response(
-            _validate_response_enums(response.data, "VectorStoreSearchResultsPage"),
-            VectorStoreSearchResultsPage,
+            _validate_response_enums(response.data, "VectorStoreFileObject"), VectorStoreFileObject
         ),
     )
 
 
-def search_vector_store_sync(
+def create_vector_store_file_sync(
     _client_config: ClientConfig,
     vector_store_id: str,
-    query: str | list[str],
-    rewrite_query: bool | NotGiven = NOT_GIVEN,
-    max_num_results: int | NotGiven = NOT_GIVEN,
-    filters: VectorStoreSearchRequestFilters | NotGiven = NOT_GIVEN,
-    ranking_options: VectorStoreSearchRequestRankingOptions | NotGiven = NOT_GIVEN,
+    file_id: str,
+    chunking_strategy: ChunkingStrategyRequestParam | NotGiven = NOT_GIVEN,
+    attributes: VectorStoreFileAttributes | None | NotGiven = NOT_GIVEN,
     *,
     request_options: RequestOptions | None = None,
-) -> VectorStoreSearchResultsPage:
-    """Searches a vector store for relevant file chunks using one or more queries and
-    optional file-attribute filters. Set `max_num_results` to control the result count
-    and `ranking_options` to configure ranking; use `next_page` to continue when more
-    results are available.
+) -> VectorStoreFileObject:
+    """Creates an attachment between a file and a vector store. Supply the file's `file_id`
+    and optionally configure `chunking_strategy` or attach `attributes`; use file
+    batches for multi-file ingestion. The response includes the attached file's
+    processing status.
 
-    Search a vector store for relevant chunks based on a query and file attributes
-    filter.
+    Create a vector store file by attaching a
+    [File](https://developers.openai.com/api/reference/resources/files) to a [vector
+    store](https://developers.openai.com/api/reference/resources/vector_stores).
 
     Args:
-        vector_store_id: The ID of the vector store to search.
-        query: A query string for a search
-        rewrite_query: Whether to rewrite the natural language query for vector search.
-        max_num_results: The maximum number of results to return. This number should be between 1 and 50
-            inclusive.
-        filters: A filter to apply based on file attributes.
-        ranking_options: Ranking options for search.
+        vector_store_id: The ID of the vector store for which to create a File.
+        file_id: A [File](https://developers.openai.com/api/reference/resources/files) ID that
+            the vector store should use. Useful for tools like `file_search` that can access
+            files. For multi-file ingestion, we recommend
+            [`file_batches`](https://developers.openai.com/api/reference/resources/vector_st
+            ores/subresources/file_batches/methods/create) to minimize per-vector-store
+            write requests.
+        chunking_strategy: The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+            strategy.
+        attributes: Set of 16 key-value pairs that can be attached to an object. This can be useful
+            for storing additional information about the object in a structured format, and
+            querying for objects via API or the dashboard. Keys are strings with a maximum
+            length of 64 characters. Values are strings with a maximum length of 512
+            characters, booleans, or numbers.
     """
-
-    if not isinstance(max_num_results, NotGiven) and max_num_results is not None:
-        validate_range("max_num_results", max_num_results, min=1, max=50)
 
     _resp = sdk_request_sync(
         "POST",
-        f"/vector_stores/{encode_path_segment(vector_store_id)}/search",
+        f"/vector_stores/{encode_path_segment(vector_store_id)}/files",
         json=omit_unset(
             {
-                "query": (NOT_GIVEN if query is NOT_GIVEN else to_wire(query, "str | list[str]")),
-                "rewrite_query": (
-                    NOT_GIVEN if rewrite_query is NOT_GIVEN else to_wire(rewrite_query, "bool")
-                ),
-                "max_num_results": (
-                    NOT_GIVEN if max_num_results is NOT_GIVEN else to_wire(max_num_results, "int")
-                ),
-                "filters": (
+                "file_id": (NOT_GIVEN if file_id is NOT_GIVEN else to_wire(file_id, "str")),
+                "chunking_strategy": (
                     NOT_GIVEN
-                    if filters is NOT_GIVEN
-                    else to_wire(filters, "VectorStoreSearchRequestFilters")
+                    if chunking_strategy is NOT_GIVEN
+                    else to_wire(chunking_strategy, "ChunkingStrategyRequestParam")
                 ),
-                "ranking_options": (
+                "attributes": (
                     NOT_GIVEN
-                    if ranking_options is NOT_GIVEN
-                    else to_wire(ranking_options, "VectorStoreSearchRequestRankingOptions")
+                    if attributes is NOT_GIVEN
+                    else to_wire(attributes, "VectorStoreFileAttributes | None")
                 ),
             }
         ),
-        operation_id="search_vector_store",
-        errors={"400": ErrorResponse, "404": ErrorResponse, "429": ErrorResponse},
+        operation_id="create_vector_store_file",
+        errors={
+            "400": ErrorResponse,
+            "404": ErrorResponse,
+            "409": ErrorResponse,
+            "429": ErrorResponse,
+            "500": ErrorResponse,
+        },
         response_decoder="json",
         request_options=request_options,
         config=_client_config,
@@ -194,14 +200,389 @@ def search_vector_store_sync(
     return sdk_decode(
         _resp,
         lambda response: _validate_pydantic_response(
-            _validate_response_enums(response.data, "VectorStoreSearchResultsPage"),
-            VectorStoreSearchResultsPage,
+            _validate_response_enums(response.data, "VectorStoreFileObject"), VectorStoreFileObject
+        ),
+    )
+
+
+GetVectorStoreFileError: TypeAlias = ErrorResponse
+
+
+async def get_vector_store_file(
+    _client_config: ClientConfig,
+    vector_store_id: str,
+    file_id: str,
+    *,
+    request_options: RequestOptions | None = None,
+) -> VectorStoreFileObject:
+    """Retrieves a file attachment and its processing details from a vector store. Use
+    `vector_store_id` and `file_id` to identify the attachment whose status and
+    configuration you need.
+
+    Retrieves a vector store file.
+
+    Args:
+        vector_store_id: The ID of the vector store that the file belongs to.
+        file_id: The ID of the file being retrieved.
+    """
+
+    _resp = await sdk_request(
+        "GET",
+        f"/vector_stores/{encode_path_segment(vector_store_id)}/files/{encode_path_segment(file_id)}",
+        operation_id="get_vector_store_file",
+        errors={"404": ErrorResponse, "429": ErrorResponse, "500": ErrorResponse},
+        response_decoder="json",
+        request_options=request_options,
+        config=_client_config,
+    )
+    return sdk_decode(
+        _resp,
+        lambda response: _validate_pydantic_response(
+            _validate_response_enums(response.data, "VectorStoreFileObject"), VectorStoreFileObject
+        ),
+    )
+
+
+def get_vector_store_file_sync(
+    _client_config: ClientConfig,
+    vector_store_id: str,
+    file_id: str,
+    *,
+    request_options: RequestOptions | None = None,
+) -> VectorStoreFileObject:
+    """Retrieves a file attachment and its processing details from a vector store. Use
+    `vector_store_id` and `file_id` to identify the attachment whose status and
+    configuration you need.
+
+    Retrieves a vector store file.
+
+    Args:
+        vector_store_id: The ID of the vector store that the file belongs to.
+        file_id: The ID of the file being retrieved.
+    """
+
+    _resp = sdk_request_sync(
+        "GET",
+        f"/vector_stores/{encode_path_segment(vector_store_id)}/files/{encode_path_segment(file_id)}",
+        operation_id="get_vector_store_file",
+        errors={"404": ErrorResponse, "429": ErrorResponse, "500": ErrorResponse},
+        response_decoder="json",
+        request_options=request_options,
+        config=_client_config,
+    )
+    return sdk_decode(
+        _resp,
+        lambda response: _validate_pydantic_response(
+            _validate_response_enums(response.data, "VectorStoreFileObject"), VectorStoreFileObject
+        ),
+    )
+
+
+DeleteVectorStoreFileError: TypeAlias = ErrorResponse
+
+
+async def delete_vector_store_file(
+    _client_config: ClientConfig,
+    vector_store_id: str,
+    file_id: str,
+    *,
+    request_options: RequestOptions | None = None,
+) -> DeleteVectorStoreFileResponse:
+    """Deletes a file attachment from a vector store without deleting the underlying file.
+    Use the file deletion operation separately if you also need to delete the file
+    itself.
+
+    Delete a vector store file. This will remove the file from the vector store but the
+    file itself will not be deleted. To delete the file, use the [delete
+    file](https://developers.openai.com/api/reference/resources/files/methods/delete)
+    endpoint.
+
+    Args:
+        vector_store_id: The ID of the vector store that the file belongs to.
+        file_id: The ID of the file to delete.
+    """
+
+    _resp = await sdk_request(
+        "DELETE",
+        f"/vector_stores/{encode_path_segment(vector_store_id)}/files/{encode_path_segment(file_id)}",
+        operation_id="delete_vector_store_file",
+        errors={
+            "400": ErrorResponse,
+            "404": ErrorResponse,
+            "409": ErrorResponse,
+            "429": ErrorResponse,
+            "500": ErrorResponse,
+        },
+        response_decoder="json",
+        request_options=request_options,
+        config=_client_config,
+    )
+    return sdk_decode(
+        _resp,
+        lambda response: _validate_pydantic_response(
+            _validate_response_enums(response.data, "DeleteVectorStoreFileResponse"),
+            DeleteVectorStoreFileResponse,
+        ),
+    )
+
+
+def delete_vector_store_file_sync(
+    _client_config: ClientConfig,
+    vector_store_id: str,
+    file_id: str,
+    *,
+    request_options: RequestOptions | None = None,
+) -> DeleteVectorStoreFileResponse:
+    """Deletes a file attachment from a vector store without deleting the underlying file.
+    Use the file deletion operation separately if you also need to delete the file
+    itself.
+
+    Delete a vector store file. This will remove the file from the vector store but the
+    file itself will not be deleted. To delete the file, use the [delete
+    file](https://developers.openai.com/api/reference/resources/files/methods/delete)
+    endpoint.
+
+    Args:
+        vector_store_id: The ID of the vector store that the file belongs to.
+        file_id: The ID of the file to delete.
+    """
+
+    _resp = sdk_request_sync(
+        "DELETE",
+        f"/vector_stores/{encode_path_segment(vector_store_id)}/files/{encode_path_segment(file_id)}",
+        operation_id="delete_vector_store_file",
+        errors={
+            "400": ErrorResponse,
+            "404": ErrorResponse,
+            "409": ErrorResponse,
+            "429": ErrorResponse,
+            "500": ErrorResponse,
+        },
+        response_decoder="json",
+        request_options=request_options,
+        config=_client_config,
+    )
+    return sdk_decode(
+        _resp,
+        lambda response: _validate_pydantic_response(
+            _validate_response_enums(response.data, "DeleteVectorStoreFileResponse"),
+            DeleteVectorStoreFileResponse,
+        ),
+    )
+
+
+UpdateVectorStoreFileAttributesError: TypeAlias = ErrorResponse
+
+
+async def update_vector_store_file_attributes(
+    _client_config: ClientConfig,
+    vector_store_id: str,
+    file_id: str,
+    attributes: VectorStoreFileAttributes | None,
+    *,
+    request_options: RequestOptions | None = None,
+) -> VectorStoreFileObject:
+    """Updates the attributes attached to a file in a vector store. Supply `attributes` to
+    replace the file's attribute set, or use `null` to clear it.
+
+    Update attributes on a vector store file.
+
+    Args:
+        vector_store_id: The ID of the vector store the file belongs to.
+        file_id: The ID of the file to update attributes.
+        attributes: Set of 16 key-value pairs that can be attached to an object. This can be useful
+            for storing additional information about the object in a structured format, and
+            querying for objects via API or the dashboard. Keys are strings with a maximum
+            length of 64 characters. Values are strings with a maximum length of 512
+            characters, booleans, or numbers.
+    """
+
+    _resp = await sdk_request(
+        "POST",
+        f"/vector_stores/{encode_path_segment(vector_store_id)}/files/{encode_path_segment(file_id)}",
+        json=omit_unset(
+            {
+                "attributes": (
+                    NOT_GIVEN
+                    if attributes is NOT_GIVEN
+                    else to_wire(attributes, "VectorStoreFileAttributes | None")
+                ),
+            }
+        ),
+        operation_id="update_vector_store_file_attributes",
+        errors={
+            "400": ErrorResponse,
+            "404": ErrorResponse,
+            "409": ErrorResponse,
+            "429": ErrorResponse,
+            "500": ErrorResponse,
+        },
+        response_decoder="json",
+        request_options=request_options,
+        config=_client_config,
+    )
+    return sdk_decode(
+        _resp,
+        lambda response: _validate_pydantic_response(
+            _validate_response_enums(response.data, "VectorStoreFileObject"), VectorStoreFileObject
+        ),
+    )
+
+
+def update_vector_store_file_attributes_sync(
+    _client_config: ClientConfig,
+    vector_store_id: str,
+    file_id: str,
+    attributes: VectorStoreFileAttributes | None,
+    *,
+    request_options: RequestOptions | None = None,
+) -> VectorStoreFileObject:
+    """Updates the attributes attached to a file in a vector store. Supply `attributes` to
+    replace the file's attribute set, or use `null` to clear it.
+
+    Update attributes on a vector store file.
+
+    Args:
+        vector_store_id: The ID of the vector store the file belongs to.
+        file_id: The ID of the file to update attributes.
+        attributes: Set of 16 key-value pairs that can be attached to an object. This can be useful
+            for storing additional information about the object in a structured format, and
+            querying for objects via API or the dashboard. Keys are strings with a maximum
+            length of 64 characters. Values are strings with a maximum length of 512
+            characters, booleans, or numbers.
+    """
+
+    _resp = sdk_request_sync(
+        "POST",
+        f"/vector_stores/{encode_path_segment(vector_store_id)}/files/{encode_path_segment(file_id)}",
+        json=omit_unset(
+            {
+                "attributes": (
+                    NOT_GIVEN
+                    if attributes is NOT_GIVEN
+                    else to_wire(attributes, "VectorStoreFileAttributes | None")
+                ),
+            }
+        ),
+        operation_id="update_vector_store_file_attributes",
+        errors={
+            "400": ErrorResponse,
+            "404": ErrorResponse,
+            "409": ErrorResponse,
+            "429": ErrorResponse,
+            "500": ErrorResponse,
+        },
+        response_decoder="json",
+        request_options=request_options,
+        config=_client_config,
+    )
+    return sdk_decode(
+        _resp,
+        lambda response: _validate_pydantic_response(
+            _validate_response_enums(response.data, "VectorStoreFileObject"), VectorStoreFileObject
+        ),
+    )
+
+
+RetrieveVectorStoreFileContentError: TypeAlias = ErrorResponse
+
+
+async def retrieve_vector_store_file_content(
+    _client_config: ClientConfig,
+    vector_store_id: str,
+    file_id: str,
+    *,
+    request_options: RequestOptions | None = None,
+) -> VectorStoreFileContentResponse:
+    """Retrieves parsed content from a file attached to a vector store. Use
+    `vector_store_id` and `file_id` to identify the file, then follow `next_page` when
+    `has_more` indicates that additional content pages are available.
+
+    Retrieve the parsed contents of a vector store file.
+
+    Args:
+        vector_store_id: The ID of the vector store.
+        file_id: The ID of the file within the vector store.
+    """
+
+    _resp = await sdk_request(
+        "GET",
+        f"/vector_stores/{encode_path_segment(vector_store_id)}/files/{encode_path_segment(file_id)}/content",
+        operation_id="retrieve_vector_store_file_content",
+        errors={
+            "400": ErrorResponse,
+            "404": ErrorResponse,
+            "429": ErrorResponse,
+            "500": ErrorResponse,
+        },
+        response_decoder="json",
+        request_options=request_options,
+        config=_client_config,
+    )
+    return sdk_decode(
+        _resp,
+        lambda response: _validate_pydantic_response(
+            _validate_response_enums(response.data, "VectorStoreFileContentResponse"),
+            VectorStoreFileContentResponse,
+        ),
+    )
+
+
+def retrieve_vector_store_file_content_sync(
+    _client_config: ClientConfig,
+    vector_store_id: str,
+    file_id: str,
+    *,
+    request_options: RequestOptions | None = None,
+) -> VectorStoreFileContentResponse:
+    """Retrieves parsed content from a file attached to a vector store. Use
+    `vector_store_id` and `file_id` to identify the file, then follow `next_page` when
+    `has_more` indicates that additional content pages are available.
+
+    Retrieve the parsed contents of a vector store file.
+
+    Args:
+        vector_store_id: The ID of the vector store.
+        file_id: The ID of the file within the vector store.
+    """
+
+    _resp = sdk_request_sync(
+        "GET",
+        f"/vector_stores/{encode_path_segment(vector_store_id)}/files/{encode_path_segment(file_id)}/content",
+        operation_id="retrieve_vector_store_file_content",
+        errors={
+            "400": ErrorResponse,
+            "404": ErrorResponse,
+            "429": ErrorResponse,
+            "500": ErrorResponse,
+        },
+        response_decoder="json",
+        request_options=request_options,
+        config=_client_config,
+    )
+    return sdk_decode(
+        _resp,
+        lambda response: _validate_pydantic_response(
+            _validate_response_enums(response.data, "VectorStoreFileContentResponse"),
+            VectorStoreFileContentResponse,
         ),
     )
 
 
 __all__ = [
-    "SearchVectorStoreError",
-    "search_vector_store",
-    "search_vector_store_sync",
+    "CreateVectorStoreFileError",
+    "DeleteVectorStoreFileError",
+    "GetVectorStoreFileError",
+    "RetrieveVectorStoreFileContentError",
+    "UpdateVectorStoreFileAttributesError",
+    "create_vector_store_file",
+    "create_vector_store_file_sync",
+    "delete_vector_store_file",
+    "delete_vector_store_file_sync",
+    "get_vector_store_file",
+    "get_vector_store_file_sync",
+    "retrieve_vector_store_file_content",
+    "retrieve_vector_store_file_content_sync",
+    "update_vector_store_file_attributes",
+    "update_vector_store_file_attributes_sync",
 ]

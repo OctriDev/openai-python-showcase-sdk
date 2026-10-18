@@ -6,6 +6,43 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_27: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "LiveSessionCreateParams": (
+        None,
+        {
+            "model": ("model", None),
+            "instructions": ("instructions", None),
+            "input": (
+                "input",
+                "union:LiveInitialDeveloperMessageItemParam|LiveInitialUserMessageItemParam|LiveInitialAssistantMessageItemParam~role=developer,user,assistant",
+            ),
+            "audio": ("audio", "LiveInitialSessionAudioParam"),
+            "delegation": (
+                "delegation",
+                "union:LiveClientDelegationParam|LiveResponsesDelegationParam|LiveDecisionsDelegationParam2~type=client,responses,decisions",
+            ),
+            "triggers": ("triggers", "LiveDecisionTriggerInputParam2"),
+            "store": ("store", None),
+            "client": ("client", "LiveClientConfigParam"),
+        },
+    ),
+    "LiveSessionStartEvent": (
+        None,
+        {
+            "event_id": ("event_id", None),
+            "type": ("type", None),
+            "session": ("session", "LiveSessionCreateParams"),
+        },
+    ),
+    "LiveDecisionsSettingsUpdateParam": (
+        None,
+        {
+            "model": ("model", None),
+            "questions": (
+                "questions",
+                "union:QuestionParamPredicate|QuestionParamChoice|QuestionParamScore~type=predicate,choice,score",
+            ),
+        },
+    ),
     "LiveDecisionsDelegationUpdateParam": (
         None,
         {
@@ -421,36 +458,6 @@ WIRE_SCHEMAS_PART_27: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "type": ("type", None),
             "usage": ("usage", "LiveSessionUsage"),
             "context_window": ("context_window", "LiveContextWindowUsage"),
-        },
-    ),
-    "LiveSessionClosed": (
-        None,
-        {
-            "event_id": ("event_id", None),
-            "client_event_id": ("client_event_id", None),
-            "type": ("type", None),
-            "reason": ("reason", None),
-            "session": ("session", "LiveSessionResourceParam"),
-            "usage": ("usage", "LiveSessionUsage"),
-        },
-    ),
-    "LiveLiveError": (
-        None,
-        {
-            "type": ("type", None),
-            "code": ("code", None),
-            "message": ("message", None),
-            "param": ("param", None),
-            "client_event_id": ("client_event_id", None),
-        },
-    ),
-    "LiveErrorEvent": (
-        None,
-        {
-            "event_id": ("event_id", None),
-            "client_event_id": ("client_event_id", None),
-            "type": ("type", None),
-            "error": ("error", "LiveLiveError"),
         },
     ),
 }

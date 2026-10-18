@@ -2,6 +2,21 @@
 # This file is machine-generated from your OpenAPI spec.
 
 from .responses_beta import (
+    UnknownBetaFunctionCallOutputItemParamOutputItem,
+    UnknownBetaFunctionShellCallEnvironment,
+    UnknownBetaFunctionShellCallItemParamEnvironment,
+    UnknownBetaFunctionShellCallOutputContentOutcome,
+    UnknownBetaFunctionShellCallOutputOutcomeParam,
+    UnknownBetaFunctionShellToolParamEnvironment,
+    UnknownBetaInputContent,
+    UnknownBetaItemField,
+    UnknownBetaMCPToolCallError,
+    UnknownBetaMessageContentItem,
+    UnknownBetaNamespaceToolParamToolsItem,
+    UnknownBetaOutputContent,
+    UnknownBetaOutputItem,
+    UnknownBetaOutputMessageContent,
+    UnknownBetaOutputTextContentParamAnnotationsItem,
     UnknownBetaPromptCacheDiagnostics,
     UnknownBetaToolCallCaller,
     UnknownBetaToolCallCallerParam,
@@ -153,26 +168,7 @@ from .responses_beta_response_shell import (
     BetaResponseShellCallCommandDeltaStreamingEvent,
     BetaResponseShellCallCommandDoneStreamingEvent,
     BetaResponseShellCallOutputContentDeltaStreamingEvent,
-    BetaResponseShellCallOutputContentDoneStreamingEvent,
 )
-from .responses_beta_response_stream import (
-    BetaResponseStreamEvent,
-    BetaResponseStreamOptions,
-    UnknownBetaResponseStreamEvent,
-)
-from .responses_beta_response_web import (
-    BetaResponseWebSearchCallCompletedEvent,
-    BetaResponseWebSearchCallInProgressEvent,
-    BetaResponseWebSearchCallSearchingEvent,
-)
-from .responses_beta_search import BetaSearchContentType, BetaSearchContextSize
-from .responses_beta_service import BetaServiceTierEnum, BetaServiceTierResponses
-from .responses_beta_specific import (
-    BetaSpecificApplyPatchParam,
-    BetaSpecificFunctionShellParam,
-    BetaSpecificProgrammaticToolCallingParam,
-)
-from .responses_beta_text import BetaTextContent
 
 __all__ = [
     "BetaAccessProgramsBody",
@@ -277,9 +273,6 @@ __all__ = [
     "BetaResponseShellCallCommandDeltaStreamingEvent",
     "BetaResponseShellCallCommandDoneStreamingEvent",
     "BetaResponseShellCallOutputContentDeltaStreamingEvent",
-    "BetaResponseShellCallOutputContentDoneStreamingEvent",
-    "BetaResponseStreamEvent",
-    "BetaResponseStreamOptions",
     "BetaResponseTextDeltaEvent",
     "BetaResponseTextDoneEvent",
     "BetaResponseTextParam",
@@ -288,23 +281,26 @@ __all__ = [
     "BetaResponseUsageOutputTokensDetails",
     "BetaResponseVariant2",
     "BetaResponseVariant2IncompleteDetails",
-    "BetaResponseWebSearchCallCompletedEvent",
-    "BetaResponseWebSearchCallInProgressEvent",
-    "BetaResponseWebSearchCallSearchingEvent",
-    "BetaSearchContentType",
-    "BetaSearchContextSize",
-    "BetaServiceTierEnum",
-    "BetaServiceTierResponses",
-    "BetaSpecificApplyPatchParam",
-    "BetaSpecificFunctionShellParam",
-    "BetaSpecificProgrammaticToolCallingParam",
-    "BetaTextContent",
     "Beta_MisalignmentErrorType",
     "Beta_MisalignmentSteer",
+    "UnknownBetaFunctionCallOutputItemParamOutputItem",
+    "UnknownBetaFunctionShellCallEnvironment",
+    "UnknownBetaFunctionShellCallItemParamEnvironment",
+    "UnknownBetaFunctionShellCallOutputContentOutcome",
+    "UnknownBetaFunctionShellCallOutputOutcomeParam",
+    "UnknownBetaFunctionShellToolParamEnvironment",
+    "UnknownBetaInputContent",
+    "UnknownBetaItemField",
+    "UnknownBetaMCPToolCallError",
+    "UnknownBetaMessageContentItem",
     "UnknownBetaModerationInput",
     "UnknownBetaModerationOutput",
+    "UnknownBetaNamespaceToolParamToolsItem",
+    "UnknownBetaOutputContent",
+    "UnknownBetaOutputItem",
+    "UnknownBetaOutputMessageContent",
+    "UnknownBetaOutputTextContentParamAnnotationsItem",
     "UnknownBetaPromptCacheDiagnostics",
-    "UnknownBetaResponseStreamEvent",
     "UnknownBetaToolCallCaller",
     "UnknownBetaToolCallCallerParam",
     "UnknownBetaToolSearchOutputNamespaceToolParamToolsItem",

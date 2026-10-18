@@ -8,23 +8,26 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, WrapValidator, field_validator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
-from octridev_openai.types.chat import PredictionContent, ServiceTier, ToolsItem
+from octridev_openai.types.chat import PredictionContent, ResponseModalities, ServiceTier
 from octridev_openai.types.chat_chat_completion_request import ChatCompletionRequestMessage
 from octridev_openai.types.chat_create_part001 import (
     ChatCompletionFunctionCallOption,
     ChatCompletionFunctions,
     ChatCompletionToolChoiceOption,
 )
-from octridev_openai.types.chat_response import ResponseFormat, ResponseModalities
+from octridev_openai.types.chat_custom import CustomToolChatCompletions
 from octridev_openai.types.chat_web import WebSearchContextSize, WebSearchLocation
 from octridev_openai.types.shared import (
     Metadata,
     PromptCacheOptionsParam,
     ReasoningEffort,
+    ResponseFormatJsonObject,
+    ResponseFormatJsonSchema,
+    ResponseFormatText,
     StopConfiguration,
     Verbosity,
 )
-from octridev_openai.types.shared_chat import ChatCompletionStreamOptions
+from octridev_openai.types.shared_chat import ChatCompletionStreamOptions, ChatCompletionTool
 from octridev_openai.types.shared_moderation import ModerationParam
 from octridev_openai.types.shared_voice import VoiceIdsOrCustomVoice
 
@@ -154,7 +157,12 @@ class CreateChatCompletionRequestVariant1(BaseModel):
     requested.
     `logprobs` must be set to `true` if this parameter is used.
     """
-    response_format: ResponseFormat | NotGiven = NOT_GIVEN
+    response_format: (
+        Annotated[ResponseFormatText, WrapValidator(validate_union_candidate)]
+        | Annotated[ResponseFormatJsonSchema, WrapValidator(validate_union_candidate)]
+        | Annotated[ResponseFormatJsonObject, WrapValidator(validate_union_candidate)]
+        | NotGiven
+    ) = NOT_GIVEN
     """
     An object specifying the format that the model must output.
 
@@ -243,7 +251,13 @@ class CreateChatCompletionRequestVariant1(BaseModel):
     """
     stream_options: ChatCompletionStreamOptions | None | NotGiven = NOT_GIVEN
     """Options for streaming response. Only set this when you set `stream: true`."""
-    tools: list[ToolsItem] | NotGiven = NOT_GIVEN
+    tools: (
+        list[
+            Annotated[ChatCompletionTool, WrapValidator(validate_union_candidate)]
+            | Annotated[CustomToolChatCompletions, WrapValidator(validate_union_candidate)]
+        ]
+        | NotGiven
+    ) = NOT_GIVEN
     """
     A list of tools the model may call. You can provide either
     [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools) or
@@ -465,7 +479,12 @@ class CreateChatCompletionRequest(BaseModel):
     This tool searches the web for relevant results to use in a response.
     Learn more about the [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
     """
-    response_format: ResponseFormat | NotGiven = NOT_GIVEN
+    response_format: (
+        Annotated[ResponseFormatText, WrapValidator(validate_union_candidate)]
+        | Annotated[ResponseFormatJsonSchema, WrapValidator(validate_union_candidate)]
+        | Annotated[ResponseFormatJsonObject, WrapValidator(validate_union_candidate)]
+        | NotGiven
+    ) = NOT_GIVEN
     """
     An object specifying the format that the model must output.
 
@@ -554,7 +573,13 @@ class CreateChatCompletionRequest(BaseModel):
     """
     stream_options: ChatCompletionStreamOptions | None | NotGiven = NOT_GIVEN
     """Options for streaming response. Only set this when you set `stream: true`."""
-    tools: list[ToolsItem] | NotGiven = NOT_GIVEN
+    tools: (
+        list[
+            Annotated[ChatCompletionTool, WrapValidator(validate_union_candidate)]
+            | Annotated[CustomToolChatCompletions, WrapValidator(validate_union_candidate)]
+        ]
+        | NotGiven
+    ) = NOT_GIVEN
     """
     A list of tools the model may call. You can provide either
     [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools) or

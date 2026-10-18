@@ -6,6 +6,32 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_29: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "BetaProgrammaticToolCallingParam": (
+        None,
+        {
+            "type": ("type", None),
+        },
+    ),
+    "BetaCodeInterpreterTool": (
+        None,
+        {
+            "type": ("type", None),
+            "container": ("container", "union:BetaAutoCodeInterpreterToolParam"),
+            "allowed_callers": ("allowed_callers", None),
+        },
+    ),
+    "BetaAutoCodeInterpreterToolParam": (
+        None,
+        {
+            "type": ("type", None),
+            "file_ids": ("file_ids", None),
+            "memory_limit": ("memory_limit", None),
+            "network_policy": (
+                "network_policy",
+                "union:BetaContainerNetworkPolicyDisabledParam|BetaContainerNetworkPolicyAllowlistParam~type=disabled,allowlist",
+            ),
+        },
+    ),
     "BetaMCPTool": (
         None,
         {
@@ -481,38 +507,6 @@ WIRE_SCHEMAS_PART_29: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "commands": ("commands", None),
             "timeout_ms": ("timeout_ms", None),
             "max_output_length": ("max_output_length", None),
-        },
-    ),
-    "BetaLocalShellToolCallOutput": (
-        None,
-        {
-            "agent": ("agent", "BetaAgentTag"),
-            "type": ("type", None),
-            "id": ("id", None),
-            "output": ("output", None),
-            "status": ("status", None),
-        },
-    ),
-    "BetaLocalShellToolCall": (
-        None,
-        {
-            "agent": ("agent", "BetaAgentTag"),
-            "type": ("type", None),
-            "id": ("id", None),
-            "call_id": ("call_id", None),
-            "action": ("action", "BetaLocalShellExecAction"),
-            "status": ("status", None),
-        },
-    ),
-    "BetaLocalShellExecAction": (
-        None,
-        {
-            "type": ("type", None),
-            "command": ("command", None),
-            "timeout_ms": ("timeout_ms", None),
-            "working_directory": ("working_directory", None),
-            "env": ("env", None),
-            "user": ("user", None),
         },
     ),
 }

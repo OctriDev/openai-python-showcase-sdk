@@ -6,6 +6,33 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_14: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "ValidateGraderResponse": (
+        None,
+        {
+            "grader": (
+                "grader",
+                "union:GraderStringCheck|GraderTextSimilarity|GraderPython|GraderScoreModel|GraderMulti~type=string_check,text_similarity,python,score_model,multi",
+            ),
+        },
+    ),
+    "VectorStoreExpirationAfter": (
+        None,
+        {
+            "anchor": ("anchor", None),
+            "days": ("days", None),
+        },
+    ),
+    "VectorStoreFileBatchObject": (
+        None,
+        {
+            "id": ("id", None),
+            "object": ("object", None),
+            "created_at": ("created_at", None),
+            "vector_store_id": ("vector_store_id", None),
+            "status": ("status", None),
+            "file_counts": ("file_counts", "VectorStoreFileBatchObjectFileCounts"),
+        },
+    ),
     "VectorStoreFileContentResponse": (
         None,
         {
@@ -459,29 +486,6 @@ WIRE_SCHEMAS_PART_14: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
         {
             "input": ("input", "ModerationConfigParam"),
             "output": ("output", "ModerationConfigParam"),
-        },
-    ),
-    "ModerationParam": (
-        None,
-        {
-            "model": ("model", None),
-            "policy": ("policy", "ModerationPolicyParam"),
-        },
-    ),
-    "SkillReferenceParam": (
-        None,
-        {
-            "type": ("type", None),
-            "skill_id": ("skill_id", None),
-            "version": ("version", None),
-        },
-    ),
-    "InlineSkillSourceParam": (
-        None,
-        {
-            "type": ("type", None),
-            "media_type": ("media_type", None),
-            "data": ("data", None),
         },
     ),
 }

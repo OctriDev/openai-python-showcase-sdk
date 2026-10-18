@@ -21,7 +21,7 @@ from octridev_openai.client import (
     serialize_query,
 )
 from octridev_openai.errors import SdkValidationError, sdk_decode
-from octridev_openai.types import ErrorResponse, ListRunsResponse, RunObject
+from octridev_openai.types import DeleteMessageResponse, ErrorResponse, ListRunsResponse, RunObject
 from octridev_openai.wire import _validate_response_enums
 
 
@@ -49,6 +49,77 @@ def _validate_pydantic_response(value: Any, response_type: Any) -> Any:
         raise SdkValidationError(
             field, code, f"Validation failed for '{field}': {message}"
         ) from error
+
+
+DeleteMessageError: TypeAlias = ErrorResponse
+
+
+async def delete_message(
+    _client_config: ClientConfig,
+    thread_id: str,
+    message_id: str,
+    *,
+    request_options: RequestOptions | None = None,
+) -> DeleteMessageResponse:
+    """Deletes a message from a thread. Provide both identifiers to select the thread and
+    the message to remove; the response confirms the deletion.
+
+    Deletes a message.
+
+    Args:
+        thread_id: The ID of the thread to which this message belongs.
+        message_id: The ID of the message to delete.
+    """
+
+    _resp = await sdk_request(
+        "DELETE",
+        f"/threads/{encode_path_segment(thread_id)}/messages/{encode_path_segment(message_id)}",
+        operation_id="delete_message",
+        errors={"429": ErrorResponse},
+        response_decoder="json",
+        request_options=request_options,
+        config=_client_config,
+    )
+    return sdk_decode(
+        _resp,
+        lambda response: _validate_pydantic_response(
+            _validate_response_enums(response.data, "DeleteMessageResponse"), DeleteMessageResponse
+        ),
+    )
+
+
+def delete_message_sync(
+    _client_config: ClientConfig,
+    thread_id: str,
+    message_id: str,
+    *,
+    request_options: RequestOptions | None = None,
+) -> DeleteMessageResponse:
+    """Deletes a message from a thread. Provide both identifiers to select the thread and
+    the message to remove; the response confirms the deletion.
+
+    Deletes a message.
+
+    Args:
+        thread_id: The ID of the thread to which this message belongs.
+        message_id: The ID of the message to delete.
+    """
+
+    _resp = sdk_request_sync(
+        "DELETE",
+        f"/threads/{encode_path_segment(thread_id)}/messages/{encode_path_segment(message_id)}",
+        operation_id="delete_message",
+        errors={"429": ErrorResponse},
+        response_decoder="json",
+        request_options=request_options,
+        config=_client_config,
+    )
+    return sdk_decode(
+        _resp,
+        lambda response: _validate_pydantic_response(
+            _validate_response_enums(response.data, "DeleteMessageResponse"), DeleteMessageResponse
+        ),
+    )
 
 
 ListRunsError: TypeAlias = ErrorResponse
@@ -346,7 +417,10 @@ def list_runs_pages_sync(
 
 
 __all__ = [
+    "DeleteMessageError",
     "ListRunsError",
+    "delete_message",
+    "delete_message_sync",
     "list_runs",
     "list_runs_pages",
     "list_runs_pages_sync",

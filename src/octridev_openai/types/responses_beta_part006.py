@@ -13,13 +13,12 @@ from octridev_openai.types.responses_beta_encrypted import BetaEncryptedContentP
 from octridev_openai.types.responses_beta_part001 import (
     BetaContainerNetworkPolicyAllowlistParam,
     BetaContainerNetworkPolicyDisabledParam,
-    BetaContainerReferenceParam,
-    BetaLocalEnvironmentParam,
 )
 from octridev_openai.types.responses_beta_part002 import (
     BetaAgentTag,
     BetaComparisonFilter,
     BetaInputTextContent,
+    BetaMCPToolFilter,
 )
 from octridev_openai.types.responses_beta_part003 import (
     BetaLocalShellToolCall,
@@ -54,38 +53,41 @@ from ..validation import (
 )
 
 if TYPE_CHECKING:
-    from octridev_openai.types.responses_beta_part009 import (
+    from octridev_openai.types.responses_beta_part008 import (
         BetaCustomToolCall,
-        BetaCustomToolCallOutput,
         BetaFunctionToolCall,
-        BetaFunctionToolCallOutput,
         BetaInputFileContent,
+    )
+    from octridev_openai.types.responses_beta_part009 import (
+        BetaCustomToolCallOutput,
+        BetaFunctionToolCallOutput,
+        BetaImageGenToolCall,
         BetaInputImageContent,
         BetaMCPToolCall,
     )
     from octridev_openai.types.responses_beta_part010 import (
+        BetaCustomToolCallOutputResource,
         BetaFileSearchToolCall,
-        BetaImageGenToolCall,
         BetaInputFileContentParam,
         BetaInputImageContentParamAutoParam,
         BetaOutputMessage,
         BetaOutputTextContent,
-    )
-    from octridev_openai.types.responses_beta_part011 import (
-        BetaApplyPatchToolCallOutput,
-        BetaCustomToolCallOutputResource,
-        BetaFunctionShellCallOutput,
-        BetaFunctionToolCallOutputResource,
-        BetaToolSearchCall,
         BetaToolSearchOutput,
     )
-    from octridev_openai.types.responses_beta_part012 import (
+    from octridev_openai.types.responses_beta_part011 import (
         BetaAdditionalTools,
-        BetaCompoundFilter,
-        BetaComputerToolCallOutputResource,
+        BetaApplyPatchToolCallOutput,
+        BetaFunctionShellCallOutput,
+        BetaFunctionToolCallOutputResource,
         BetaMultiAgentCall,
         BetaMultiAgentCallOutput,
         BetaProgramOutput,
+        BetaToolSearchCall,
+    )
+    from octridev_openai.types.responses_beta_part012 import (
+        BetaAutoCodeInterpreterToolParam,
+        BetaCompoundFilter,
+        BetaComputerToolCallOutputResource,
         BetaPromptCacheMissDiagnosticsBody,
         BetaWebSearchToolCall,
     )
@@ -94,7 +96,6 @@ if TYPE_CHECKING:
         BetaApplyPatchToolCall,
         BetaCodeInterpreterToolCall,
         BetaComputerToolCall,
-        BetaContainerAutoParam,
         BetaFunctionShellCall,
         BetaMessage,
     )
@@ -600,6 +601,35 @@ BetaCompoundFilterFiltersItem = TypeAliasType(
 )
 
 
+class BetaMCPToolRequireApprovalVariant0(BaseModel):
+    """
+    Specify which of the MCP server's tools require approval. Can be
+    `always`, `never`, or a filter object associated with tools
+    that require approval.
+    """
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    always: BetaMCPToolFilter | NotGiven = NOT_GIVEN
+    """A filter object to specify which tools are allowed."""
+    never: BetaMCPToolFilter | NotGiven = NOT_GIVEN
+    """A filter object to specify which tools are allowed."""
+
+
+# BetaMCPToolRequireApproval is a union type
+BetaMCPToolRequireApproval = TypeAliasType(
+    "BetaMCPToolRequireApproval",
+    'Annotated[BetaMCPToolRequireApprovalVariant0, WrapValidator(validate_union_candidate)] | Annotated[Literal["always", "never"], WrapValidator(validate_union_candidate)] | Annotated[str, WrapValidator(validate_union_candidate)]',
+)
+
+
+# BetaCodeInterpreterToolContainer is a union type
+BetaCodeInterpreterToolContainer = TypeAliasType(
+    "BetaCodeInterpreterToolContainer",
+    "Annotated[str, WrapValidator(validate_union_candidate)] | Annotated[BetaAutoCodeInterpreterToolParam, WrapValidator(validate_union_candidate)]",
+)
+
+
 class UnknownBetaAutoCodeInterpreterToolParamNetworkPolicy(BaseModel):
     """A `BetaAutoCodeInterpreterToolParamNetworkPolicy` whose `type` names no branch this SDK knows, kept as received."""
 
@@ -610,30 +640,4 @@ class UnknownBetaAutoCodeInterpreterToolParamNetworkPolicy(BaseModel):
 BetaAutoCodeInterpreterToolParamNetworkPolicy = TypeAliasType(
     "BetaAutoCodeInterpreterToolParamNetworkPolicy",
     'Annotated[Annotated[BetaContainerNetworkPolicyDisabledParam, WrapValidator(validate_union_candidate)] | Annotated[BetaContainerNetworkPolicyAllowlistParam, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownBetaAutoCodeInterpreterToolParamNetworkPolicy))]',
-)
-
-
-class UnknownBetaFunctionShellToolParamEnvironment(BaseModel):
-    """A `BetaFunctionShellToolParamEnvironment` whose `type` names no branch this SDK knows, kept as received."""
-
-    model_config = ConfigDict(extra="allow")
-
-
-# BetaFunctionShellToolParamEnvironment is a union type
-BetaFunctionShellToolParamEnvironment = TypeAliasType(
-    "BetaFunctionShellToolParamEnvironment",
-    'Annotated[Annotated[BetaContainerAutoParam, WrapValidator(validate_union_candidate)] | Annotated[BetaLocalEnvironmentParam, WrapValidator(validate_union_candidate)] | Annotated[BetaContainerReferenceParam, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownBetaFunctionShellToolParamEnvironment))]',
-)
-
-
-class UnknownBetaContainerAutoParamNetworkPolicy(BaseModel):
-    """A `BetaContainerAutoParamNetworkPolicy` whose `type` names no branch this SDK knows, kept as received."""
-
-    model_config = ConfigDict(extra="allow")
-
-
-# BetaContainerAutoParamNetworkPolicy is a union type
-BetaContainerAutoParamNetworkPolicy = TypeAliasType(
-    "BetaContainerAutoParamNetworkPolicy",
-    'Annotated[Annotated[BetaContainerNetworkPolicyDisabledParam, WrapValidator(validate_union_candidate)] | Annotated[BetaContainerNetworkPolicyAllowlistParam, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownBetaContainerAutoParamNetworkPolicy))]',
 )

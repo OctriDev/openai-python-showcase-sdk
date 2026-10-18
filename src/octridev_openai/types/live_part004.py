@@ -12,12 +12,8 @@ from octridev_openai.client import NOT_GIVEN, NotGiven
 from octridev_openai.types.decisions_question import QuestionParam
 from octridev_openai.types.live_live_allowed import LiveAllowedToolsChoiceParam
 from octridev_openai.types.live_live_container import LiveContainerMemoryLimit
-from octridev_openai.types.live_live_custom import LiveCustomToolInputParam
-from octridev_openai.types.live_live_function import (
-    LiveFunctionToolChoiceParam,
-    LiveFunctionToolInputParam,
-)
-from octridev_openai.types.live_live_mcptool import LiveMCPToolChoiceParam, LiveMCPToolInputParam
+from octridev_openai.types.live_live_function import LiveFunctionToolChoiceParam
+from octridev_openai.types.live_live_mcptool import LiveMCPToolChoiceParam
 from octridev_openai.types.live_live_reasoning import LiveReasoningEffort, LiveReasoningSummary
 from octridev_openai.types.live_live_siptransport import LiveSIPTransport, LiveSIPTransportRequest
 from octridev_openai.types.live_live_specific import (
@@ -32,37 +28,26 @@ from octridev_openai.types.live_live_specific import (
     LiveSpecificWebSearchParam,
     LiveSpecificWebSearchPreviewParam,
 )
-from octridev_openai.types.live_live_tool import LiveToolChoiceEnum, LiveToolSearchToolInputParam
-from octridev_openai.types.live_live_web import LiveWebRTCTransport, LiveWebSearchToolInputParam
+from octridev_openai.types.live_live_tool import LiveToolChoiceEnum
+from octridev_openai.types.live_live_web import LiveWebRTCTransport
 from octridev_openai.types.live_part001 import (
-    LiveApplyPatchToolInputParam,
-    LiveClientDelegationParam,
-    LiveCodeInterpreterToolInputParam,
-    LiveComputerToolInputParam,
     LiveDecisionQuestion,
-    LiveFileSearchToolInputParam,
-    LiveImageGenerationToolInputParam,
+    LiveInitialInputTextContentPartParam,
     LiveInitialMessageStatus,
-    LiveInitialSessionAudioOutputParam,
-    LiveNamespaceToolInputParam,
-    LiveProgrammaticToolInputParam,
-    LiveResponsesDelegationParam,
-    LiveResponsesServiceTier,
     LiveTextVerbosity,
 )
 from octridev_openai.types.live_part002 import (
     LiveAudioFormat,
     LiveDecisionInputTextParam,
-    LiveDecisionsDelegationParam2,
     LiveDetailEnum,
-    LiveInitialInputTextContentPartParam,
     LiveInitialItem,
 )
 from octridev_openai.types.live_part003 import (
     LiveHostedShellContainerAutoParamNetworkPolicy,
     LiveHostedShellContainerAutoParamSkillsItem,
     LiveHostedShellToolInputParamEnvironment,
-    LiveResponsesDelegationSettingsInputParamToolsItem,
+    LiveInitialAssistantMessageItemParamContentItem,
+    LiveInitialSessionAudioOutputParamVoice,
 )
 
 from ..validation import (
@@ -73,45 +58,6 @@ from ..validation import (
     validate_pattern,
     validate_required,
     validate_union_candidate,
-)
-
-
-class UnknownLiveResponsesDelegationSettingsUpdateInputParamToolsItem(BaseModel):
-    """A `LiveResponsesDelegationSettingsUpdateInputParamToolsItem` whose `type` names no branch this SDK knows, kept as received."""
-
-    model_config = ConfigDict(extra="allow")
-
-
-# LiveResponsesDelegationSettingsUpdateInputParamToolsItem is a union type
-LiveResponsesDelegationSettingsUpdateInputParamToolsItem = TypeAliasType(
-    "LiveResponsesDelegationSettingsUpdateInputParamToolsItem",
-    'Annotated[Annotated[LiveFunctionToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveWebSearchToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveFileSearchToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveCodeInterpreterToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveHostedShellToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveImageGenerationToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveMCPToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveCustomToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveNamespaceToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveToolSearchToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveProgrammaticToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveComputerToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveApplyPatchToolInputParam, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownLiveResponsesDelegationSettingsUpdateInputParamToolsItem))]',
-)
-
-
-class UnknownLiveDecisionInputItemParamContentItem(BaseModel):
-    """A `LiveDecisionInputItemParamContentItem` whose `type` names no branch this SDK knows, kept as received."""
-
-    model_config = ConfigDict(extra="allow")
-
-
-# LiveDecisionInputItemParamContentItem is a union type
-LiveDecisionInputItemParamContentItem = TypeAliasType(
-    "LiveDecisionInputItemParamContentItem",
-    'Annotated[Annotated[LiveDecisionInputTextParam, WrapValidator(validate_union_candidate)] | Annotated[LiveDecisionInputImageParam, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownLiveDecisionInputItemParamContentItem))]',
-)
-
-
-class UnknownLiveSessionResourceParamDelegation(BaseModel):
-    """A `LiveSessionResourceParamDelegation` whose `type` names no branch this SDK knows, kept as received."""
-
-    model_config = ConfigDict(extra="allow")
-
-
-# LiveSessionResourceParamDelegation is a union type
-LiveSessionResourceParamDelegation = TypeAliasType(
-    "LiveSessionResourceParamDelegation",
-    'Annotated[Annotated[LiveClientDelegationParam, WrapValidator(validate_union_candidate)] | Annotated[LiveResponsesDelegationParam, WrapValidator(validate_union_candidate)] | Annotated[LiveDecisionsDelegationParam2, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownLiveSessionResourceParamDelegation))]',
 )
 
 
@@ -225,6 +171,20 @@ class LiveDelegationTextInputParam(BaseModel):
 
     verbosity: LiveTextVerbosity | None | NotGiven = NOT_GIVEN
     """Optional API value serialized in the `verbosity` wire field."""
+
+
+# LiveResponsesDelegationSettingsInputParamToolChoice is a union type
+LiveResponsesDelegationSettingsInputParamToolChoice = TypeAliasType(
+    "LiveResponsesDelegationSettingsInputParamToolChoice",
+    "Annotated[LiveToolChoiceEnum, WrapValidator(validate_union_candidate)] | Annotated[LiveFunctionToolChoiceParam, WrapValidator(validate_union_candidate)] | Annotated[LiveMCPToolChoiceParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificFileSearchParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificWebSearchParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificWebSearchPreviewParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificImageGenParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificComputerParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificCodeInterpreterParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificProgrammaticToolCallingParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificFunctionShellParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificCustomToolParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificApplyPatchParam, WrapValidator(validate_union_candidate)] | Annotated[LiveAllowedToolsChoiceParam, WrapValidator(validate_union_candidate)]",
+)
+
+
+# LiveResponsesDelegationSettingsUpdateInputParamToolChoice is a union type
+LiveResponsesDelegationSettingsUpdateInputParamToolChoice = TypeAliasType(
+    "LiveResponsesDelegationSettingsUpdateInputParamToolChoice",
+    "Annotated[LiveToolChoiceEnum, WrapValidator(validate_union_candidate)] | Annotated[LiveFunctionToolChoiceParam, WrapValidator(validate_union_candidate)] | Annotated[LiveMCPToolChoiceParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificFileSearchParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificWebSearchParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificWebSearchPreviewParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificImageGenParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificComputerParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificCodeInterpreterParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificProgrammaticToolCallingParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificFunctionShellParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificCustomToolParam, WrapValidator(validate_union_candidate)] | Annotated[LiveSpecificApplyPatchParam, WrapValidator(validate_union_candidate)] | Annotated[LiveAllowedToolsChoiceParam, WrapValidator(validate_union_candidate)]",
+)
 
 
 class LiveDecisionsSettingsInputParam(BaseModel):
@@ -458,53 +418,13 @@ class LiveDecisionInputImageParam(BaseModel):
         return value
 
 
-class LiveResponsesDelegationSettingsInputParam(BaseModel):
-    """Model, prompt, and tool settings for tasks delegated by the Live session to a Responses backend."""
+class LiveInitialSessionAudioOutputParam(BaseModel):
+    """Settings for speech generated by the Live model. Choose the voice before starting the session."""
 
     model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
 
-    model: str
-    """The model used for server-owned Responses delegations."""
-    instructions: str | None | NotGiven = NOT_GIVEN
-    """Optional `string` value serialized in the `instructions` wire field."""
-    max_output_tokens: int | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `max_output_tokens` wire field."""
-    service_tier: LiveResponsesServiceTier | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `service_tier` wire field."""
-    reasoning: LiveDelegationReasoningInputParam | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `reasoning` wire field."""
-    text: LiveDelegationTextInputParam | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `text` wire field."""
-    tools: list[LiveResponsesDelegationSettingsInputParamToolsItem] | NotGiven = NOT_GIVEN
-    """Tools available to the Responses backend while it handles tasks delegated by the Live model."""
-    tool_choice: (
-        Annotated[LiveToolChoiceEnum, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveFunctionToolChoiceParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveMCPToolChoiceParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificFileSearchParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificWebSearchParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificWebSearchPreviewParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificImageGenParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificComputerParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificCodeInterpreterParam, WrapValidator(validate_union_candidate)]
-        | Annotated[
-            LiveSpecificProgrammaticToolCallingParam, WrapValidator(validate_union_candidate)
-        ]
-        | Annotated[LiveSpecificFunctionShellParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificCustomToolParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveSpecificApplyPatchParam, WrapValidator(validate_union_candidate)]
-        | Annotated[LiveAllowedToolsChoiceParam, WrapValidator(validate_union_candidate)]
-        | NotGiven
-    ) = NOT_GIVEN
-    """Controls which tool the Responses backend uses when handling a task delegated by the Live model."""
-    parallel_tool_calls: bool | None | NotGiven = NOT_GIVEN
-    """Optional `boolean` value serialized in the `parallel_tool_calls` wire field."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["model"])
-        return value
+    voice: LiveInitialSessionAudioOutputParamVoice | NotGiven = NOT_GIVEN
+    """The voice used for Live speech, as a built-in voice name or a custom voice object containing its ID. Defaults to `marin` and cannot change after startup."""
 
 
 class LiveHostedShellToolInputParam(BaseModel):
@@ -570,4 +490,39 @@ class LiveHostedShellContainerAutoParam(BaseModel):
     def _validate_skills(cls, value):
         if value is not None:
             validate_items("skills", value, max=200)
+        return value
+
+
+class LiveInitialAssistantMessageItemParam(BaseModel):
+    """An assistant message included in the initial text history of a Live session."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    role: Literal["assistant"]
+    """The author of this history message. Always `assistant`."""
+    content: list[LiveInitialAssistantMessageItemParamContentItem]
+    """The message content. Supply exactly one text part for the initial Live conversation history."""
+    id: str | None | NotGiven = NOT_GIVEN
+    """Optional `string` value serialized in the `id` wire field."""
+    type: Literal["message"] | str | NotGiven = NOT_GIVEN
+    """The history item type. Always `message`."""
+    status: LiveInitialMessageStatus | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `status` wire field."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["role", "content"])
+        return value
+
+    @field_validator("role")
+    @classmethod
+    def _validate_role(cls, value):
+        validate_enum("role", value, ["assistant"])
+        return value
+
+    @field_validator("content")
+    @classmethod
+    def _validate_content(cls, value):
+        validate_items("content", value, min=1, max=1)
         return value

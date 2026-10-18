@@ -3,9 +3,10 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, WrapValidator, field_validator, model_validator
+from typing_extensions import TypeAliasType
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
 from octridev_openai.types.responses_beta_part001 import (
@@ -18,11 +19,20 @@ from octridev_openai.types.responses_beta_part001 import (
     BetaToolSearchExecutionType,
 )
 from octridev_openai.types.responses_beta_part002 import (
+    Beta_AgentTagParam,
+    BetaAgentTag,
+    BetaCompactionTriggerItemParam,
     BetaComputerEnvironment,
+    BetaFileInputDetail,
     BetaFilters,
     BetaHybridSearchOptions,
-    BetaMCPToolFilter,
+    BetaItem,
+    BetaItemReferenceParam,
+    BetaProgramItemParam,
+    BetaProgramOutputItemStatus,
+    BetaPromptCacheBreakpointConfig,
     BetaRankerVersionType,
+    BetaToolCallCaller,
 )
 from octridev_openai.types.responses_beta_search import BetaSearchContentType, BetaSearchContextSize
 
@@ -37,180 +47,8 @@ from ..validation import (
     validate_uri,
 )
 
-
-class BetaMCPToolRequireApprovalMCPToolApprovalFilter(BaseModel):
-    """
-    Specify which of the MCP server's tools require approval. Can be
-    `always`, `never`, or a filter object associated with tools
-    that require approval.
-    """
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    always: BetaMCPToolFilter | NotGiven = NOT_GIVEN
-    """A filter object to specify which tools are allowed."""
-    never: BetaMCPToolFilter | NotGiven = NOT_GIVEN
-    """A filter object to specify which tools are allowed."""
-
-
-class BetaMCPTool(BaseModel):
-    """
-    Give the model access to additional tools via remote Model Context Protocol
-    (MCP) servers. [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
-    """
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["mcp"]
-    """The type of the MCP tool. Always `mcp`."""
-    server_label: str
-    """A label for this MCP server, used to identify it in tool calls."""
-    server_url: str | NotGiven = NOT_GIVEN
-    """
-    The URL for the MCP server. One of `server_url`, `connector_id`, or
-    `tunnel_id` must be provided.
-    """
-    connector_id: (
-        Literal[
-            "connector_dropbox",
-            "connector_gmail",
-            "connector_googlecalendar",
-            "connector_googledrive",
-            "connector_microsoftteams",
-            "connector_outlookcalendar",
-            "connector_outlookemail",
-            "connector_sharepoint",
-        ]
-        | str
-        | NotGiven
-    ) = NOT_GIVEN
-    """
-    Identifier for service connectors, like those available in ChatGPT. One of
-    `server_url`, `connector_id`, or `tunnel_id` must be provided. Learn more
-    about service connectors [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
-
-    This field is deprecated for models released after September 1, 2026.
-    Use `server_url` to connect to a remote MCP server, or `tunnel_id` to
-    connect through a Secure MCP Tunnel.
-
-    Currently supported `connector_id` values are:
-
-    - Dropbox: `connector_dropbox`
-    - Gmail: `connector_gmail`
-    - Google Calendar: `connector_googlecalendar`
-    - Google Drive: `connector_googledrive`
-    - Microsoft Teams: `connector_microsoftteams`
-    - Outlook Calendar: `connector_outlookcalendar`
-    - Outlook Email: `connector_outlookemail`
-    - SharePoint: `connector_sharepoint`
-    """
-    tunnel_id: str | NotGiven = NOT_GIVEN
-    """
-    The Secure MCP Tunnel ID to use instead of a direct server URL. One of
-    `server_url`, `connector_id`, or `tunnel_id` must be provided.
-    """
-    authorization: str | NotGiven = NOT_GIVEN
-    """
-    An OAuth access token that can be used with a remote MCP server, either
-    with a custom MCP server URL or a service connector. Your application
-    must handle the OAuth authorization flow and provide the token here.
-    """
-    server_description: str | NotGiven = NOT_GIVEN
-    """Optional description of the MCP server, used to provide more context."""
-    headers: dict[str, str] | None | NotGiven = NOT_GIVEN
-    """
-    Optional HTTP headers to send to the MCP server. Use for authentication
-    or other purposes.
-    """
-    allowed_tools: (
-        list[str]
-        | Annotated[BetaMCPToolFilter, WrapValidator(validate_union_candidate)]
-        | None
-        | NotGiven
-    ) = NOT_GIVEN
-    """List of allowed tool names or a filter object."""
-    allowed_callers: list[BetaCallableToolAllowedCaller] | None | NotGiven = NOT_GIVEN
-    """The tool invocation context(s)."""
-    require_approval: (
-        Annotated[
-            BetaMCPToolRequireApprovalMCPToolApprovalFilter, WrapValidator(validate_union_candidate)
-        ]
-        | Literal["always", "never"]
-        | str
-        | None
-        | NotGiven
-    ) = NOT_GIVEN
-    """Specify which of the MCP server's tools require approval."""
-    defer_loading: bool | NotGiven = NOT_GIVEN
-    """Whether this MCP tool is deferred and discovered via tool search."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "server_label"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["mcp"])
-        return value
-
-    @field_validator("server_url")
-    @classmethod
-    def _validate_server_url(cls, value):
-        validate_uri("server_url", value)
-        return value
-
-    @field_validator("tunnel_id")
-    @classmethod
-    def _validate_tunnel_id(cls, value):
-        validate_pattern("tunnel_id", value, "^tunnel_[a-z0-9]{32}$")
-        return value
-
-    @field_validator("allowed_callers")
-    @classmethod
-    def _validate_allowed_callers(cls, value):
-        if value is not None:
-            validate_items("allowed_callers", value, min=1)
-        return value
-
-
-class BetaFunctionTool(BaseModel):
-    """Defines a function in your own code the model can choose to call. Learn more about [function calling](https://developers.openai.com/api/docs/guides/function-calling)."""
-
-    model_config = ConfigDict(populate_by_name=True, arbitrary_types_allowed=True)
-
-    type: Literal["function"]
-    """The type of the function tool. Always `function`."""
-    name: str
-    """The name of the function to call."""
-    parameters: dict[str, Any] | None
-    """A JSON schema object describing the parameters of the function."""
-    strict: bool | None
-    """Required `boolean` value serialized in the `strict` wire field."""
-    async_: bool | NotGiven = Field(NOT_GIVEN, alias="async")
-    """Optional `boolean` value serialized in the `async` wire field."""
-    description: str | None | NotGiven = NOT_GIVEN
-    """Optional `string` value serialized in the `description` wire field."""
-    output_schema: dict[str, Any] | None | NotGiven = NOT_GIVEN
-    """A JSON schema object describing the JSON value encoded in string outputs for this function."""
-    defer_loading: bool | NotGiven = NOT_GIVEN
-    """Whether this function is deferred and loaded via tool search."""
-    allowed_callers: list[BetaCallableToolAllowedCaller] | None | NotGiven = NOT_GIVEN
-    """The tool invocation context(s)."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "name", "strict", "parameters"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["function"])
-        return value
+if TYPE_CHECKING:
+    from octridev_openai.types.responses_beta_part014 import BetaEasyInputMessage
 
 
 class BetaToolSearchOutputFunctionToolParam(BaseModel):
@@ -494,3 +332,178 @@ class BetaRankingOptions(BaseModel):
     """The score threshold for the file search, a number between 0 and 1. Numbers closer to 1 will attempt to return only the most relevant results, but may return fewer results."""
     hybrid_search: BetaHybridSearchOptions | NotGiven = NOT_GIVEN
     """Weights that control how reciprocal rank fusion balances semantic embedding matches versus sparse keyword matches when hybrid search is enabled."""
+
+
+class BetaProgramOutputItemParam(BaseModel):
+    """Typed representation of the `BetaProgramOutputItemParam` API schema."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    id: str
+    """
+    The unique ID of this program output item.
+
+    @example "cmo_123"
+    """
+    type: Literal["program_output"]
+    """The item type. Always `program_output`."""
+    call_id: str
+    """The call ID of the program item."""
+    result: str
+    """The result produced by the program item."""
+    status: BetaProgramOutputItemStatus
+    """The terminal status of the program output."""
+    agent: Beta_AgentTagParam | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `agent` wire field."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["id", "type", "call_id", "result", "status"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["program_output"])
+        return value
+
+    @field_validator("call_id")
+    @classmethod
+    def _validate_call_id(cls, value):
+        validate_length("call_id", value, min=1, max=64)
+        return value
+
+    @field_validator("result")
+    @classmethod
+    def _validate_result(cls, value):
+        validate_length("result", value, max=10485760)
+        return value
+
+
+# BetaInputItem is a union type
+BetaInputItem = TypeAliasType(
+    "BetaInputItem",
+    "Annotated[BetaEasyInputMessage, WrapValidator(validate_union_candidate)] | Annotated[BetaItem, WrapValidator(validate_union_candidate)] | Annotated[BetaCompactionTriggerItemParam, WrapValidator(validate_union_candidate)] | Annotated[BetaItemReferenceParam, WrapValidator(validate_union_candidate)] | Annotated[BetaProgramItemParam, WrapValidator(validate_union_candidate)] | Annotated[BetaProgramOutputItemParam, WrapValidator(validate_union_candidate)]",
+)
+
+
+class BetaCustomToolCall(BaseModel):
+    """A call to a custom tool created by the model."""
+
+    model_config = ConfigDict(populate_by_name=True, arbitrary_types_allowed=True)
+
+    type: Literal["custom_tool_call"]
+    """The type of the custom tool call. Always `custom_tool_call`."""
+    call_id: str
+    """An identifier used to map this custom tool call to a tool call output."""
+    name: str
+    """The name of the custom tool being called."""
+    input: str
+    """The input for the custom tool call generated by the model."""
+    agent: BetaAgentTag | None | NotGiven = NOT_GIVEN
+    """The agent that produced this item."""
+    id: str | NotGiven = NOT_GIVEN
+    """The unique ID of the custom tool call in the OpenAI platform."""
+    caller: BetaToolCallCaller | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `caller` wire field."""
+    namespace: str | NotGiven = NOT_GIVEN
+    """The namespace of the custom tool being called."""
+    async_: bool | NotGiven = Field(NOT_GIVEN, alias="async")
+    """Whether the custom tool call runs asynchronously."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "call_id", "name", "input"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["custom_tool_call"])
+        return value
+
+
+class BetaFunctionToolCall(BaseModel):
+    """
+    A tool call to run a function. See the
+    [function calling guide](https://developers.openai.com/api/docs/guides/function-calling) for more information.
+    """
+
+    model_config = ConfigDict(populate_by_name=True, arbitrary_types_allowed=True)
+
+    type: Literal["function_call"]
+    """The type of the function tool call. Always `function_call`."""
+    call_id: str
+    """The unique ID of the function tool call generated by the model."""
+    name: str
+    """The name of the function to run."""
+    arguments: str
+    """A JSON string of the arguments to pass to the function."""
+    agent: BetaAgentTag | None | NotGiven = NOT_GIVEN
+    """The agent that produced this item."""
+    id: str | NotGiven = NOT_GIVEN
+    """The unique ID of the function tool call."""
+    caller: BetaToolCallCaller | None | NotGiven = NOT_GIVEN
+    """Optional API value serialized in the `caller` wire field."""
+    namespace: str | NotGiven = NOT_GIVEN
+    """The namespace of the function to run."""
+    status: Literal["in_progress", "completed", "incomplete"] | str | NotGiven = NOT_GIVEN
+    """
+    The status of the item. One of `in_progress`, `completed`, or
+    `incomplete`. Populated when items are returned via API.
+    """
+    async_: bool | NotGiven = Field(NOT_GIVEN, alias="async")
+    """Whether the function tool call runs asynchronously."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "call_id", "name", "arguments"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["function_call"])
+        return value
+
+
+class BetaInputFileContent(BaseModel):
+    """A file input to the model."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["input_file"]
+    """The type of the input item. Always `input_file`."""
+    file_id: str | None | NotGiven = NOT_GIVEN
+    """Optional `string` value serialized in the `file_id` wire field."""
+    filename: str | NotGiven = NOT_GIVEN
+    """The name of the file to be sent to the model."""
+    file_data: str | NotGiven = NOT_GIVEN
+    """The content of the file to be sent to the model."""
+    prompt_cache_breakpoint: BetaPromptCacheBreakpointConfig | NotGiven = NOT_GIVEN
+    """Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block."""
+    file_url: str | NotGiven = NOT_GIVEN
+    """The URL of the file to be sent to the model."""
+    detail: BetaFileInputDetail | NotGiven = NOT_GIVEN
+    """The detail level of the file to be sent to the model. Use `auto` to let the system select the detail level; for GPT-5.6 and later models, `auto` uses high-quality rendering, which may increase input token usage. Use `low` for lower-cost rendering, or `high` to render the file at higher quality. Defaults to `auto`."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["input_file"])
+        return value
+
+    @field_validator("file_url")
+    @classmethod
+    def _validate_file_url(cls, value):
+        validate_uri("file_url", value)
+        return value

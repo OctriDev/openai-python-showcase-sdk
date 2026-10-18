@@ -6,6 +6,28 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_26: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "VaultCredentialAuthResourceMcpOauth": (
+        None,
+        {
+            "type": ("type", None),
+            "mcp_server_url": ("mcp_server_url", None),
+            "expires_at": ("expires_at", None),
+            "refresh": ("refresh", "McpOauthRefreshResource"),
+        },
+    ),
+    "VaultCredentialAuthResourceStaticBearer": (
+        None,
+        {
+            "type": ("type", None),
+            "mcp_server_url": ("mcp_server_url", None),
+        },
+    ),
+    "VaultCredentialNetworkingResourceUnrestricted": (
+        None,
+        {
+            "type": ("type", None),
+        },
+    ),
     "VaultCredentialNetworkingResourceLimited": (
         None,
         {
@@ -406,43 +428,6 @@ WIRE_SCHEMAS_PART_26: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "type": ("type", None),
             "event_type": ("event_type", None),
             "decisions": ("decisions", "LiveDecisionQuestionsInputParam2"),
-        },
-    ),
-    "LiveSessionCreateParams": (
-        None,
-        {
-            "model": ("model", None),
-            "instructions": ("instructions", None),
-            "input": (
-                "input",
-                "union:LiveInitialDeveloperMessageItemParam|LiveInitialUserMessageItemParam|LiveInitialAssistantMessageItemParam~role=developer,user,assistant",
-            ),
-            "audio": ("audio", "LiveInitialSessionAudioParam"),
-            "delegation": (
-                "delegation",
-                "union:LiveClientDelegationParam|LiveResponsesDelegationParam|LiveDecisionsDelegationParam2~type=client,responses,decisions",
-            ),
-            "triggers": ("triggers", "LiveDecisionTriggerInputParam2"),
-            "store": ("store", None),
-            "client": ("client", "LiveClientConfigParam"),
-        },
-    ),
-    "LiveSessionStartEvent": (
-        None,
-        {
-            "event_id": ("event_id", None),
-            "type": ("type", None),
-            "session": ("session", "LiveSessionCreateParams"),
-        },
-    ),
-    "LiveDecisionsSettingsUpdateParam": (
-        None,
-        {
-            "model": ("model", None),
-            "questions": (
-                "questions",
-                "union:QuestionParamPredicate|QuestionParamChoice|QuestionParamScore~type=predicate,choice,score",
-            ),
         },
     ),
 }

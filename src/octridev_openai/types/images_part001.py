@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal, TypeAlias
+from typing import Annotated, Literal, TypeAlias
 
 from pydantic import BaseModel, ConfigDict, Field, WrapValidator, field_validator, model_validator
 from typing_extensions import TypeAliasType
@@ -13,6 +13,7 @@ from octridev_openai.client import NOT_GIVEN, NotGiven
 from ..validation import (
     open_union,
     validate_enum,
+    validate_length,
     validate_range,
     validate_required,
     validate_union_candidate,
@@ -305,8 +306,33 @@ ImageGenStreamEvent = TypeAliasType(
 )
 
 
-# ImageRefParam is a union type
-ImageRefParam: TypeAlias = Annotated[Any, WrapValidator(validate_union_candidate)]
+class ImageRefParam(BaseModel):
+    """
+    Reference an input image by either URL or uploaded file ID.
+    Provide exactly one of `image_url` or `file_id`.
+    """
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    image_url: str | NotGiven = NOT_GIVEN
+    """
+    A fully qualified URL or base64-encoded data URL.
+
+    @example "https://example.com/source-image.png"
+    """
+    file_id: str | NotGiven = NOT_GIVEN
+    """
+    The File API ID of an uploaded image to use as input.
+
+    @example "file-abc123"
+    """
+
+    @field_validator("image_url")
+    @classmethod
+    def _validate_image_url(cls, value):
+        validate_length("image_url", value, max=20971520)
+        validate_uri("image_url", value)
+        return value
 
 
 class ImagesResponse(BaseModel):

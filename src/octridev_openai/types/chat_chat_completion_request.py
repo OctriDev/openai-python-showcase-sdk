@@ -43,7 +43,13 @@ class ChatCompletionRequestDeveloperMessage(BaseModel):
 
     model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
 
-    content: str | list[ChatCompletionRequestMessageContentPartText]
+    content: (
+        str
+        | Annotated[
+            list[ChatCompletionRequestMessageContentPartText],
+            WrapValidator(validate_union_candidate),
+        ]
+    )
     """The contents of the developer message."""
     role: Literal["developer"]
     """The role of the messages author, in this case `developer`."""
@@ -313,7 +319,13 @@ class ChatCompletionRequestSystemMessage(BaseModel):
 
     model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
 
-    content: str | list[ChatCompletionRequestSystemMessageContentPart]
+    content: (
+        str
+        | Annotated[
+            list[ChatCompletionRequestSystemMessageContentPart],
+            WrapValidator(validate_union_candidate),
+        ]
+    )
     """The contents of the system message."""
     role: Literal["system"]
     """The role of the messages author, in this case `system`."""
@@ -341,7 +353,13 @@ class ChatCompletionRequestUserMessage(BaseModel):
 
     model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
 
-    content: str | list[ChatCompletionRequestUserMessageContentPart]
+    content: (
+        str
+        | Annotated[
+            list[ChatCompletionRequestUserMessageContentPart],
+            WrapValidator(validate_union_candidate),
+        ]
+    )
     """The contents of the user message."""
     role: Literal["user"]
     """The role of the messages author, in this case `user`."""
@@ -366,7 +384,13 @@ class ChatCompletionRequestToolMessage(BaseModel):
 
     role: Literal["tool"]
     """The role of the messages author, in this case `tool`."""
-    content: str | list[ChatCompletionRequestToolMessageContentPart]
+    content: (
+        str
+        | Annotated[
+            list[ChatCompletionRequestToolMessageContentPart],
+            WrapValidator(validate_union_candidate),
+        ]
+    )
     """The contents of the tool message."""
     tool_call_id: str
     """Tool call that this message is responding to."""
@@ -422,9 +446,15 @@ class ChatCompletionRequestAssistantMessage(BaseModel):
 
     role: Literal["assistant"]
     """The role of the messages author, in this case `assistant`."""
-    content: str | list[ChatCompletionRequestAssistantMessageContentPart] | None | NotGiven = (
-        NOT_GIVEN
-    )
+    content: (
+        str
+        | Annotated[
+            list[ChatCompletionRequestAssistantMessageContentPart],
+            WrapValidator(validate_union_candidate),
+        ]
+        | None
+        | NotGiven
+    ) = NOT_GIVEN
     """The contents of the assistant message. Required unless `tool_calls` or `function_call` is specified."""
     refusal: str | None | NotGiven = NOT_GIVEN
     """Optional `string` value serialized in the `refusal` wire field."""

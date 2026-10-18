@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal, TypeAlias
+from typing import Any, Literal, TypeAlias
 
-from pydantic import TypeAdapter, ValidationError as _PydanticValidationError, WrapValidator
+from pydantic import TypeAdapter, ValidationError as _PydanticValidationError
 
 import octridev_openai.types as _response_types
 from octridev_openai.client import (
@@ -22,15 +22,13 @@ from octridev_openai.client import (
 from octridev_openai.errors import SdkValidationError, sdk_decode
 from octridev_openai.types import (
     AudioResponseFormat,
-    CreateTranscriptionResponseDiarizedJson,
-    CreateTranscriptionResponseJson,
-    CreateTranscriptionResponseVerboseJson,
+    CreateTranscriptionRequestChunkingStrategy,
+    CreateTranscriptionResponse,
     ErrorResponse,
     TranscriptionInclude,
-    VadConfig,
 )
-from octridev_openai.validation import validate_items, validate_union_candidate
-from octridev_openai.wire import _validate_response_enums, to_wire
+from octridev_openai.validation import validate_items
+from octridev_openai.wire import to_wire
 
 
 def _validate_pydantic_response(value: Any, response_type: Any) -> Any:
@@ -75,16 +73,12 @@ async def create_transcription(
     include: list[TranscriptionInclude] | NotGiven = NOT_GIVEN,
     timestamp_granularities: list[Literal["word", "segment"] | str] | NotGiven = NOT_GIVEN,
     stream: bool | None | NotGiven = NOT_GIVEN,
-    chunking_strategy: Literal["auto"] | str | VadConfig | None | NotGiven = NOT_GIVEN,
+    chunking_strategy: CreateTranscriptionRequestChunkingStrategy | None | NotGiven = NOT_GIVEN,
     known_speaker_names: list[str] | NotGiven = NOT_GIVEN,
     known_speaker_references: list[str] | NotGiven = NOT_GIVEN,
     *,
     request_options: RequestOptions | None = None,
-) -> (
-    Annotated[CreateTranscriptionResponseJson, WrapValidator(validate_union_candidate)]
-    | Annotated[CreateTranscriptionResponseDiarizedJson, WrapValidator(validate_union_candidate)]
-    | Annotated[CreateTranscriptionResponseVerboseJson, WrapValidator(validate_union_candidate)]
-):
+) -> CreateTranscriptionResponse:
     """Transcribes an audio file and returns the transcript in a selected format or as a
     stream of transcript events. Provide the audio `file` and `model`, then use options
     such as `language`, `prompt`, or `timestamp_granularities` to guide or shape the
@@ -203,7 +197,9 @@ async def create_transcription(
                     (
                         NOT_GIVEN
                         if chunking_strategy is NOT_GIVEN
-                        else to_wire(chunking_strategy, "VadConfig")
+                        else to_wire(
+                            chunking_strategy, "CreateTranscriptionRequestChunkingStrategy | None"
+                        )
                     ),
                     "application/json",
                 ),
@@ -236,19 +232,7 @@ async def create_transcription(
     )
     return sdk_decode(
         _resp,
-        lambda response: _validate_pydantic_response(
-            _validate_response_enums(
-                response.data,
-                "union:CreateTranscriptionResponseJson|CreateTranscriptionResponseDiarizedJson|CreateTranscriptionResponseVerboseJson",
-            ),
-            Annotated[CreateTranscriptionResponseJson, WrapValidator(validate_union_candidate)]
-            | Annotated[
-                CreateTranscriptionResponseDiarizedJson, WrapValidator(validate_union_candidate)
-            ]
-            | Annotated[
-                CreateTranscriptionResponseVerboseJson, WrapValidator(validate_union_candidate)
-            ],
-        ),
+        lambda response: _validate_pydantic_response(response.data, CreateTranscriptionResponse),
     )
 
 
@@ -265,16 +249,12 @@ def create_transcription_sync(
     include: list[TranscriptionInclude] | NotGiven = NOT_GIVEN,
     timestamp_granularities: list[Literal["word", "segment"] | str] | NotGiven = NOT_GIVEN,
     stream: bool | None | NotGiven = NOT_GIVEN,
-    chunking_strategy: Literal["auto"] | str | VadConfig | None | NotGiven = NOT_GIVEN,
+    chunking_strategy: CreateTranscriptionRequestChunkingStrategy | None | NotGiven = NOT_GIVEN,
     known_speaker_names: list[str] | NotGiven = NOT_GIVEN,
     known_speaker_references: list[str] | NotGiven = NOT_GIVEN,
     *,
     request_options: RequestOptions | None = None,
-) -> (
-    Annotated[CreateTranscriptionResponseJson, WrapValidator(validate_union_candidate)]
-    | Annotated[CreateTranscriptionResponseDiarizedJson, WrapValidator(validate_union_candidate)]
-    | Annotated[CreateTranscriptionResponseVerboseJson, WrapValidator(validate_union_candidate)]
-):
+) -> CreateTranscriptionResponse:
     """Transcribes an audio file and returns the transcript in a selected format or as a
     stream of transcript events. Provide the audio `file` and `model`, then use options
     such as `language`, `prompt`, or `timestamp_granularities` to guide or shape the
@@ -393,7 +373,9 @@ def create_transcription_sync(
                     (
                         NOT_GIVEN
                         if chunking_strategy is NOT_GIVEN
-                        else to_wire(chunking_strategy, "VadConfig")
+                        else to_wire(
+                            chunking_strategy, "CreateTranscriptionRequestChunkingStrategy | None"
+                        )
                     ),
                     "application/json",
                 ),
@@ -426,19 +408,7 @@ def create_transcription_sync(
     )
     return sdk_decode(
         _resp,
-        lambda response: _validate_pydantic_response(
-            _validate_response_enums(
-                response.data,
-                "union:CreateTranscriptionResponseJson|CreateTranscriptionResponseDiarizedJson|CreateTranscriptionResponseVerboseJson",
-            ),
-            Annotated[CreateTranscriptionResponseJson, WrapValidator(validate_union_candidate)]
-            | Annotated[
-                CreateTranscriptionResponseDiarizedJson, WrapValidator(validate_union_candidate)
-            ]
-            | Annotated[
-                CreateTranscriptionResponseVerboseJson, WrapValidator(validate_union_candidate)
-            ],
-        ),
+        lambda response: _validate_pydantic_response(response.data, CreateTranscriptionResponse),
     )
 
 

@@ -38,25 +38,27 @@ if TYPE_CHECKING:
         BetaAdditionalToolsItemParam,
         BetaResponseConfigurationUpdateItemParam,
     )
+    from octridev_openai.types.responses_beta_part008 import (
+        BetaCustomToolCall,
+        BetaFunctionToolCall,
+        BetaInputFileContent,
+    )
     from octridev_openai.types.responses_beta_part009 import (
         BetaApplyPatchToolCallItemParam,
         BetaApplyPatchToolCallOutputItemParam,
-        BetaCustomToolCall,
+        BetaComputerCallOutputItemParam,
         BetaCustomToolCallOutput,
         BetaFunctionShellCallOutputItemParam,
-        BetaFunctionToolCall,
-        BetaInputFileContent,
+        BetaImageGenToolCall,
         BetaInputImageContent,
         BetaMCPToolCall,
+        BetaToolSearchCallItemParam,
     )
     from octridev_openai.types.responses_beta_part010 import (
-        BetaComputerCallOutputItemParam,
         BetaFileSearchToolCall,
-        BetaImageGenToolCall,
         BetaMultiAgentCallItemParam,
         BetaMultiAgentCallOutputItemParam,
         BetaOutputMessage,
-        BetaToolSearchCallItemParam,
         BetaToolSearchOutputItemParam,
     )
     from octridev_openai.types.responses_beta_part012 import (

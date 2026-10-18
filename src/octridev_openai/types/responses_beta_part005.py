@@ -24,33 +24,33 @@ from ..validation import open_union, validate_enum, validate_required, validate_
 if TYPE_CHECKING:
     from octridev_openai.types.responses_beta_part006 import BetaCompactionBody, BetaProgram
     from octridev_openai.types.responses_beta_part007 import BetaResponseConfigurationUpdate
+    from octridev_openai.types.responses_beta_part008 import BetaInputFileContent
     from octridev_openai.types.responses_beta_part009 import (
-        BetaInputFileContent,
+        BetaImageGenToolCall,
         BetaInputImageContent,
         BetaMCPToolCall,
     )
     from octridev_openai.types.responses_beta_part010 import (
+        BetaCustomToolCallOutputResource,
         BetaFileSearchToolCall,
-        BetaImageGenToolCall,
         BetaOutputMessage,
         BetaOutputTextContent,
+        BetaToolSearchOutput,
     )
     from octridev_openai.types.responses_beta_part011 import (
+        BetaAdditionalTools,
         BetaApplyPatchToolCallOutput,
-        BetaCustomToolCallOutputResource,
         BetaCustomToolCallResource,
         BetaFunctionShellCallOutput,
         BetaFunctionToolCallOutputResource,
         BetaFunctionToolCallResource,
-        BetaToolSearchCall,
-        BetaToolSearchOutput,
-    )
-    from octridev_openai.types.responses_beta_part012 import (
-        BetaAdditionalTools,
-        BetaComputerToolCallOutputResource,
         BetaMultiAgentCall,
         BetaMultiAgentCallOutput,
         BetaProgramOutput,
+        BetaToolSearchCall,
+    )
+    from octridev_openai.types.responses_beta_part012 import (
+        BetaComputerToolCallOutputResource,
         BetaWebSearchToolCall,
     )
     from octridev_openai.types.responses_beta_part013 import (

@@ -6,6 +6,26 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_6: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "MCPApprovalResponse": (
+        None,
+        {
+            "type": ("type", None),
+            "id": ("id", None),
+            "approval_request_id": ("approval_request_id", None),
+            "approve": ("approve", None),
+            "reason": ("reason", None),
+        },
+    ),
+    "MCPApprovalResponseResource": (
+        None,
+        {
+            "type": ("type", None),
+            "id": ("id", None),
+            "approval_request_id": ("approval_request_id", None),
+            "approve": ("approve", None),
+            "reason": ("reason", None),
+        },
+    ),
     "MCPListTools": (
         None,
         {
@@ -480,25 +500,6 @@ WIRE_SCHEMAS_PART_6: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = 
             "name": ("name", None),
             "created_at": ("created_at", None),
             "role": ("role", None),
-        },
-    ),
-    "ProjectApiKeyOwnerUser": (
-        None,
-        {
-            "id": ("id", None),
-            "email": ("email", None),
-            "name": ("name", None),
-            "created_at": ("created_at", None),
-            "role": ("role", None),
-        },
-    ),
-    "ProjectCreateRequest": (
-        None,
-        {
-            "name": ("name", None),
-            "geography": ("geography", None),
-            "residency": ("residency", None),
-            "external_key_id": ("external_key_id", None),
         },
     ),
 }

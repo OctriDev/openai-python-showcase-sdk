@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, WrapValidator, field_validator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
 from octridev_openai.types.responses_beta_part001 import BetaTool, BetaToolSearchExecutionType
@@ -19,147 +19,19 @@ from octridev_openai.types.responses_beta_part005 import (
     BetaApplyPatchCallOutputStatus,
     BetaFunctionCallOutputStatusEnum,
     BetaFunctionCallStatus,
-    BetaPromptCacheModeEnum,
-    BetaPromptCacheTTLEnum,
 )
-from octridev_openai.types.responses_beta_part006 import BetaFunctionShellCallOutputStatusEnum
+from octridev_openai.types.responses_beta_part006 import (
+    BetaFunctionShellCallOutputStatusEnum,
+    BetaMessageRole,
+    BetaMultiAgentAction,
+    BetaProgramOutputStatus,
+)
+from octridev_openai.types.responses_beta_part010 import BetaOutputTextContent
 
-from ..validation import validate_enum, validate_required
+from ..validation import validate_enum, validate_required, validate_union_candidate
 
 if TYPE_CHECKING:
     from octridev_openai.types.responses_beta_part013 import BetaFunctionShellCallOutputContent
-
-
-class BetaPromptCacheOptions(BaseModel):
-    """The prompt-caching options that were applied to the response. Supported for `gpt-5.6` and later models."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    ttl: BetaPromptCacheTTLEnum
-    """The minimum lifetime applied to each cache breakpoint."""
-    mode: BetaPromptCacheModeEnum
-    """Whether implicit prompt-cache breakpoints were enabled."""
-    comparison_response_id: str | None | NotGiven = NOT_GIVEN
-    """Optional `string` value serialized in the `comparison_response_id` wire field."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["ttl", "mode"])
-        return value
-
-
-class BetaResponsePromptCacheOptionsParam(BaseModel):
-    """Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for current details."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    ttl: BetaPromptCacheTTLEnum | NotGiven = NOT_GIVEN
-    """The minimum lifetime applied to every implicit and explicit cache breakpoint written by the request. Defaults to `30m`, which is currently the only supported value. The backend may retain cache entries for longer."""
-    mode: BetaPromptCacheModeEnum | NotGiven = NOT_GIVEN
-    """Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults to `implicit`. With `implicit`, OpenAI creates one implicit breakpoint and writes up to the latest three explicit breakpoints in the request. With `explicit`, OpenAI does not create an implicit breakpoint and writes up to the latest four explicit breakpoints. If there are no explicit breakpoints, the request does not use prompt caching."""
-    prewarm: bool | NotGiven = NOT_GIVEN
-    """Prepares the prompt cache without generating output. Defaults to `false`. When set to `true`, overrides the `generate` field to `false`."""
-    comparison_response_id: str | None | NotGiven = NOT_GIVEN
-    """Optional `string` value serialized in the `comparison_response_id` wire field."""
-
-
-class BetaCustomToolCallOutputResourceVariant1(BaseModel):
-    """Required object value serialized in the `data[]` wire field."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    id: str
-    """The unique ID of the custom tool call output item."""
-    status: BetaFunctionCallOutputStatusEnum
-    """
-    The status of the item. One of `in_progress`, `completed`, or
-    `incomplete`. Populated when items are returned via API.
-    """
-    created_by: str | NotGiven = NOT_GIVEN
-    """The identifier of the actor that created the item."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["id", "status"])
-        return value
-
-
-class BetaCustomToolCallOutputResource(BaseModel):
-    """Typed representation of the `BetaCustomToolCallOutputResource` API schema."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["custom_tool_call_output"]
-    """The type of the custom tool call output. Always `custom_tool_call_output`."""
-    id: str
-    """The unique ID of the custom tool call output item."""
-    call_id: str
-    """The call ID, used to map this custom tool call output to a custom tool call."""
-    output: str | list[BetaFunctionAndCustomToolCallOutput]
-    """
-    The output from the custom tool call generated by your code.
-    Can be a string or an list of output content.
-    """
-    status: BetaFunctionCallOutputStatusEnum
-    """
-    The status of the item. One of `in_progress`, `completed`, or
-    `incomplete`. Populated when items are returned via API.
-    """
-    agent: BetaAgentTag | None | NotGiven = NOT_GIVEN
-    """The agent that produced this item."""
-    caller: BetaToolCallCallerParam | None | NotGiven = NOT_GIVEN
-    """Optional API value serialized in the `caller` wire field."""
-    created_by: str | NotGiven = NOT_GIVEN
-    """The identifier of the actor that created the item."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "call_id", "output", "id", "status"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["custom_tool_call_output"])
-        return value
-
-
-class BetaToolSearchOutput(BaseModel):
-    """Typed representation of the `BetaToolSearchOutput` API schema."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["tool_search_output"]
-    """The type of the item. Always `tool_search_output`."""
-    id: str
-    """The unique ID of the tool search output item."""
-    call_id: str | None
-    """Required `string` value serialized in the `call_id` wire field."""
-    execution: BetaToolSearchExecutionType
-    """Whether tool search was executed by the server or by the client."""
-    tools: list[BetaTool]
-    """The loaded tool definitions returned by tool search."""
-    status: BetaFunctionCallOutputStatusEnum
-    """The status of the tool search output item that was recorded."""
-    agent: BetaAgentTag | NotGiven = NOT_GIVEN
-    """The agent that produced this item."""
-    created_by: str | NotGiven = NOT_GIVEN
-    """The identifier of the actor that created the item."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "id", "call_id", "execution", "tools", "status"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["tool_search_output"])
-        return value
 
 
 class BetaFunctionToolCallOutputResourceVariant1(BaseModel):
@@ -193,7 +65,12 @@ class BetaFunctionToolCallOutputResource(BaseModel):
     """The unique ID of the function call tool output."""
     type: Literal["function_call_output"]
     """The type of the function tool call output. Always `function_call_output`."""
-    output: str | list[BetaFunctionAndCustomToolCallOutput]
+    output: (
+        str
+        | Annotated[
+            list[BetaFunctionAndCustomToolCallOutput], WrapValidator(validate_union_candidate)
+        ]
+    )
     """
     The output from the function call generated by your code.
     Can be a string or an list of output content.
@@ -465,4 +342,126 @@ class BetaFunctionShellCallOutput(BaseModel):
     @classmethod
     def _validate_type(cls, value):
         validate_enum("type", value, ["shell_call_output"])
+        return value
+
+
+class BetaProgramOutput(BaseModel):
+    """Typed representation of the `BetaProgramOutput` API schema."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["program_output"]
+    """The type of the item. Always `program_output`."""
+    id: str
+    """The unique ID of the program output item."""
+    call_id: str
+    """The call ID of the program item."""
+    result: str
+    """The result produced by the program item."""
+    status: BetaProgramOutputStatus
+    """The terminal status of the program output item."""
+    agent: BetaAgentTag | NotGiven = NOT_GIVEN
+    """The agent that produced this item."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "id", "call_id", "result", "status"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["program_output"])
+        return value
+
+
+class BetaAdditionalTools(BaseModel):
+    """Typed representation of the `BetaAdditionalTools` API schema."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["additional_tools"]
+    """The type of the item. Always `additional_tools`."""
+    id: str
+    """The unique ID of the additional tools item."""
+    role: BetaMessageRole
+    """The role that provided the additional tools."""
+    tools: list[BetaTool]
+    """The additional tool definitions made available at this item."""
+    agent: BetaAgentTag | NotGiven = NOT_GIVEN
+    """The agent that produced this item."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "id", "role", "tools"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["additional_tools"])
+        return value
+
+
+class BetaMultiAgentCallOutput(BaseModel):
+    """Typed representation of the `BetaMultiAgentCallOutput` API schema."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["multi_agent_call_output"]
+    """The type of the multi-agent result. Always `multi_agent_call_output`."""
+    id: str
+    """The unique ID of the multi-agent call output item."""
+    call_id: str
+    """The unique ID of the multi-agent call."""
+    action: BetaMultiAgentAction
+    """The multi-agent action that produced this result."""
+    output: list[BetaOutputTextContent]
+    """Text output returned by the multi-agent action."""
+    agent: BetaAgentTag | NotGiven = NOT_GIVEN
+    """The agent that produced this item."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "id", "call_id", "action", "output"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["multi_agent_call_output"])
+        return value
+
+
+class BetaMultiAgentCall(BaseModel):
+    """Typed representation of the `BetaMultiAgentCall` API schema."""
+
+    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
+
+    type: Literal["multi_agent_call"]
+    """The type of the multi-agent call. Always `multi_agent_call`."""
+    id: str
+    """The unique ID of the multi-agent call item."""
+    call_id: str
+    """The unique ID linking this call to its output."""
+    action: BetaMultiAgentAction
+    """The multi-agent action to execute."""
+    arguments: str
+    """The JSON string of arguments generated for the action."""
+    agent: BetaAgentTag | NotGiven = NOT_GIVEN
+    """The agent that produced this item."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_required(cls, value):
+        validate_required(value, ["type", "id", "call_id", "action", "arguments"])
+        return value
+
+    @field_validator("type")
+    @classmethod
+    def _validate_type(cls, value):
+        validate_enum("type", value, ["multi_agent_call"])
         return value

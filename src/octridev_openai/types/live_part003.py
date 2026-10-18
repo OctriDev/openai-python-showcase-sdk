@@ -14,7 +14,7 @@ from octridev_openai.types.live_live_container import (
     LiveContainerNetworkPolicyDisabledParam,
     LiveContainerReferenceParam,
 )
-from octridev_openai.types.live_live_custom import LiveCustomToolInputParam
+from octridev_openai.types.live_live_custom import LiveCustomToolInputParam, LiveCustomVoiceParam
 from octridev_openai.types.live_live_function import LiveFunctionToolInputParam
 from octridev_openai.types.live_live_inline import LiveInlineSkillParam
 from octridev_openai.types.live_live_local import LiveLocalEnvironmentParam
@@ -37,6 +37,7 @@ from octridev_openai.types.live_part001 import (
     LiveSkillReferenceParam,
 )
 from octridev_openai.types.live_part002 import (
+    LiveDecisionInputTextParam,
     LiveDecisionsDelegationParam2,
     LiveDecisionsDelegationUpdateParam,
     LiveInitialOutputTextContentPartParam,
@@ -48,6 +49,7 @@ from ..validation import open_union, validate_enum, validate_required, validate_
 
 if TYPE_CHECKING:
     from octridev_openai.types.live_part004 import (
+        LiveDecisionInputImageParam,
         LiveDelegationItem,
         LiveHostedShellContainerAutoParam,
         LiveHostedShellToolInputParam,
@@ -56,33 +58,6 @@ if TYPE_CHECKING:
         LiveDecisionStoredInputItemParam,
         LiveSessionResourceParam,
     )
-
-
-class LiveSessionStarted(BaseModel):
-    """Returned when a Live session has started. Contains the resolved session configuration, including server defaults."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    type: Literal["session.started"]
-    """The event type, always `session.started`."""
-    event_id: str
-    """The unique ID of the Live server event."""
-    session: LiveSessionResourceParam
-    """The resolved Live session configuration and server-assigned session metadata."""
-    client_event_id: str | NotGiven = NOT_GIVEN
-    """The event_id of the client command associated with this server event, when supplied."""
-
-    @model_validator(mode="before")
-    @classmethod
-    def _validate_required(cls, value):
-        validate_required(value, ["type", "event_id", "session"])
-        return value
-
-    @field_validator("type")
-    @classmethod
-    def _validate_type(cls, value):
-        validate_enum("type", value, ["session.started"])
-        return value
 
 
 class LiveSessionUpdated(BaseModel):
@@ -459,6 +434,13 @@ class Session(BaseModel):
 TargetUri = str
 
 
+# LiveInitialSessionAudioOutputParamVoice is a union type
+LiveInitialSessionAudioOutputParamVoice = TypeAliasType(
+    "LiveInitialSessionAudioOutputParamVoice",
+    'Annotated[str, WrapValidator(validate_union_candidate)] | Annotated[Literal["alloy", "ash", "ballad", "beacon", "bossa", "brise", "cedar", "cinder", "coral", "delta", "echo", "flitz", "gleam", "harema", "juni", "marin", "meridian", "nira", "noeul", "nuri", "quartz", "ripple", "sage", "shida", "shimmer", "sillage", "stone", "tempo", "verse", "vesper", "willow"], WrapValidator(validate_union_candidate)] | Annotated[LiveCustomVoiceParam, WrapValidator(validate_union_candidate)]',
+)
+
+
 class UnknownLiveResponsesDelegationSettingsInputParamToolsItem(BaseModel):
     """A `LiveResponsesDelegationSettingsInputParamToolsItem` whose `type` names no branch this SDK knows, kept as received."""
 
@@ -547,4 +529,43 @@ class UnknownLiveSessionUpdateParamsDelegation(BaseModel):
 LiveSessionUpdateParamsDelegation = TypeAliasType(
     "LiveSessionUpdateParamsDelegation",
     'Annotated[Annotated[LiveClientDelegationParam, WrapValidator(validate_union_candidate)] | Annotated[LiveResponsesDelegationUpdateParam, WrapValidator(validate_union_candidate)] | Annotated[LiveDecisionsDelegationUpdateParam, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownLiveSessionUpdateParamsDelegation))]',
+)
+
+
+class UnknownLiveResponsesDelegationSettingsUpdateInputParamToolsItem(BaseModel):
+    """A `LiveResponsesDelegationSettingsUpdateInputParamToolsItem` whose `type` names no branch this SDK knows, kept as received."""
+
+    model_config = ConfigDict(extra="allow")
+
+
+# LiveResponsesDelegationSettingsUpdateInputParamToolsItem is a union type
+LiveResponsesDelegationSettingsUpdateInputParamToolsItem = TypeAliasType(
+    "LiveResponsesDelegationSettingsUpdateInputParamToolsItem",
+    'Annotated[Annotated[LiveFunctionToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveWebSearchToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveFileSearchToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveCodeInterpreterToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveHostedShellToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveImageGenerationToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveMCPToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveCustomToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveNamespaceToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveToolSearchToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveProgrammaticToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveComputerToolInputParam, WrapValidator(validate_union_candidate)] | Annotated[LiveApplyPatchToolInputParam, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownLiveResponsesDelegationSettingsUpdateInputParamToolsItem))]',
+)
+
+
+class UnknownLiveDecisionInputItemParamContentItem(BaseModel):
+    """A `LiveDecisionInputItemParamContentItem` whose `type` names no branch this SDK knows, kept as received."""
+
+    model_config = ConfigDict(extra="allow")
+
+
+# LiveDecisionInputItemParamContentItem is a union type
+LiveDecisionInputItemParamContentItem = TypeAliasType(
+    "LiveDecisionInputItemParamContentItem",
+    'Annotated[Annotated[LiveDecisionInputTextParam, WrapValidator(validate_union_candidate)] | Annotated[LiveDecisionInputImageParam, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownLiveDecisionInputItemParamContentItem))]',
+)
+
+
+class UnknownLiveSessionResourceParamDelegation(BaseModel):
+    """A `LiveSessionResourceParamDelegation` whose `type` names no branch this SDK knows, kept as received."""
+
+    model_config = ConfigDict(extra="allow")
+
+
+# LiveSessionResourceParamDelegation is a union type
+LiveSessionResourceParamDelegation = TypeAliasType(
+    "LiveSessionResourceParamDelegation",
+    'Annotated[Annotated[LiveClientDelegationParam, WrapValidator(validate_union_candidate)] | Annotated[LiveResponsesDelegationParam, WrapValidator(validate_union_candidate)] | Annotated[LiveDecisionsDelegationParam2, WrapValidator(validate_union_candidate)], Field(discriminator="type"), WrapValidator(open_union(UnknownLiveSessionResourceParamDelegation))]',
 )

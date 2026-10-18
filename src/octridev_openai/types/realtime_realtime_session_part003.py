@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, WrapValidator, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 from octridev_openai.client import NOT_GIVEN, NotGiven
 from octridev_openai.types.realtime import NoiseReductionType
@@ -19,10 +19,11 @@ from octridev_openai.types.realtime_realtime_reasoning import RealtimeReasoning
 from octridev_openai.types.realtime_realtime_session_part001 import (
     RealtimeSessionCreateResponseGAToolChoice,
     RealtimeSessionCreateResponseGAToolsItem,
+    RealtimeSessionCreateResponseGATracing,
 )
 from octridev_openai.types.shared import Prompt
 
-from ..validation import validate_enum, validate_range, validate_required, validate_union_candidate
+from ..validation import validate_enum, validate_range, validate_required
 
 
 class RealtimeSessionCreateResponseGAAudioInputNoiseReduction(BaseModel):
@@ -112,28 +113,6 @@ class RealtimeSessionCreateResponseGAAudio(BaseModel):
     """Optional object value serialized in the `output` wire field."""
 
 
-class RealtimeSessionCreateResponseGATracingTracingConfiguration(BaseModel):
-    """Granular configuration for tracing."""
-
-    model_config = ConfigDict(populate_by_name=False, arbitrary_types_allowed=True)
-
-    workflow_name: str | NotGiven = NOT_GIVEN
-    """
-    The name of the workflow to attach to this trace. This is used to
-    name the trace in the Traces Dashboard.
-    """
-    group_id: str | NotGiven = NOT_GIVEN
-    """
-    The group id to attach to this trace to enable filtering and
-    grouping in the Traces Dashboard.
-    """
-    metadata: dict[str, Any] | NotGiven = NOT_GIVEN
-    """
-    The arbitrary metadata to attach to this trace to enable
-    filtering in the Traces Dashboard.
-    """
-
-
 class RealtimeSessionCreateResponseGA(BaseModel):
     """A Realtime session configuration object."""
 
@@ -171,16 +150,7 @@ class RealtimeSessionCreateResponseGA(BaseModel):
 
     `item.input_audio_transcription.logprobs`: Include logprobs for input audio transcription.
     """
-    tracing: (
-        Literal["auto"]
-        | str
-        | Annotated[
-            RealtimeSessionCreateResponseGATracingTracingConfiguration,
-            WrapValidator(validate_union_candidate),
-        ]
-        | None
-        | NotGiven
-    ) = NOT_GIVEN
+    tracing: RealtimeSessionCreateResponseGATracing | None | NotGiven = NOT_GIVEN
     """
     Realtime API can write session traces to the [Traces Dashboard](https://platform.openai.com/logs?api=traces). Set to null to disable tracing. Once
     tracing is enabled for a session, the configuration cannot be modified.

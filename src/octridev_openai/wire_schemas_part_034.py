@@ -6,6 +6,32 @@ from __future__ import annotations
 from typing import Any
 
 WIRE_SCHEMAS_PART_34: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] = {
+    "LiveSIPTrunkRequest": (
+        None,
+        {
+            "provider_url": ("provider_url", None),
+            "auth": ("auth", "LiveSIPTrunkAuthRequest"),
+            "caller_number": ("caller_number", None),
+        },
+    ),
+    "LiveSIPTransportRequest": (
+        None,
+        {
+            "type": ("type", None),
+            "destination": ("destination", None),
+            "trunk": ("trunk", "LiveSIPTrunkRequest"),
+        },
+    ),
+    "LiveSessionCreateRequestRequest": (
+        None,
+        {
+            "session": ("session", "LiveMediaSessionCreateParams"),
+            "transport": (
+                "transport",
+                "union:LiveWebRTCTransport|LiveSIPTransportRequest~type=webrtc,sip",
+            ),
+        },
+    ),
     "DeleteContainerResponse": (
         None,
         {
@@ -784,75 +810,6 @@ WIRE_SCHEMAS_PART_34: dict[str, tuple[Any, dict[str, tuple[str, str | None]]]] =
             "context_management": ("context_management", "BetaContextManagementParam"),
             "max_output_tokens": ("max_output_tokens", None),
             "multi_agent": ("multi_agent", "BetaMultiAgentParam"),
-        },
-    ),
-    "BetaCreateResponse": (
-        None,
-        {
-            "metadata": ("metadata", None),
-            "top_logprobs": ("top_logprobs", None),
-            "temperature": ("temperature", None),
-            "top_p": ("top_p", None),
-            "user": ("user", None),
-            "safety_identifier": ("safety_identifier", None),
-            "prompt_cache_key": ("prompt_cache_key", None),
-            "prompt_cache_retention": ("prompt_cache_retention", None),
-            "prompt_cache_options": ("prompt_cache_options", "BetaResponsePromptCacheOptionsParam"),
-            "previous_response_id": ("previous_response_id", None),
-            "model": ("model", None),
-            "background": ("background", None),
-            "max_tool_calls": ("max_tool_calls", None),
-            "text": ("text", "BetaResponseTextParam"),
-            "tools": (
-                "tools",
-                "union:BetaFunctionTool|BetaFileSearchTool|BetaComputerTool|BetaComputerUsePreviewTool|BetaWebSearchTool|BetaMCPTool|BetaCodeInterpreterTool|BetaProgrammaticToolCallingParam|BetaImageGenTool|BetaLocalShellToolParam|BetaFunctionShellToolParam|BetaCustomToolParam|BetaNamespaceToolParam|BetaToolSearchToolParam|BetaWebSearchPreviewTool|BetaApplyPatchToolParam~type=function,file_search,computer,computer_use_preview,web_search,web_search_2025_08_26,mcp,code_interpreter,programmatic_tool_calling,image_generation,local_shell,shell,custom,namespace,tool_search,web_search_preview,web_search_preview_2025_03_11,apply_patch",
-            ),
-            "tool_choice": (
-                "tool_choice",
-                "union:BetaToolChoiceAllowed|BetaToolChoiceTypes|BetaToolChoiceFunction|BetaToolChoiceMCP|BetaToolChoiceCustom|BetaSpecificProgrammaticToolCallingParam|BetaSpecificApplyPatchParam|BetaSpecificFunctionShellParam~type=allowed_tools,file_search,web_search_preview,computer,computer_use_preview,computer_use,web_search_preview_2025_03_11,image_generation,code_interpreter,function,mcp,custom,programmatic_tool_calling,apply_patch,shell",
-            ),
-            "prompt": ("prompt", "BetaPrompt"),
-            "access_programs": ("access_programs", "BetaAccessProgramsParam"),
-            "service_tier": ("service_tier", None),
-            "truncation": ("truncation", None),
-            "reasoning": ("reasoning", "BetaReasoning"),
-            "input": ("input", None),
-            "include": ("include", None),
-            "parallel_tool_calls": ("parallel_tool_calls", None),
-            "store": ("store", None),
-            "instructions": ("instructions", None),
-            "moderation": ("moderation", "BetaModerationParam"),
-            "stream": ("stream", None),
-            "stream_options": ("stream_options", "BetaResponseStreamOptions"),
-            "conversation": ("conversation", "union:BetaConversationParam2"),
-            "context_management": ("context_management", "BetaContextManagementParam"),
-            "max_output_tokens": ("max_output_tokens", None),
-            "multi_agent": ("multi_agent", "BetaMultiAgentParam"),
-        },
-    ),
-    "BetaCreateModelResponseProperties": (
-        None,
-        {
-            "metadata": ("metadata", None),
-            "top_logprobs": ("top_logprobs", None),
-            "temperature": ("temperature", None),
-            "top_p": ("top_p", None),
-            "user": ("user", None),
-            "safety_identifier": ("safety_identifier", None),
-            "prompt_cache_key": ("prompt_cache_key", None),
-            "prompt_cache_retention": ("prompt_cache_retention", None),
-            "prompt_cache_options": ("prompt_cache_options", "BetaPromptCacheOptionsParam"),
-        },
-    ),
-    "AdminApiKeyOwner": (
-        None,
-        {
-            "type": ("type", None),
-            "object": ("object", None),
-            "id": ("id", None),
-            "name": ("name", None),
-            "created_at": ("created_at", None),
-            "role": ("role", None),
         },
     ),
 }
