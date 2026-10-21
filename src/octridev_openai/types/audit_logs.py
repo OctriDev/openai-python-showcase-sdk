@@ -3,7 +3,7 @@
 
 import importlib
 
-from .audit_logs_part001 import (
+from .audit_logs_list_audit_logs import (
     AuditLogActor,
     AuditLogActorApiKey,
     AuditLogActorServiceAccount,
@@ -14,7 +14,7 @@ from .audit_logs_part001 import (
     Provider,
     UnknownProvider,
 )
-from .audit_logs_part002 import (
+from .audit_logs_list_audit_logs2 import (
     AuditLog,
     AuditLogApiKeyCreated,
     AuditLogApiKeyCreatedData,
@@ -185,11 +185,11 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_audit_logs_part001 = importlib.import_module(".audit_logs_part001", __package__)
+_audit_logs_list_audit_logs = importlib.import_module(".audit_logs_list_audit_logs", __package__)
 
-_deferred_audit_logs_part001: tuple[tuple[str, object], ...] = (("AuditLog", AuditLog),)
-for _name, _value in _deferred_audit_logs_part001:
-    setattr(_audit_logs_part001, _name, _value)
+_deferred_audit_logs_list_audit_logs: tuple[tuple[str, object], ...] = (("AuditLog", AuditLog),)
+for _name, _value in _deferred_audit_logs_list_audit_logs:
+    setattr(_audit_logs_list_audit_logs, _name, _value)
 
 AuditLogActor.model_rebuild()
 AuditLogActorApiKey.model_rebuild()

@@ -3,25 +3,7 @@
 
 import importlib
 
-from .realtime_realtime_translation_part001 import (
-    RealtimeTranslationClientEvent,
-    RealtimeTranslationClientEventInputAudioBufferAppend,
-    RealtimeTranslationClientEventSessionClose,
-    RealtimeTranslationClientEventSessionUpdate,
-    RealtimeTranslationClientSecretCreateRequest,
-    RealtimeTranslationClientSecretCreateRequestExpiresAfter,
-    RealtimeTranslationClientSecretCreateResponse,
-    RealtimeTranslationServerEvent,
-    RealtimeTranslationServerEventSessionClosed,
-    RealtimeTranslationServerEventSessionCreated,
-    RealtimeTranslationServerEventSessionInputTranscriptDelta,
-    RealtimeTranslationServerEventSessionOutputAudioDelta,
-    RealtimeTranslationServerEventSessionOutputTranscriptDelta,
-    RealtimeTranslationServerEventSessionUpdated,
-    UnknownRealtimeTranslationClientEvent,
-    UnknownRealtimeTranslationServerEvent,
-)
-from .realtime_realtime_translation_part002 import (
+from .realtime_realtime_translation_create_realtime_translation_client_secret import (
     RealtimeTranslationSession,
     RealtimeTranslationSessionAudio,
     RealtimeTranslationSessionAudioInput,
@@ -40,6 +22,24 @@ from .realtime_realtime_translation_part002 import (
     RealtimeTranslationSessionUpdateRequestAudioInputNoiseReduction,
     RealtimeTranslationSessionUpdateRequestAudioInputTranscription,
     RealtimeTranslationSessionUpdateRequestAudioOutput,
+)
+from .realtime_realtime_translation_shared import (
+    RealtimeTranslationClientEvent,
+    RealtimeTranslationClientEventInputAudioBufferAppend,
+    RealtimeTranslationClientEventSessionClose,
+    RealtimeTranslationClientEventSessionUpdate,
+    RealtimeTranslationClientSecretCreateRequest,
+    RealtimeTranslationClientSecretCreateRequestExpiresAfter,
+    RealtimeTranslationClientSecretCreateResponse,
+    RealtimeTranslationServerEvent,
+    RealtimeTranslationServerEventSessionClosed,
+    RealtimeTranslationServerEventSessionCreated,
+    RealtimeTranslationServerEventSessionInputTranscriptDelta,
+    RealtimeTranslationServerEventSessionOutputAudioDelta,
+    RealtimeTranslationServerEventSessionOutputTranscriptDelta,
+    RealtimeTranslationServerEventSessionUpdated,
+    UnknownRealtimeTranslationClientEvent,
+    UnknownRealtimeTranslationServerEvent,
 )
 
 __all__ = [
@@ -81,17 +81,17 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_realtime_realtime_translation_part001 = importlib.import_module(
-    ".realtime_realtime_translation_part001", __package__
+_realtime_realtime_translation_shared = importlib.import_module(
+    ".realtime_realtime_translation_shared", __package__
 )
 
-_deferred_realtime_realtime_translation_part001: tuple[tuple[str, object], ...] = (
+_deferred_realtime_realtime_translation_shared: tuple[tuple[str, object], ...] = (
     ("RealtimeTranslationSession", RealtimeTranslationSession),
     ("RealtimeTranslationSessionCreateRequest", RealtimeTranslationSessionCreateRequest),
     ("RealtimeTranslationSessionUpdateRequest", RealtimeTranslationSessionUpdateRequest),
 )
-for _name, _value in _deferred_realtime_realtime_translation_part001:
-    setattr(_realtime_realtime_translation_part001, _name, _value)
+for _name, _value in _deferred_realtime_realtime_translation_shared:
+    setattr(_realtime_realtime_translation_shared, _name, _value)
 
 UnknownRealtimeTranslationClientEvent.model_rebuild()
 RealtimeTranslationClientEventInputAudioBufferAppend.model_rebuild()

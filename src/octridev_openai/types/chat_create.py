@@ -3,7 +3,15 @@
 
 import importlib
 
-from .chat_create_part001 import (
+from .chat_create_chat_completion import (
+    CreateChatCompletionRequest,
+    CreateChatCompletionRequestAudio,
+    CreateChatCompletionRequestVariant1,
+    CreateChatCompletionRequestVariant1Audio,
+    CreateChatCompletionRequestVariant1WebSearchOptions,
+    CreateChatCompletionRequestVariant1WebSearchOptionsUserLocation,
+)
+from .chat_create_delete_chat_completion import (
     ChatCompletionDeleted,
     ChatCompletionFunctionCallOption,
     ChatCompletionFunctions,
@@ -23,15 +31,7 @@ from .chat_create_part001 import (
     CreateChatCompletionStreamResponseChoicesItem,
     CreateChatCompletionStreamResponseChoicesItemLogprobs,
 )
-from .chat_create_part002 import (
-    CreateChatCompletionRequest,
-    CreateChatCompletionRequestAudio,
-    CreateChatCompletionRequestVariant1,
-    CreateChatCompletionRequestVariant1Audio,
-    CreateChatCompletionRequestVariant1WebSearchOptions,
-    CreateChatCompletionRequestVariant1WebSearchOptionsUserLocation,
-)
-from .chat_create_part003 import (
+from .chat_create_shared import (
     ChatCompletionResponseMessage,
     ChatCompletionResponseMessageAnnotationsItem,
     ChatCompletionResponseMessageAnnotationsItemUrlCitation,
@@ -73,13 +73,15 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_chat_create_part001 = importlib.import_module(".chat_create_part001", __package__)
+_chat_create_delete_chat_completion = importlib.import_module(
+    ".chat_create_delete_chat_completion", __package__
+)
 
-_deferred_chat_create_part001: tuple[tuple[str, object], ...] = (
+_deferred_chat_create_delete_chat_completion: tuple[tuple[str, object], ...] = (
     ("ChatCompletionResponseMessage", ChatCompletionResponseMessage),
 )
-for _name, _value in _deferred_chat_create_part001:
-    setattr(_chat_create_part001, _name, _value)
+for _name, _value in _deferred_chat_create_delete_chat_completion:
+    setattr(_chat_create_delete_chat_completion, _name, _value)
 
 ChatCompletionDeleted.model_rebuild()
 ChatCompletionFunctionCallOption.model_rebuild()

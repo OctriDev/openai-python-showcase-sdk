@@ -3,7 +3,7 @@
 
 import importlib
 
-from .responses_beta_response_part001 import (
+from .responses_beta_response_shared import (
     BetaResponseCompactionCompactingStreamingEvent,
     BetaResponseCompletedEvent,
     BetaResponseConversation,
@@ -22,7 +22,7 @@ from .responses_beta_response_part001 import (
     BetaResponseUsageInputTokensDetails,
     BetaResponseUsageOutputTokensDetails,
 )
-from .responses_beta_response_part002 import (
+from .responses_beta_response_shared2 import (
     BetaResponse,
     BetaResponseIncompleteDetails,
     BetaResponseProperties,
@@ -57,15 +57,15 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_responses_beta_response_part001 = importlib.import_module(
-    ".responses_beta_response_part001", __package__
+_responses_beta_response_shared = importlib.import_module(
+    ".responses_beta_response_shared", __package__
 )
 
-_deferred_responses_beta_response_part001: tuple[tuple[str, object], ...] = (
+_deferred_responses_beta_response_shared: tuple[tuple[str, object], ...] = (
     ("BetaResponse", BetaResponse),
 )
-for _name, _value in _deferred_responses_beta_response_part001:
-    setattr(_responses_beta_response_part001, _name, _value)
+for _name, _value in _deferred_responses_beta_response_shared:
+    setattr(_responses_beta_response_shared, _name, _value)
 
 BetaResponseUsageInputTokensDetails.model_rebuild()
 BetaResponseUsageOutputTokensDetails.model_rebuild()

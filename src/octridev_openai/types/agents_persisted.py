@@ -3,7 +3,7 @@
 
 import importlib
 
-from .agents_persisted_part001 import (
+from .agents_persisted_shared import (
     PersistedAgentToolConfigParam,
     PersistedAgentToolConfigParamComputerUse,
     PersistedAgentToolConfigParamFunction,
@@ -26,7 +26,7 @@ from .agents_persisted_part001 import (
     UnknownPersistedMcpTransportConfigParam,
     UnknownPersistedMcpTransportResource,
 )
-from .agents_persisted_part002 import (
+from .agents_persisted_shared2 import (
     PersistedAgentToolConfigParamMcp,
     PersistedAgentToolConfigParamWebSearch,
     PersistedAgentToolResourceWebSearch,
@@ -61,15 +61,15 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_agents_persisted_part001 = importlib.import_module(".agents_persisted_part001", __package__)
+_agents_persisted_shared = importlib.import_module(".agents_persisted_shared", __package__)
 
-_deferred_agents_persisted_part001: tuple[tuple[str, object], ...] = (
+_deferred_agents_persisted_shared: tuple[tuple[str, object], ...] = (
     ("PersistedAgentToolConfigParamMcp", PersistedAgentToolConfigParamMcp),
     ("PersistedAgentToolConfigParamWebSearch", PersistedAgentToolConfigParamWebSearch),
     ("PersistedAgentToolResourceWebSearch", PersistedAgentToolResourceWebSearch),
 )
-for _name, _value in _deferred_agents_persisted_part001:
-    setattr(_agents_persisted_part001, _name, _value)
+for _name, _value in _deferred_agents_persisted_shared:
+    setattr(_agents_persisted_shared, _name, _value)
 
 PersistedAgentToolResourceFunction.model_rebuild()
 PersistedAgentToolResourceToolSearch.model_rebuild()

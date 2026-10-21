@@ -3,7 +3,60 @@
 
 import importlib
 
-from .shared_part001 import (
+from .shared10 import (
+    ApplyPatchToolParam,
+    ComputerUsePreviewTool,
+    CustomGrammarFormatParam,
+    FileSearchTool,
+    FunctionShellCallOutput,
+    FunctionTool,
+    FunctionToolParam,
+    ImageGenTool,
+    ImageGenToolInputImageMask,
+    RankingOptions,
+    ToolSearchOutputFunctionToolParam,
+    WebSearchPreviewTool,
+    WebSearchTool,
+    WebSearchToolFilters,
+)
+from .shared11 import (
+    ApplyPatchToolCallItemParam,
+    ApplyPatchToolCallOutput,
+    ApplyPatchToolCallOutputItemParam,
+    AutoCodeInterpreterToolParam,
+    CodeInterpreterTool,
+    CodeInterpreterToolCall,
+    ComputerCallOutputItemParam,
+    FunctionShellCallOutputContentParam,
+    FunctionShellCallOutputItemParam,
+    InputFileContentParam,
+    InputImageContentParamAutoParam,
+    MCPToolCall,
+    ToolSearchCallItemParam,
+    ToolSearchOutputItemParam,
+)
+from .shared12 import (
+    ApplyPatchToolCall,
+    CompoundFilter,
+    ContainerAutoParam,
+    CustomToolParam,
+    FunctionCallOutputItemParam,
+    FunctionShellCall,
+    FunctionShellCallOutputContent,
+    FunctionShellToolParam,
+    MCPTool,
+    Message,
+    NamespaceToolParam,
+    WebSearchToolCall,
+)
+from .shared13 import (
+    ComputerToolCall,
+    EasyInputMessage,
+    FunctionShellCallItemParam,
+    InputMessage,
+    ToolSearchOutputNamespaceToolParam,
+)
+from .shared2 import (
     AssignedRoleDetails,
     AssignedRoleDetailsAssignmentSourcesItem,
     ComparisonFilter,
@@ -38,7 +91,7 @@ from .shared_part001 import (
     UnknownMCPToolCallError,
     UnknownOutputMessageContent,
 )
-from .shared_part002 import (
+from .shared3 import (
     ContainerNetworkPolicyAllowlistParam,
     ContainerNetworkPolicyDisabledParam,
     ContainerNetworkPolicyDomainSecretParam,
@@ -72,7 +125,7 @@ from .shared_part002 import (
     WebSearchActionSearchSourcesItem,
     WebSearchApproximateLocation,
 )
-from .shared_part003 import (
+from .shared4 import (
     Annotation,
     ContainerFileCitationBody,
     CoordParam,
@@ -106,7 +159,7 @@ from .shared_part003 import (
     UrlCitationBody,
     WebSearchCallStatus,
 )
-from .shared_part004 import (
+from .shared5 import (
     ApplyPatchCallOutputStatus,
     ApplyPatchCallStatus,
     ApplyPatchCreateFileOperation,
@@ -141,7 +194,7 @@ from .shared_part004 import (
     TypeParam,
     WaitParam,
 )
-from .shared_part005 import (
+from .shared6 import (
     ApplyPatchCallOutputStatusParam,
     ApplyPatchCallStatusParam,
     ApplyPatchCreateFileOperationParam,
@@ -173,7 +226,7 @@ from .shared_part005 import (
     UnknownFunctionShellCallOutputOutcomeParam,
     WebhookEndpointWithSecretResource,
 )
-from .shared_part006 import (
+from .shared7 import (
     ApplyPatchToolCallOperation,
     AutoCodeInterpreterToolParamNetworkPolicy,
     CodeInterpreterToolCallOutputsItem,
@@ -220,7 +273,7 @@ from .shared_part006 import (
     UnknownWebSearchToolCallAction,
     WebSearchToolCallAction,
 )
-from .shared_part007 import (
+from .shared8 import (
     AdditionalTools,
     AdditionalToolsItemParam,
     ComputerScreenshotContent,
@@ -238,7 +291,7 @@ from .shared_part007 import (
     ResponseFormatJsonSchemaJsonSchema,
     TextResponseFormatJsonSchema,
 )
-from .shared_part008 import (
+from .shared9 import (
     ComputerToolCallOutputResource,
     ComputerToolCallOutputResourceVariant1,
     CustomToolCallOutput,
@@ -252,59 +305,6 @@ from .shared_part008 import (
     ToolSearchCall,
     ToolSearchOutput,
     ToolSearchToolParam,
-)
-from .shared_part009 import (
-    ApplyPatchToolParam,
-    ComputerUsePreviewTool,
-    CustomGrammarFormatParam,
-    FileSearchTool,
-    FunctionShellCallOutput,
-    FunctionTool,
-    FunctionToolParam,
-    ImageGenTool,
-    ImageGenToolInputImageMask,
-    RankingOptions,
-    ToolSearchOutputFunctionToolParam,
-    WebSearchPreviewTool,
-    WebSearchTool,
-    WebSearchToolFilters,
-)
-from .shared_part010 import (
-    ApplyPatchToolCallItemParam,
-    ApplyPatchToolCallOutput,
-    ApplyPatchToolCallOutputItemParam,
-    AutoCodeInterpreterToolParam,
-    CodeInterpreterTool,
-    CodeInterpreterToolCall,
-    ComputerCallOutputItemParam,
-    FunctionShellCallOutputContentParam,
-    FunctionShellCallOutputItemParam,
-    InputFileContentParam,
-    InputImageContentParamAutoParam,
-    MCPToolCall,
-    ToolSearchCallItemParam,
-    ToolSearchOutputItemParam,
-)
-from .shared_part011 import (
-    ApplyPatchToolCall,
-    CompoundFilter,
-    ContainerAutoParam,
-    CustomToolParam,
-    FunctionCallOutputItemParam,
-    FunctionShellCall,
-    FunctionShellCallOutputContent,
-    FunctionShellToolParam,
-    MCPTool,
-    Message,
-    NamespaceToolParam,
-    WebSearchToolCall,
-)
-from .shared_part012 import (
-    ComputerToolCall,
-    EasyInputMessage,
-    FunctionShellCallItemParam,
-    InputMessage,
-    ToolSearchOutputNamespaceToolParam,
 )
 
 __all__ = [
@@ -591,9 +591,9 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_shared_part001 = importlib.import_module(".shared_part001", __package__)
+_shared2 = importlib.import_module(".shared2", __package__)
 
-_deferred_shared_part001: tuple[tuple[str, object], ...] = (
+_deferred_shared2: tuple[tuple[str, object], ...] = (
     ("AdditionalToolsItemParam", AdditionalToolsItemParam),
     ("ApplyPatchToolCallItemParam", ApplyPatchToolCallItemParam),
     ("ApplyPatchToolCallOutputItemParam", ApplyPatchToolCallOutputItemParam),
@@ -634,8 +634,8 @@ _deferred_shared_part001: tuple[tuple[str, object], ...] = (
     ("WaitParam", WaitParam),
     ("WebSearchToolCall", WebSearchToolCall),
 )
-for _name, _value in _deferred_shared_part001:
-    setattr(_shared_part001, _name, _value)
+for _name, _value in _deferred_shared2:
+    setattr(_shared2, _name, _value)
 
 AssignedRoleDetailsAssignmentSourcesItem.model_rebuild()
 AssignedRoleDetails.model_rebuild()
@@ -659,9 +659,9 @@ OpenAIFile.model_rebuild()
 UnknownOutputMessageContent.model_rebuild()
 PublicAssignOrganizationGroupRoleBody.model_rebuild()
 
-_shared_part002 = importlib.import_module(".shared_part002", __package__)
+_shared3 = importlib.import_module(".shared3", __package__)
 
-_deferred_shared_part002: tuple[tuple[str, object], ...] = (
+_deferred_shared3: tuple[tuple[str, object], ...] = (
     ("ApplyPatchToolParam", ApplyPatchToolParam),
     ("CodeInterpreterTool", CodeInterpreterTool),
     ("ComputerTool", ComputerTool),
@@ -684,8 +684,8 @@ _deferred_shared_part002: tuple[tuple[str, object], ...] = (
     ("WebSearchPreviewTool", WebSearchPreviewTool),
     ("WebSearchTool", WebSearchTool),
 )
-for _name, _value in _deferred_shared_part002:
-    setattr(_shared_part002, _name, _value)
+for _name, _value in _deferred_shared3:
+    setattr(_shared3, _name, _value)
 
 ReasoningItem.model_rebuild()
 ResponseFormatJsonObject.model_rebuild()
@@ -706,11 +706,11 @@ ContainerNetworkPolicyAllowlistParam.model_rebuild()
 PromptCacheBreakpointConfig.model_rebuild()
 InputTextContent.model_rebuild()
 
-_shared_part004 = importlib.import_module(".shared_part004", __package__)
+_shared5 = importlib.import_module(".shared5", __package__)
 
-_deferred_shared_part004: tuple[tuple[str, object], ...] = (("CompoundFilter", CompoundFilter),)
-for _name, _value in _deferred_shared_part004:
-    setattr(_shared_part004, _name, _value)
+_deferred_shared5: tuple[tuple[str, object], ...] = (("CompoundFilter", CompoundFilter),)
+for _name, _value in _deferred_shared5:
+    setattr(_shared5, _name, _value)
 
 ScrollParam.model_rebuild()
 TypeParam.model_rebuild()
@@ -733,9 +733,9 @@ ApplyPatchCreateFileOperation.model_rebuild()
 ApplyPatchDeleteFileOperation.model_rebuild()
 ApplyPatchUpdateFileOperation.model_rebuild()
 
-_shared_part006 = importlib.import_module(".shared_part006", __package__)
+_shared7 = importlib.import_module(".shared7", __package__)
 
-_deferred_shared_part006: tuple[tuple[str, object], ...] = (
+_deferred_shared7: tuple[tuple[str, object], ...] = (
     ("AutoCodeInterpreterToolParam", AutoCodeInterpreterToolParam),
     ("CompoundFilter", CompoundFilter),
     ("ComputerScreenshotContent", ComputerScreenshotContent),
@@ -752,8 +752,8 @@ _deferred_shared_part006: tuple[tuple[str, object], ...] = (
     ("PromptCacheOptionsParam", PromptCacheOptionsParam),
     ("ToolSearchOutputFunctionToolParam", ToolSearchOutputFunctionToolParam),
 )
-for _name, _value in _deferred_shared_part006:
-    setattr(_shared_part006, _name, _value)
+for _name, _value in _deferred_shared7:
+    setattr(_shared7, _name, _value)
 
 Error3.model_rebuild()
 UnknownAutoCodeInterpreterToolParamNetworkPolicy.model_rebuild()
@@ -780,13 +780,13 @@ OutputMessage.model_rebuild()
 ResponseConfigurationUpdateReasoning.model_rebuild()
 ResponseConfigurationUpdate.model_rebuild()
 
-_shared_part009 = importlib.import_module(".shared_part009", __package__)
+_shared10 = importlib.import_module(".shared10", __package__)
 
-_deferred_shared_part009: tuple[tuple[str, object], ...] = (
+_deferred_shared10: tuple[tuple[str, object], ...] = (
     ("FunctionShellCallOutputContent", FunctionShellCallOutputContent),
 )
-for _name, _value in _deferred_shared_part009:
-    setattr(_shared_part009, _name, _value)
+for _name, _value in _deferred_shared10:
+    setattr(_shared10, _name, _value)
 
 FunctionTool.model_rebuild()
 FunctionToolParam.model_rebuild()

@@ -3,7 +3,7 @@
 
 import importlib
 
-from .realtime_realtime_server_event_part001 import (
+from .realtime_realtime_server_event_shared import (
     RealtimeServerEvent,
     RealtimeServerEventConversationCreated,
     RealtimeServerEventConversationCreatedConversation,
@@ -23,7 +23,7 @@ from .realtime_realtime_server_event_part001 import (
     RealtimeServerEventMCPListToolsFailed,
     UnknownRealtimeServerEvent,
 )
-from .realtime_realtime_server_event_part002 import (
+from .realtime_realtime_server_event_shared2 import (
     RealtimeServerEventMCPListToolsInProgress,
     RealtimeServerEventOutputAudioBufferCleared,
     RealtimeServerEventOutputAudioBufferStarted,
@@ -41,7 +41,7 @@ from .realtime_realtime_server_event_part002 import (
     RealtimeServerEventResponseCreated,
     RealtimeServerEventResponseDone,
 )
-from .realtime_realtime_server_event_part003 import (
+from .realtime_realtime_server_event_shared3 import (
     RealtimeServerEventConversationItemAdded,
     RealtimeServerEventConversationItemCreated,
     RealtimeServerEventConversationItemInputAudioTranscriptionCompletedUsage,
@@ -63,7 +63,7 @@ from .realtime_realtime_server_event_part003 import (
     UnknownRealtimeServerEventSessionCreatedSession,
     UnknownRealtimeServerEventSessionUpdatedSession,
 )
-from .realtime_realtime_server_event_part004 import (
+from .realtime_realtime_server_event_shared4 import (
     RealtimeServerEventConversationItemDone,
     RealtimeServerEventConversationItemInputAudioTranscriptionCompleted,
     RealtimeServerEventConversationItemRetrieved,
@@ -139,11 +139,11 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_realtime_realtime_server_event_part001 = importlib.import_module(
-    ".realtime_realtime_server_event_part001", __package__
+_realtime_realtime_server_event_shared = importlib.import_module(
+    ".realtime_realtime_server_event_shared", __package__
 )
 
-_deferred_realtime_realtime_server_event_part001: tuple[tuple[str, object], ...] = (
+_deferred_realtime_realtime_server_event_shared: tuple[tuple[str, object], ...] = (
     ("RealtimeServerEventConversationItemAdded", RealtimeServerEventConversationItemAdded),
     ("RealtimeServerEventConversationItemCreated", RealtimeServerEventConversationItemCreated),
     ("RealtimeServerEventConversationItemDone", RealtimeServerEventConversationItemDone),
@@ -201,8 +201,8 @@ _deferred_realtime_realtime_server_event_part001: tuple[tuple[str, object], ...]
     ("RealtimeServerEventSessionCreated", RealtimeServerEventSessionCreated),
     ("RealtimeServerEventSessionUpdated", RealtimeServerEventSessionUpdated),
 )
-for _name, _value in _deferred_realtime_realtime_server_event_part001:
-    setattr(_realtime_realtime_server_event_part001, _name, _value)
+for _name, _value in _deferred_realtime_realtime_server_event_shared:
+    setattr(_realtime_realtime_server_event_shared, _name, _value)
 
 UnknownRealtimeServerEvent.model_rebuild()
 RealtimeServerEventConversationCreatedConversation.model_rebuild()

@@ -3,13 +3,13 @@
 
 import importlib
 
-from .beta_responses_part001 import (
+from .beta_responses_shared import (
     BetaResponsesClientEvent,
     BetaResponsesWebSocketStreamEvent,
     BetaResponsesWebSocketStreamEventVariant1,
     UnknownBetaResponsesClientEvent,
 )
-from .beta_responses_part002 import (
+from .beta_responses_shared2 import (
     BetaResponsesServerEvent,
     BetaResponsesServerEventVariant0,
     BetaResponsesServerEventVariant1,
@@ -71,7 +71,7 @@ from .beta_responses_part002 import (
     BetaResponsesServerEventVariant9,
     UnknownBetaResponsesServerEvent,
 )
-from .beta_responses_part003 import (
+from .beta_responses_shared3 import (
     BetaResponsesClientEventResponseCreate,
     BetaResponsesClientEventResponseCreateVariant0,
 )
@@ -147,13 +147,13 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_beta_responses_part001 = importlib.import_module(".beta_responses_part001", __package__)
+_beta_responses_shared = importlib.import_module(".beta_responses_shared", __package__)
 
-_deferred_beta_responses_part001: tuple[tuple[str, object], ...] = (
+_deferred_beta_responses_shared: tuple[tuple[str, object], ...] = (
     ("BetaResponsesClientEventResponseCreate", BetaResponsesClientEventResponseCreate),
 )
-for _name, _value in _deferred_beta_responses_part001:
-    setattr(_beta_responses_part001, _name, _value)
+for _name, _value in _deferred_beta_responses_shared:
+    setattr(_beta_responses_shared, _name, _value)
 
 BetaResponsesWebSocketStreamEventVariant1.model_rebuild()
 BetaResponsesWebSocketStreamEvent.model_rebuild()

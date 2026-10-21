@@ -3,7 +3,7 @@
 
 import importlib
 
-from .fine_tuning_part001 import (
+from .fine_tuning_create_fine_tuning_checkpoint_permission import (
     CreateFineTuningCheckpointPermissionRequest,
     DeleteFineTuningCheckpointPermissionResponse,
     FineTuneDPOHyperparameters,
@@ -24,7 +24,7 @@ from .fine_tuning_part001 import (
     ListFineTuningJobEventsResponse,
     ListPaginatedFineTuningJobsResponse,
 )
-from .fine_tuning_part002 import (
+from .fine_tuning_run_grader import (
     CreateFineTuningJobRequest,
     CreateFineTuningJobRequestHyperparameters,
     CreateFineTuningJobRequestIntegrationsItem,
@@ -46,7 +46,7 @@ from .fine_tuning_part002 import (
     ValidateGraderRequestGrader,
     ValidateGraderResponseGrader,
 )
-from .fine_tuning_part003 import RunGraderRequest, ValidateGraderRequest, ValidateGraderResponse
+from .fine_tuning_run_grader2 import RunGraderRequest, ValidateGraderRequest, ValidateGraderResponse
 
 __all__ = [
     "CreateFineTuningCheckpointPermissionRequest",
@@ -95,14 +95,16 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_fine_tuning_part001 = importlib.import_module(".fine_tuning_part001", __package__)
+_fine_tuning_create_fine_tuning_checkpoint_permission = importlib.import_module(
+    ".fine_tuning_create_fine_tuning_checkpoint_permission", __package__
+)
 
-_deferred_fine_tuning_part001: tuple[tuple[str, object], ...] = (
+_deferred_fine_tuning_create_fine_tuning_checkpoint_permission: tuple[tuple[str, object], ...] = (
     ("FineTuneReinforcementMethod", FineTuneReinforcementMethod),
     ("FineTuningJob", FineTuningJob),
 )
-for _name, _value in _deferred_fine_tuning_part001:
-    setattr(_fine_tuning_part001, _name, _value)
+for _name, _value in _deferred_fine_tuning_create_fine_tuning_checkpoint_permission:
+    setattr(_fine_tuning_create_fine_tuning_checkpoint_permission, _name, _value)
 
 CreateFineTuningCheckpointPermissionRequest.model_rebuild()
 DeleteFineTuningCheckpointPermissionResponse.model_rebuild()

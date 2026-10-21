@@ -3,7 +3,7 @@
 
 import importlib
 
-from .live_part001 import (
+from .live_shared import (
     LiveApplyPatchToolInputParam,
     LiveClientDelegationParam,
     LiveClientEvent,
@@ -35,7 +35,7 @@ from .live_part001 import (
     UnknownLiveClientEvent,
     UnknownLiveDecisionQuestion,
 )
-from .live_part002 import (
+from .live_shared2 import (
     LiveAudioFormat,
     LiveClientConfigParam,
     LiveDataChannelConfigParam,
@@ -62,7 +62,7 @@ from .live_part002 import (
     UnknownLiveAudioFormat,
     UnknownLiveInitialItem,
 )
-from .live_part003 import (
+from .live_shared3 import (
     Delegation,
     Instructions,
     LiveContextWindowUsage,
@@ -105,7 +105,7 @@ from .live_part003 import (
     UnknownLiveSessionResourceParamDelegation,
     UnknownLiveSessionUpdateParamsDelegation,
 )
-from .live_part004 import (
+from .live_shared4 import (
     Input,
     LiveDecisionInputImageParam,
     LiveDecisionQuestionsInputParam,
@@ -135,7 +135,7 @@ from .live_part004 import (
     UnknownLiveSessionCreateRequestTransportRequest,
     UnknownLiveSessionCreateResponseTransport,
 )
-from .live_part005 import (
+from .live_shared5 import (
     LiveDecisionInputItemParam,
     LiveDecisionStoredInputItemParam,
     LiveMediaSessionCreateParams,
@@ -289,9 +289,9 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_live_part001 = importlib.import_module(".live_part001", __package__)
+_live_shared = importlib.import_module(".live_shared", __package__)
 
-_deferred_live_part001: tuple[tuple[str, object], ...] = (
+_deferred_live_shared: tuple[tuple[str, object], ...] = (
     ("LiveClientConfigParam", LiveClientConfigParam),
     ("LiveDecisionCreateParam", LiveDecisionCreateParam),
     ("LiveDecisionItemCreateParam", LiveDecisionItemCreateParam),
@@ -305,8 +305,8 @@ _deferred_live_part001: tuple[tuple[str, object], ...] = (
     ("LiveSessionStartEvent", LiveSessionStartEvent),
     ("LiveSessionUpdateParam", LiveSessionUpdateParam),
 )
-for _name, _value in _deferred_live_part001:
-    setattr(_live_part001, _name, _value)
+for _name, _value in _deferred_live_shared:
+    setattr(_live_shared, _name, _value)
 
 UnknownLiveClientEvent.model_rebuild()
 LiveConnectParams.model_rebuild()
@@ -333,9 +333,9 @@ LiveDecisionsDelegationParam.model_rebuild()
 LiveDecisionTriggerInputParam.model_rebuild()
 LiveInitialInputTextContentPartParam.model_rebuild()
 
-_live_part002 = importlib.import_module(".live_part002", __package__)
+_live_shared2 = importlib.import_module(".live_shared2", __package__)
 
-_deferred_live_part002: tuple[tuple[str, object], ...] = (
+_deferred_live_shared2: tuple[tuple[str, object], ...] = (
     ("LiveDecisionInputItemParam", LiveDecisionInputItemParam),
     ("LiveDecisionQuestionsInputParam2", LiveDecisionQuestionsInputParam2),
     ("LiveDecisionsSettingsInputParam2", LiveDecisionsSettingsInputParam2),
@@ -351,8 +351,8 @@ _deferred_live_part002: tuple[tuple[str, object], ...] = (
     ("LiveSessionResourceParam", LiveSessionResourceParam),
     ("LiveSessionUpdateParams", LiveSessionUpdateParams),
 )
-for _name, _value in _deferred_live_part002:
-    setattr(_live_part002, _name, _value)
+for _name, _value in _deferred_live_shared2:
+    setattr(_live_shared2, _name, _value)
 
 LiveInitialTextContentPartParam.model_rebuild()
 LiveInitialOutputTextContentPartParam.model_rebuild()
@@ -376,9 +376,9 @@ LiveDecisionItemDeleteParam.model_rebuild()
 LiveSessionCloseParam.model_rebuild()
 LiveSessionStarted.model_rebuild()
 
-_live_part003 = importlib.import_module(".live_part003", __package__)
+_live_shared3 = importlib.import_module(".live_shared3", __package__)
 
-_deferred_live_part003: tuple[tuple[str, object], ...] = (
+_deferred_live_shared3: tuple[tuple[str, object], ...] = (
     ("LiveDecisionInputImageParam", LiveDecisionInputImageParam),
     ("LiveDecisionStoredInputItemParam", LiveDecisionStoredInputItemParam),
     ("LiveDelegationItem", LiveDelegationItem),
@@ -386,8 +386,8 @@ _deferred_live_part003: tuple[tuple[str, object], ...] = (
     ("LiveHostedShellToolInputParam", LiveHostedShellToolInputParam),
     ("LiveSessionResourceParam", LiveSessionResourceParam),
 )
-for _name, _value in _deferred_live_part003:
-    setattr(_live_part003, _name, _value)
+for _name, _value in _deferred_live_shared3:
+    setattr(_live_shared3, _name, _value)
 
 LiveSessionUpdated.model_rebuild()
 LiveDelegationCreated.model_rebuild()

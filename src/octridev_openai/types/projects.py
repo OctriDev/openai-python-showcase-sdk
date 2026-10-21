@@ -3,7 +3,18 @@
 
 import importlib
 
-from .projects_part001 import (
+from .projects_create_project_user import (
+    Project,
+    ProjectCreateRequest,
+    ProjectUserCreateRequest,
+    ProjectUserDeleteResponse,
+    ProjectUserListResponse,
+    ProjectUserUpdateRequest,
+    PublicProjectResidency,
+    UpdateProjectApiKeyBody,
+    UpdateProjectServiceAccountBody,
+)
+from .projects_shared import (
     ProjectApiKey,
     ProjectApiKeyDeleteResponse,
     ProjectApiKeyListResponse,
@@ -25,17 +36,6 @@ from .projects_part001 import (
     ProjectServiceAccountListResponse,
     ProjectUpdateRequest,
     ProjectUser,
-)
-from .projects_part002 import (
-    Project,
-    ProjectCreateRequest,
-    ProjectUserCreateRequest,
-    ProjectUserDeleteResponse,
-    ProjectUserListResponse,
-    ProjectUserUpdateRequest,
-    PublicProjectResidency,
-    UpdateProjectApiKeyBody,
-    UpdateProjectServiceAccountBody,
 )
 
 __all__ = [
@@ -73,11 +73,11 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_projects_part001 = importlib.import_module(".projects_part001", __package__)
+_projects_shared = importlib.import_module(".projects_shared", __package__)
 
-_deferred_projects_part001: tuple[tuple[str, object], ...] = (("Project", Project),)
-for _name, _value in _deferred_projects_part001:
-    setattr(_projects_part001, _name, _value)
+_deferred_projects_shared: tuple[tuple[str, object], ...] = (("Project", Project),)
+for _name, _value in _deferred_projects_shared:
+    setattr(_projects_shared, _name, _value)
 
 ProjectApiKeyOwner.model_rebuild()
 ProjectApiKey.model_rebuild()

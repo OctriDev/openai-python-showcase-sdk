@@ -431,10 +431,10 @@ def delete_spend_limits_project_sync(
     )
 
 
-UpdateSpendLimitsProjectError: TypeAlias = ErrorResponse | PermissionErrorResponse
+UpdateProjectSpendLimitError: TypeAlias = ErrorResponse | PermissionErrorResponse
 
 
-async def update_spend_limits_project(
+async def update_project_spend_limit(
     _client_config: ClientConfig,
     project_id: str,
     threshold_amount: int,
@@ -479,7 +479,7 @@ async def update_spend_limits_project(
                 ),
             }
         ),
-        operation_id="update_spend_limits_project",
+        operation_id="update_project_spend_limit",
         errors={"400": ErrorResponse, "403": PermissionErrorResponse, "404": ErrorResponse},
         response_decoder="json",
         request_options=request_options,
@@ -494,7 +494,7 @@ async def update_spend_limits_project(
     )
 
 
-def update_spend_limits_project_sync(
+def update_project_spend_limit_sync(
     _client_config: ClientConfig,
     project_id: str,
     threshold_amount: int,
@@ -539,7 +539,7 @@ def update_spend_limits_project_sync(
                 ),
             }
         ),
-        operation_id="update_spend_limits_project",
+        operation_id="update_project_spend_limit",
         errors={"400": ErrorResponse, "403": PermissionErrorResponse, "404": ErrorResponse},
         response_decoder="json",
         request_options=request_options,
@@ -559,8 +559,8 @@ __all__ = [
     "DeleteSpendLimitsProjectError",
     "RetrieveSpendLimitsOrganizationError",
     "RetrieveSpendLimitsProjectError",
+    "UpdateProjectSpendLimitError",
     "UpdateSpendLimitsOrganizationError",
-    "UpdateSpendLimitsProjectError",
     "delete_spend_limits_organization",
     "delete_spend_limits_organization_sync",
     "delete_spend_limits_project",
@@ -569,8 +569,8 @@ __all__ = [
     "retrieve_spend_limits_organization_sync",
     "retrieve_spend_limits_project",
     "retrieve_spend_limits_project_sync",
+    "update_project_spend_limit",
+    "update_project_spend_limit_sync",
     "update_spend_limits_organization",
     "update_spend_limits_organization_sync",
-    "update_spend_limits_project",
-    "update_spend_limits_project_sync",
 ]

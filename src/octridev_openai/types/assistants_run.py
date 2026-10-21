@@ -3,7 +3,7 @@
 
 import importlib
 
-from .assistants_run_part001 import (
+from .assistants_run_shared import (
     AssistantSupportedModels,
     AssistantToolsCode,
     AssistantToolsFileSearch,
@@ -25,7 +25,7 @@ from .assistants_run_part001 import (
     MessageDeltaContentImageUrlObjectImageUrl,
     MessageDeltaContentRefusalObject,
 )
-from .assistants_run_part002 import (
+from .assistants_run_shared2 import (
     MessageDeltaContentTextAnnotationsFileCitationObject,
     MessageDeltaContentTextAnnotationsFileCitationObjectFileCitation,
     MessageDeltaContentTextAnnotationsFilePathObject,
@@ -50,7 +50,7 @@ from .assistants_run_part002 import (
     RunStepDetailsMessageCreationObject,
     RunStepDetailsMessageCreationObjectMessageCreation,
 )
-from .assistants_run_part003 import (
+from .assistants_run_shared3 import (
     RunStepDetailsToolCallsCodeOutputImageObject,
     RunStepDetailsToolCallsCodeOutputImageObjectImage,
     RunStepDetailsToolCallsCodeOutputLogsObject,
@@ -69,7 +69,7 @@ from .assistants_run_part003 import (
     RunStepStreamEventThreadRunStepFailed,
     RunStepStreamEventThreadRunStepInProgress,
 )
-from .assistants_run_part004 import (
+from .assistants_run_shared4 import (
     AssistantObjectToolsItem,
     AssistantStreamEvent,
     MessageContentTextObjectTextAnnotationsItem,
@@ -112,7 +112,7 @@ from .assistants_run_part004 import (
     UnknownRunStepDetailsToolCallsObjectToolCallsItem,
     UnknownRunStepObjectStepDetails,
 )
-from .assistants_run_part005 import (
+from .assistants_run_shared5 import (
     AssistantObject,
     AssistantObjectToolResources,
     AssistantObjectToolResourcesCodeInterpreter,
@@ -133,7 +133,7 @@ from .assistants_run_part005 import (
     RunStepObject,
     RunStepObjectLastError,
 )
-from .assistants_run_part006 import (
+from .assistants_run_shared6 import (
     MessageContentTextObject,
     MessageContentTextObjectText,
     MessageDeltaContentTextObject,
@@ -279,14 +279,14 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_assistants_run_part002 = importlib.import_module(".assistants_run_part002", __package__)
+_assistants_run_shared2 = importlib.import_module(".assistants_run_shared2", __package__)
 
-_deferred_assistants_run_part002: tuple[tuple[str, object], ...] = (
+_deferred_assistants_run_shared2: tuple[tuple[str, object], ...] = (
     ("MessageDeltaObject", MessageDeltaObject),
     ("MessageObject", MessageObject),
 )
-for _name, _value in _deferred_assistants_run_part002:
-    setattr(_assistants_run_part002, _name, _value)
+for _name, _value in _deferred_assistants_run_shared2:
+    setattr(_assistants_run_shared2, _name, _value)
 
 MessageDeltaContentTextAnnotationsFileCitationObjectFileCitation.model_rebuild()
 MessageDeltaContentTextAnnotationsFileCitationObject.model_rebuild()
@@ -311,9 +311,9 @@ RunStepDeltaStepDetailsToolCallsFunctionObject.model_rebuild()
 RunStepDetailsMessageCreationObjectMessageCreation.model_rebuild()
 RunStepDetailsMessageCreationObject.model_rebuild()
 
-_assistants_run_part003 = importlib.import_module(".assistants_run_part003", __package__)
+_assistants_run_shared3 = importlib.import_module(".assistants_run_shared3", __package__)
 
-_deferred_assistants_run_part003: tuple[tuple[str, object], ...] = (
+_deferred_assistants_run_shared3: tuple[tuple[str, object], ...] = (
     ("RunStepDeltaObject", RunStepDeltaObject),
     (
         "RunStepDetailsToolCallsFileSearchRankingOptionsObject",
@@ -321,8 +321,8 @@ _deferred_assistants_run_part003: tuple[tuple[str, object], ...] = (
     ),
     ("RunStepObject", RunStepObject),
 )
-for _name, _value in _deferred_assistants_run_part003:
-    setattr(_assistants_run_part003, _name, _value)
+for _name, _value in _deferred_assistants_run_shared3:
+    setattr(_assistants_run_shared3, _name, _value)
 
 RunStepDetailsToolCallsCodeOutputImageObjectImage.model_rebuild()
 RunStepDetailsToolCallsCodeOutputImageObject.model_rebuild()
@@ -341,9 +341,9 @@ RunStepStreamEventThreadRunStepFailed.model_rebuild()
 RunStepStreamEventThreadRunStepCancelled.model_rebuild()
 RunStepStreamEventThreadRunStepExpired.model_rebuild()
 
-_assistants_run_part004 = importlib.import_module(".assistants_run_part004", __package__)
+_assistants_run_shared4 = importlib.import_module(".assistants_run_shared4", __package__)
 
-_deferred_assistants_run_part004: tuple[tuple[str, object], ...] = (
+_deferred_assistants_run_shared4: tuple[tuple[str, object], ...] = (
     ("MessageContentTextObject", MessageContentTextObject),
     ("MessageDeltaContentTextObject", MessageDeltaContentTextObject),
     ("RunObject", RunObject),
@@ -352,8 +352,8 @@ _deferred_assistants_run_part004: tuple[tuple[str, object], ...] = (
     ("RunStepDetailsToolCallsCodeObject", RunStepDetailsToolCallsCodeObject),
     ("RunStepDetailsToolCallsObject", RunStepDetailsToolCallsObject),
 )
-for _name, _value in _deferred_assistants_run_part004:
-    setattr(_assistants_run_part004, _name, _value)
+for _name, _value in _deferred_assistants_run_shared4:
+    setattr(_assistants_run_shared4, _name, _value)
 
 RunStreamEventThreadRunCreated.model_rebuild()
 RunStreamEventThreadRunQueued.model_rebuild()

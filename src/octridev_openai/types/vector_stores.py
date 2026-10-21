@@ -3,7 +3,7 @@
 
 import importlib
 
-from .vector_stores_part001 import (
+from .vector_stores_shared import (
     AutoChunkingStrategyRequestParam,
     ChunkingStrategyRequestParam,
     CreateVectorStoreRequestChunkingStrategy,
@@ -29,7 +29,7 @@ from .vector_stores_part001 import (
     VectorStoreSearchResultContentObject,
     VectorStoreSearchResultsPage,
 )
-from .vector_stores_part002 import (
+from .vector_stores_shared2 import (
     CreateVectorStoreFileBatchRequest,
     CreateVectorStoreFileRequest,
     CreateVectorStoreRequest,
@@ -83,15 +83,15 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_vector_stores_part001 = importlib.import_module(".vector_stores_part001", __package__)
+_vector_stores_shared = importlib.import_module(".vector_stores_shared", __package__)
 
-_deferred_vector_stores_part001: tuple[tuple[str, object], ...] = (
+_deferred_vector_stores_shared: tuple[tuple[str, object], ...] = (
     ("VectorStoreFileObject", VectorStoreFileObject),
     ("VectorStoreObject", VectorStoreObject),
     ("VectorStoreSearchResultItem", VectorStoreSearchResultItem),
 )
-for _name, _value in _deferred_vector_stores_part001:
-    setattr(_vector_stores_part001, _name, _value)
+for _name, _value in _deferred_vector_stores_shared:
+    setattr(_vector_stores_shared, _name, _value)
 
 AutoChunkingStrategyRequestParam.model_rebuild()
 UnknownChunkingStrategyRequestParam.model_rebuild()
