@@ -3,7 +3,7 @@
 
 import importlib
 
-from .realtime_realtime_client_part001 import (
+from .realtime_realtime_client_shared import (
     RealtimeClientEvent,
     RealtimeClientEventConversationItemCreate,
     RealtimeClientEventConversationItemDelete,
@@ -20,7 +20,7 @@ from .realtime_realtime_client_part001 import (
     UnknownRealtimeClientEvent,
     UnknownRealtimeClientEventSessionUpdateSession,
 )
-from .realtime_realtime_client_part002 import RealtimeClientEventInputAudioBufferAppend
+from .realtime_realtime_client_shared2 import RealtimeClientEventInputAudioBufferAppend
 
 __all__ = [
     "RealtimeClientEvent",
@@ -43,15 +43,15 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_realtime_realtime_client_part001 = importlib.import_module(
-    ".realtime_realtime_client_part001", __package__
+_realtime_realtime_client_shared = importlib.import_module(
+    ".realtime_realtime_client_shared", __package__
 )
 
-_deferred_realtime_realtime_client_part001: tuple[tuple[str, object], ...] = (
+_deferred_realtime_realtime_client_shared: tuple[tuple[str, object], ...] = (
     ("RealtimeClientEventInputAudioBufferAppend", RealtimeClientEventInputAudioBufferAppend),
 )
-for _name, _value in _deferred_realtime_realtime_client_part001:
-    setattr(_realtime_realtime_client_part001, _name, _value)
+for _name, _value in _deferred_realtime_realtime_client_shared:
+    setattr(_realtime_realtime_client_shared, _name, _value)
 
 UnknownRealtimeClientEvent.model_rebuild()
 RealtimeClientEventConversationItemDelete.model_rebuild()

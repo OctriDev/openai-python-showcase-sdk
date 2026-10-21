@@ -3,7 +3,8 @@
 
 import importlib
 
-from .responses_part001 import (
+from .responses_create_response import CreateResponse, CreateResponseVariant2
+from .responses_shared import (
     CacheMissReasonTypeEnum,
     ContextManagementParam,
     CyberAccessProgramEnum,
@@ -30,7 +31,7 @@ from .responses_part001 import (
     UnknownPromptCacheDiagnostics,
     UnknownResponseStreamEvent,
 )
-from .responses_part002 import (
+from .responses_shared2 import (
     AccessProgramsBody,
     AccessProgramsParam,
     PersonalityEnum,
@@ -49,7 +50,7 @@ from .responses_part002 import (
     ToolsArray,
     TruncationEnum,
 )
-from .responses_part003 import (
+from .responses_shared3 import (
     Response,
     ResponseConversation,
     ResponseIncompleteDetails,
@@ -57,7 +58,6 @@ from .responses_part003 import (
     ResponseVariant2,
     ResponseVariant2IncompleteDetails,
 )
-from .responses_part004 import CreateResponse, CreateResponseVariant2
 
 __all__ = [
     "AccessProgramsBody",
@@ -114,9 +114,9 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_responses_part001 = importlib.import_module(".responses_part001", __package__)
+_responses_shared = importlib.import_module(".responses_shared", __package__)
 
-_deferred_responses_part001: tuple[tuple[str, object], ...] = (
+_deferred_responses_shared: tuple[tuple[str, object], ...] = (
     ("PromptCacheMissDiagnosticsBody", PromptCacheMissDiagnosticsBody),
     ("Response", Response),
     ("ResponseShellCallCommandAddedStreamingEvent", ResponseShellCallCommandAddedStreamingEvent),
@@ -131,8 +131,8 @@ _deferred_responses_part001: tuple[tuple[str, object], ...] = (
         ResponseShellCallOutputContentDoneStreamingEvent,
     ),
 )
-for _name, _value in _deferred_responses_part001:
-    setattr(_responses_part001, _name, _value)
+for _name, _value in _deferred_responses_shared:
+    setattr(_responses_shared, _name, _value)
 
 ResponseCompletedEvent.model_rebuild()
 ResponseCreatedEvent.model_rebuild()

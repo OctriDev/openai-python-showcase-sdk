@@ -3,13 +3,13 @@
 
 import importlib
 
-from .responses_responses_part001 import (
+from .responses_responses_shared import (
     ResponsesClientEvent,
     ResponsesWebSocketStreamEvent,
     ResponsesWebSocketStreamEventVariant1,
     UnknownResponsesClientEvent,
 )
-from .responses_responses_part002 import (
+from .responses_responses_shared2 import (
     ResponsesServerEvent,
     ResponsesServerEventVariant0,
     ResponsesServerEventVariant1,
@@ -71,7 +71,7 @@ from .responses_responses_part002 import (
     ResponsesServerEventVariant9,
     UnknownResponsesServerEvent,
 )
-from .responses_responses_part003 import (
+from .responses_responses_shared3 import (
     ResponsesClientEventResponseCreate,
     ResponsesClientEventResponseCreateVariant0,
 )
@@ -147,13 +147,13 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_responses_responses_part001 = importlib.import_module(".responses_responses_part001", __package__)
+_responses_responses_shared = importlib.import_module(".responses_responses_shared", __package__)
 
-_deferred_responses_responses_part001: tuple[tuple[str, object], ...] = (
+_deferred_responses_responses_shared: tuple[tuple[str, object], ...] = (
     ("ResponsesClientEventResponseCreate", ResponsesClientEventResponseCreate),
 )
-for _name, _value in _deferred_responses_responses_part001:
-    setattr(_responses_responses_part001, _name, _value)
+for _name, _value in _deferred_responses_responses_shared:
+    setattr(_responses_responses_shared, _name, _value)
 
 UnknownResponsesClientEvent.model_rebuild()
 ResponsesWebSocketStreamEventVariant1.model_rebuild()

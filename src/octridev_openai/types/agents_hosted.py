@@ -3,7 +3,7 @@
 
 import importlib
 
-from .agents_hosted_part001 import (
+from .agents_hosted_shared import (
     HostedEnvironmentFileParam,
     HostedEnvironmentFileParamFileId,
     HostedEnvironmentFileParamInline,
@@ -28,7 +28,7 @@ from .agents_hosted_part001 import (
     UnknownHostedSkillResource,
     UnknownHostedTemplateSkillResource,
 )
-from .agents_hosted_part002 import (
+from .agents_hosted_shared2 import (
     HostedPluginParamInline,
     HostedSkillParamInline,
     HostedTemplateFileResource,
@@ -69,14 +69,14 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_agents_hosted_part001 = importlib.import_module(".agents_hosted_part001", __package__)
+_agents_hosted_shared = importlib.import_module(".agents_hosted_shared", __package__)
 
-_deferred_agents_hosted_part001: tuple[tuple[str, object], ...] = (
+_deferred_agents_hosted_shared: tuple[tuple[str, object], ...] = (
     ("HostedPluginParamInline", HostedPluginParamInline),
     ("HostedSkillParamInline", HostedSkillParamInline),
 )
-for _name, _value in _deferred_agents_hosted_part001:
-    setattr(_agents_hosted_part001, _name, _value)
+for _name, _value in _deferred_agents_hosted_shared:
+    setattr(_agents_hosted_shared, _name, _value)
 
 HostedEnvironmentFileResourceFileId.model_rebuild()
 HostedEnvironmentFileResourceInline.model_rebuild()

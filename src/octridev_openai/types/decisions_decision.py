@@ -3,7 +3,7 @@
 
 import importlib
 
-from .decisions_decision_part001 import (
+from .decisions_decision_create_decision import (
     DecisionInput,
     DecisionInputContent,
     DecisionInputContentParts,
@@ -28,7 +28,7 @@ from .decisions_decision_part001 import (
     UnknownDecisionInputItem,
     UnknownDecisionInputToolOutputContentPartsItem,
 )
-from .decisions_decision_part002 import (
+from .decisions_decision_create_decision2 import (
     DecisionInputCustomToolCallOutput,
     DecisionInputFunctionCallOutput,
 )
@@ -63,14 +63,16 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_decisions_decision_part001 = importlib.import_module(".decisions_decision_part001", __package__)
+_decisions_decision_create_decision = importlib.import_module(
+    ".decisions_decision_create_decision", __package__
+)
 
-_deferred_decisions_decision_part001: tuple[tuple[str, object], ...] = (
+_deferred_decisions_decision_create_decision: tuple[tuple[str, object], ...] = (
     ("DecisionInputCustomToolCallOutput", DecisionInputCustomToolCallOutput),
     ("DecisionInputFunctionCallOutput", DecisionInputFunctionCallOutput),
 )
-for _name, _value in _deferred_decisions_decision_part001:
-    setattr(_decisions_decision_part001, _name, _value)
+for _name, _value in _deferred_decisions_decision_create_decision:
+    setattr(_decisions_decision_create_decision, _name, _value)
 
 DecisionInputTextPromptCacheBreakpoint.model_rebuild()
 DecisionInputText.model_rebuild()

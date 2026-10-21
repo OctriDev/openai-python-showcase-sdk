@@ -3,7 +3,8 @@
 
 import importlib
 
-from .agents_part001 import (
+from .agents_create_agent_session_events import CreateSessionEventsParams
+from .agents_list_agent_environments import (
     AgentContentResource,
     AgentEnvironmentListResource,
     AgentListResource,
@@ -37,7 +38,7 @@ from .agents_part001 import (
     UnknownMessageContentResource,
     UnknownSessionTurnItemResource,
 )
-from .agents_part002 import (
+from .agents_shared import (
     AgentToolConfigParam,
     AgentToolConfigParamComputerUse,
     AgentToolConfigParamFunction,
@@ -63,7 +64,7 @@ from .agents_part002 import (
     UnknownEnvironmentParam,
     UnknownEnvironmentResource,
 )
-from .agents_part003 import (
+from .agents_shared2 import (
     AgentMessageItemResource,
     AgentOutputItemResource,
     CreateAgentEnvironmentParams,
@@ -77,7 +78,7 @@ from .agents_part003 import (
     SessionTurnTraceResource,
     UnknownAgentOutputItemResource,
 )
-from .agents_part004 import (
+from .agents_shared3 import (
     AssistantMessageItemResource,
     CommandExecutionItemResource,
     CreateSubagentCallItemResource,
@@ -87,7 +88,7 @@ from .agents_part004 import (
     SendSubagentInputCallItemResource,
     WaitForSubagentsCallItemResource,
 )
-from .agents_part005 import (
+from .agents_shared4 import (
     AgentResource,
     AgentToolConfigParamWebSearch,
     AgentToolResourceWebSearch,
@@ -100,7 +101,7 @@ from .agents_part005 import (
     SessionTurnErrorResource,
     TurnResource,
 )
-from .agents_part006 import (
+from .agents_shared5 import (
     AgentToolConfigParamMcp,
     AgentToolResourceMcp,
     CreateAgentSessionParams,
@@ -110,7 +111,6 @@ from .agents_part006 import (
     SessionAgentResource,
     SessionResource,
 )
-from .agents_part007 import CreateSessionEventsParams
 
 __all__ = [
     "AgentContentResource",
@@ -213,9 +213,11 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_agents_part001 = importlib.import_module(".agents_part001", __package__)
+_agents_list_agent_environments = importlib.import_module(
+    ".agents_list_agent_environments", __package__
+)
 
-_deferred_agents_part001: tuple[tuple[str, object], ...] = (
+_deferred_agents_list_agent_environments: tuple[tuple[str, object], ...] = (
     ("AgentMessageItemResource", AgentMessageItemResource),
     ("AgentResource", AgentResource),
     ("CloseSubagentCallItemResource", CloseSubagentCallItemResource),
@@ -231,8 +233,8 @@ _deferred_agents_part001: tuple[tuple[str, object], ...] = (
     ("TurnResource", TurnResource),
     ("WaitForSubagentsCallItemResource", WaitForSubagentsCallItemResource),
 )
-for _name, _value in _deferred_agents_part001:
-    setattr(_agents_part001, _name, _value)
+for _name, _value in _deferred_agents_list_agent_environments:
+    setattr(_agents_list_agent_environments, _name, _value)
 
 AgentEnvironmentListResource.model_rebuild()
 EnvironmentPackagesParam.model_rebuild()
@@ -250,9 +252,9 @@ TokenUsageResource.model_rebuild()
 SessionTurnListResource.model_rebuild()
 AgentListResource.model_rebuild()
 
-_agents_part002 = importlib.import_module(".agents_part002", __package__)
+_agents_shared = importlib.import_module(".agents_shared", __package__)
 
-_deferred_agents_part002: tuple[tuple[str, object], ...] = (
+_deferred_agents_shared: tuple[tuple[str, object], ...] = (
     ("AgentToolConfigParamMcp", AgentToolConfigParamMcp),
     ("AgentToolConfigParamWebSearch", AgentToolConfigParamWebSearch),
     ("AgentToolResourceMcp", AgentToolResourceMcp),
@@ -262,8 +264,8 @@ _deferred_agents_part002: tuple[tuple[str, object], ...] = (
     ("EnvironmentTemplateResource", EnvironmentTemplateResource),
     ("SessionResource", SessionResource),
 )
-for _name, _value in _deferred_agents_part002:
-    setattr(_agents_part002, _name, _value)
+for _name, _value in _deferred_agents_shared:
+    setattr(_agents_shared, _name, _value)
 
 EnvironmentPackagesResource.model_rebuild()
 EnvironmentTemplateListResource.model_rebuild()
@@ -284,9 +286,9 @@ EnvironmentParamNone.model_rebuild()
 EnvironmentParamSelfHosted.model_rebuild()
 UnknownEnvironmentParam.model_rebuild()
 
-_agents_part003 = importlib.import_module(".agents_part003", __package__)
+_agents_shared2 = importlib.import_module(".agents_shared2", __package__)
 
-_deferred_agents_part003: tuple[tuple[str, object], ...] = (
+_deferred_agents_shared2: tuple[tuple[str, object], ...] = (
     ("AssistantMessageItemResource", AssistantMessageItemResource),
     ("CloseSubagentCallItemResource", CloseSubagentCallItemResource),
     ("CommandExecutionItemResource", CommandExecutionItemResource),
@@ -296,8 +298,8 @@ _deferred_agents_part003: tuple[tuple[str, object], ...] = (
     ("SendSubagentInputCallItemResource", SendSubagentInputCallItemResource),
     ("WaitForSubagentsCallItemResource", WaitForSubagentsCallItemResource),
 )
-for _name, _value in _deferred_agents_part003:
-    setattr(_agents_part003, _name, _value)
+for _name, _value in _deferred_agents_shared2:
+    setattr(_agents_shared2, _name, _value)
 
 SessionErrorResource.model_rebuild()
 UnknownAgentOutputItemResource.model_rebuild()

@@ -3,7 +3,7 @@
 
 import importlib
 
-from .evals_eval_part001 import (
+from .evals_eval_create_eval import (
     CreateEvalCustomDataSourceConfig,
     CreateEvalItem,
     CreateEvalItemVariant0,
@@ -26,7 +26,7 @@ from .evals_eval_part001 import (
     EvalRunOutputItemSampleOutputItem,
     EvalRunOutputItemSampleUsage,
 )
-from .evals_eval_part002 import (
+from .evals_eval_get_eval_run_output_items import (
     CreateEvalCompletionsRunDataSourceInputMessages,
     CreateEvalCompletionsRunDataSourceInputMessagesVariant0,
     CreateEvalCompletionsRunDataSourceInputMessagesVariant1,
@@ -63,7 +63,7 @@ from .evals_eval_part002 import (
     UnknownEvalRunDataSource,
     UnknownEvalTestingCriteriaItem,
 )
-from .evals_eval_part003 import (
+from .evals_eval_shared import (
     CreateEvalCompletionsRunDataSource,
     CreateEvalCompletionsRunDataSourceSamplingParams,
     CreateEvalJsonlRunDataSource,
@@ -78,7 +78,7 @@ from .evals_eval_part003 import (
     EvalGraderScoreModelVariant1,
     EvalResponsesSource,
 )
-from .evals_eval_part004 import (
+from .evals_eval_shared2 import (
     EvalRun,
     EvalRunPerModelUsageItem,
     EvalRunPerTestingCriteriaResultsItem,
@@ -163,15 +163,15 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_evals_eval_part001 = importlib.import_module(".evals_eval_part001", __package__)
+_evals_eval_create_eval = importlib.import_module(".evals_eval_create_eval", __package__)
 
-_deferred_evals_eval_part001: tuple[tuple[str, object], ...] = (
+_deferred_evals_eval_create_eval: tuple[tuple[str, object], ...] = (
     ("Eval", Eval),
     ("EvalRun", EvalRun),
     ("EvalRunOutputItemResult", EvalRunOutputItemResult),
 )
-for _name, _value in _deferred_evals_eval_part001:
-    setattr(_evals_eval_part001, _name, _value)
+for _name, _value in _deferred_evals_eval_create_eval:
+    setattr(_evals_eval_create_eval, _name, _value)
 
 CreateEvalCustomDataSourceConfig.model_rebuild()
 CreateEvalItemVariant0.model_rebuild()
@@ -194,17 +194,19 @@ EvalRunOutputItemSampleUsage.model_rebuild()
 EvalRunOutputItemSample.model_rebuild()
 EvalRunOutputItem.model_rebuild()
 
-_evals_eval_part002 = importlib.import_module(".evals_eval_part002", __package__)
+_evals_eval_get_eval_run_output_items = importlib.import_module(
+    ".evals_eval_get_eval_run_output_items", __package__
+)
 
-_deferred_evals_eval_part002: tuple[tuple[str, object], ...] = (
+_deferred_evals_eval_get_eval_run_output_items: tuple[tuple[str, object], ...] = (
     ("CreateEvalCompletionsRunDataSource", CreateEvalCompletionsRunDataSource),
     ("CreateEvalJsonlRunDataSource", CreateEvalJsonlRunDataSource),
     ("CreateEvalResponsesRunDataSource", CreateEvalResponsesRunDataSource),
     ("EvalGraderScoreModel", EvalGraderScoreModel),
     ("EvalResponsesSource", EvalResponsesSource),
 )
-for _name, _value in _deferred_evals_eval_part002:
-    setattr(_evals_eval_part002, _name, _value)
+for _name, _value in _deferred_evals_eval_get_eval_run_output_items:
+    setattr(_evals_eval_get_eval_run_output_items, _name, _value)
 
 EvalRunOutputItemList.model_rebuild()
 EvalRunOutputItemResult.model_rebuild()

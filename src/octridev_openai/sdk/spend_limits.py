@@ -15,10 +15,10 @@ from ..methods.spend_limits import (
     retrieve_spend_limits_organization_sync,
     retrieve_spend_limits_project,
     retrieve_spend_limits_project_sync,
+    update_project_spend_limit,
+    update_project_spend_limit_sync,
     update_spend_limits_organization,
     update_spend_limits_organization_sync,
-    update_spend_limits_project,
-    update_spend_limits_project_sync,
 )
 
 
@@ -34,8 +34,8 @@ class _SpendLimitsNamespace:
         self.retrieve_project.__doc__ = retrieve_spend_limits_project_sync.__doc__
         self.delete_project = partial(delete_spend_limits_project_sync, config)
         self.delete_project.__doc__ = delete_spend_limits_project_sync.__doc__
-        self.update_project = partial(update_spend_limits_project_sync, config)
-        self.update_project.__doc__ = update_spend_limits_project_sync.__doc__
+        self.update = partial(update_project_spend_limit_sync, config)
+        self.update.__doc__ = update_project_spend_limit_sync.__doc__
 
 
 class _AsyncSpendLimitsNamespace:
@@ -50,5 +50,5 @@ class _AsyncSpendLimitsNamespace:
         self.retrieve_project.__doc__ = retrieve_spend_limits_project.__doc__
         self.delete_project = partial(delete_spend_limits_project, config)
         self.delete_project.__doc__ = delete_spend_limits_project.__doc__
-        self.update_project = partial(update_spend_limits_project, config)
-        self.update_project.__doc__ = update_spend_limits_project.__doc__
+        self.update = partial(update_project_spend_limit, config)
+        self.update.__doc__ = update_project_spend_limit.__doc__

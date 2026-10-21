@@ -3,7 +3,7 @@
 
 import importlib
 
-from .audio_part001 import (
+from .audio_create_transcription import (
     AudioResponseFormat,
     CreateSpeechResponseStreamEvent,
     CreateTranscriptionResponseStreamEvent,
@@ -31,7 +31,7 @@ from .audio_part001 import (
     UnknownCreateSpeechResponseStreamEvent,
     UnknownCreateTranscriptionResponseStreamEvent,
 )
-from .audio_part002 import (
+from .audio_shared import (
     CreateSpeechRequest,
     CreateSpeechRequestVoice,
     CreateSpeechRequestVoiceVariant2,
@@ -109,14 +109,14 @@ __all__ = [
 
 # Forward references deferred to TYPE_CHECKING in the parts above are
 # resolvable now that every part is loaded.
-_audio_part001 = importlib.import_module(".audio_part001", __package__)
+_audio_create_transcription = importlib.import_module(".audio_create_transcription", __package__)
 
-_deferred_audio_part001: tuple[tuple[str, object], ...] = (
+_deferred_audio_create_transcription: tuple[tuple[str, object], ...] = (
     ("TranscriptionSegment", TranscriptionSegment),
     ("TranscriptionWord", TranscriptionWord),
 )
-for _name, _value in _deferred_audio_part001:
-    setattr(_audio_part001, _name, _value)
+for _name, _value in _deferred_audio_create_transcription:
+    setattr(_audio_create_transcription, _name, _value)
 
 UnknownCreateSpeechResponseStreamEvent.model_rebuild()
 UnknownCreateTranscriptionResponseStreamEvent.model_rebuild()
