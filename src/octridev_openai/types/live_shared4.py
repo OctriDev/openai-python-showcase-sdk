@@ -141,7 +141,7 @@ class LiveDelegationItem(BaseModel):
     """The unique ID of the delegation. Use this as delegation_id when replying to client-owned work or correlating backend events."""
     type: Literal["delegation"] | str
     """The object type, always `delegation`."""
-    target: Literal["client"] | str | Literal["responses"] | Literal["decisions"]
+    target: Literal["client", "responses", "decisions"] | str
     """Where the Live model delegated the work: `client`, `responses`, or `decisions`."""
     response_id: str | NotGiven = NOT_GIVEN
     """The ID of the Responses API response associated with a Responses delegation. Omitted for client delegations."""
